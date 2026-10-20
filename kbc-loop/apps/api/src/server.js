@@ -5,6 +5,8 @@
 //   POST /api/actions                        { type, ... } → past de actie toe, geeft de nieuwe state terug
 //   GET  /api/insights?kind=&customerType=   geanonimiseerde groepen + aanbevelingen (KBC Loop Insights)
 //   GET  /api/actions/recent?limit=          laatste acties uit het logboek
+//   GET  /api/catalog                        partner catalogue { categories, partners, products } (from the database)
+//   GET  /api/catalog/partners/:id           one partner with its products (404 when unknown)
 //   WS   /api/live                           { type: 'state', version, state } bij verbinden en elke wijziging
 //
 // In productie serveert dezelfde server ook de gebouwde web (STATIC_DIR): alles op één (HTTPS-)adres.
@@ -12,6 +14,7 @@ import { createServer as createHttpServer } from 'node:http'
 import { ACTION_TYPES } from '@kbc-loop/shared/state/loopReducer.js'
 import { insights } from '@kbc-loop/shared/engine/insights.js'
 import { openDb } from './db.js'
+import { PARTNER_ID } from './catalog.js'
 import { liveUpdates } from './live.js'
 import { staticFiles } from './static.js'
 import { HSTS, SECURITY_HEADERS, clientIp, keyCheck, originCheck, rateLimiter } from './security.js'
@@ -20,6 +23,7 @@ import { loadConfig } from './config.js'
 const MAX_BODY = 16 * 1024
 const KINDS = ['alle', 'herstelling', 'herhaalaankoop']
 const CUSTOMER_TYPES = ['alle', 'particulier', 'kmo']
+const PARTNER_PATH = '/api/catalog/partners/'
 
 class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status }
@@ -27,9 +31,9 @@ class HttpError extends Error {
 
 function readJson(req) {
   if (!String(req.headers['content-type'] ?? '').startsWith('application/json')) {
-    return Promise.reject(new HttpError(415, 'Verwacht application/json'))
+    return Promise.reject(new HttpError(415, 'Expected application/json'))
   }
-  if (Number(req.headers['content-length']) > MAX_BODY) return Promise.reject(new HttpError(413, 'Te groot verzoek'))
+  if (Number(req.headers['content-length']) > MAX_BODY) return Promise.reject(new HttpError(413, 'Request too large'))
   return new Promise((ok, fail) => {
     let size = 0
     let tooBig = false
@@ -40,10 +44,10 @@ function readJson(req) {
       else chunks.push(c)
     })
     req.on('end', () => {
-      if (tooBig) return fail(new HttpError(413, 'Te groot verzoek'))
-      try { ok(JSON.parse(Buffer.concat(chunks).toString() || '{}')) } catch { fail(new HttpError(400, 'Ongeldige JSON')) }
+      if (tooBig) return fail(new HttpError(413, 'Request too large'))
+      try { ok(JSON.parse(Buffer.concat(chunks).toString() || '{}')) } catch { fail(new HttpError(400, 'Invalid JSON')) }
     })
-    req.on('error', () => fail(new HttpError(400, 'Verzoek afgebroken')))
+    req.on('error', () => fail(new HttpError(400, 'Request aborted')))
   })
 }
 
@@ -71,21 +75,21 @@ export function createServer(overrides = {}) {
   async function handleApi(req, res, url, origin) {
     const { pathname } = url
     if (pathname === '/api/health' && req.method === 'GET') return respond(res, 200, { ok: true }, origin)
-    if (!checkKey(req)) throw new HttpError(401, 'Ongeldige of ontbrekende sleutel')
+    if (!checkKey(req)) throw new HttpError(401, 'Invalid or missing key')
 
     const ip = clientIp(req, config.trustProxy, config.proxyHops)
     const write = req.method === 'POST'
-    if (!(write ? writeLimit(ip) : readLimit(ip))) throw new HttpError(429, 'Te veel verzoeken, probeer zo opnieuw')
+    if (!(write ? writeLimit(ip) : readLimit(ip))) throw new HttpError(429, 'Too many requests, please try again shortly')
 
     if (pathname === '/api/state' && req.method === 'GET') return respond(res, 200, { type: 'state', ...db.read() }, origin)
 
     if (pathname === '/api/actions' && write) {
       const action = await readJson(req)
       if (!action || typeof action !== 'object' || Array.isArray(action) || !ACTION_TYPES.includes(action.type)) {
-        throw new HttpError(400, 'Onbekende actie')
+        throw new HttpError(400, 'Unknown action')
       }
       let snapshot
-      try { snapshot = db.apply(action) } catch { throw new HttpError(400, `Actie ${action.type} kon niet worden toegepast`) }
+      try { snapshot = db.apply(action) } catch { throw new HttpError(400, `Action ${action.type} could not be applied`) }
       live.broadcast(snapshot)
       return respond(res, 200, { type: 'state', ...snapshot }, origin)
     }
@@ -98,11 +102,21 @@ export function createServer(overrides = {}) {
     if (pathname === '/api/insights' && req.method === 'GET') {
       const kind = url.searchParams.get('kind') ?? 'alle'
       const customerType = url.searchParams.get('customerType') ?? 'alle'
-      if (!KINDS.includes(kind) || !CUSTOMER_TYPES.includes(customerType)) throw new HttpError(400, 'Ongeldige filter')
+      if (!KINDS.includes(kind) || !CUSTOMER_TYPES.includes(customerType)) throw new HttpError(400, 'Invalid filter')
       return respond(res, 200, { ...insights({ kind, customerType }), campaigns: db.read().state.campaigns }, origin)
     }
 
-    throw new HttpError(404, 'Onbekend api-pad')
+    if (pathname === '/api/catalog' && req.method === 'GET') return respond(res, 200, db.catalog.catalog(), origin)
+
+    if (pathname.startsWith(PARTNER_PATH) && req.method === 'GET') {
+      const id = pathname.slice(PARTNER_PATH.length)
+      if (!PARTNER_ID.test(id)) throw new HttpError(400, 'Invalid partner id')
+      const partner = db.catalog.partner(id)
+      if (!partner) throw new HttpError(404, 'Unknown partner')
+      return respond(res, 200, partner, origin)
+    }
+
+    throw new HttpError(404, 'Unknown API path')
   }
 
   const server = createHttpServer(async (req, res) => {
@@ -112,7 +126,7 @@ export function createServer(overrides = {}) {
       const isApi = url.pathname.startsWith('/api/')
       if (isApi) {
         const check = checkOrigin(req)
-        if (!check.ok) throw new HttpError(403, 'Origin niet toegelaten')
+        if (!check.ok) throw new HttpError(403, 'Origin not allowed')
         origin = check.origin
         if (req.method === 'OPTIONS') {
           res.writeHead(204, {
@@ -126,7 +140,7 @@ export function createServer(overrides = {}) {
         return await handleApi(req, res, url, origin)
       }
       if (serveStatic && (req.method === 'GET' || req.method === 'HEAD')) return await serveStatic(res, url.pathname)
-      throw new HttpError(404, 'Niet gevonden')
+      throw new HttpError(404, 'Not found')
     } catch (err) {
       const status = err instanceof HttpError ? err.status : 500
       if (status === 500) console.error(err)

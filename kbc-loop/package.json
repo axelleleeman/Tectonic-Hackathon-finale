@@ -16,6 +16,7 @@
     "dev:app": "npm run start -w @kbc-loop/app",
     "test": "npm test -w @kbc-loop/shared && npm test -w @kbc-loop/api && npm run check:readme",
     "check:readme": "node scripts/check-readme.mjs",
+    "import:feed": "node scripts/import-partner-feed.mjs",
     "lint": "npm run lint -w @kbc-loop/web && npm run lint -w @kbc-loop/insights",
     "build": "npm run build -w @kbc-loop/web && npm run build -w @kbc-loop/insights && npm run export:web -w @kbc-loop/app",
     "dev:insights": "npm run dev -w @kbc-loop/insights"

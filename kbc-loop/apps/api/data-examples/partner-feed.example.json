@@ -1,0 +1,39 @@
+{
+  "partner": {
+    "id": "greenspin",
+    "name": "GreenSpin",
+    "short": "GreenSpin",
+    "tagline": "Fictional example partner: refurbished dryers and vacuum cleaners, repaired within 72 hours",
+    "category": "toestellen"
+  },
+  "products": [
+    {
+      "id": "greenspin-dryer",
+      "name": "Heat pump dryer",
+      "detail": "8 kg, energy class A+++, refurbished",
+      "icon": "🌀",
+      "for": ["particulier"],
+      "monthly": 17,
+      "buyPrice": 799,
+      "expectedRepairs": 140,
+      "termMonths": 60,
+      "co2Kg": 160,
+      "energySavingMonthly": 4,
+      "connected": true,
+      "includes": ["Delivery and installation", "Repair within 72 hours", "Take-back and refurbishment"]
+    },
+    {
+      "id": "greenspin-vacuum",
+      "name": "Cordless vacuum cleaner",
+      "detail": "With replaceable battery and wall dock",
+      "icon": "🧹",
+      "for": ["particulier", "kmo"],
+      "monthly": 7,
+      "buyPrice": 349,
+      "expectedRepairs": 60,
+      "termMonths": 48,
+      "co2Kg": 45,
+      "includes": ["Battery replaced free of charge", "Repair or replacement within 72 hours", "Take-back and refurbishment"]
+    }
+  ]
+}

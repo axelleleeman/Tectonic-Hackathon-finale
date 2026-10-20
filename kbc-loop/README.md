@@ -104,7 +104,10 @@ kbc-loop/
       src/assets/      KBC-logo
   apps/
     api/             @kbc-loop/api: REST + WebSocket op SQLite
-      src/             index.js (start), server.js (routes), db.js, live.js, security.js, static.js, config.js
+      src/             index.js (start), server.js (routes), db.js, live.js, security.js, static.js, config.js,
+                       catalog.js (partner catalogue tables partners + products, seeded from shared data),
+                       partnerFeed.js (strict validation of a partner product feed)
+      data-examples/   partner-feed.example.json: example feed of a fictional partner (GreenSpin)
       tests/
     web/             @kbc-loop/web: Vite + React, dev op http://localhost:5173
       index.html       KBC-appspagina (pixel-exacte screenshot + KBC Loop-tab en -kaart), presentatiepaneel,
@@ -130,6 +133,7 @@ kbc-loop/
       src/             api.js (api-adres + client), useLoop.js, navigation.js, theme.js
       app.json         Expo-config (web onder basis-pad /app)
   scripts/           check-readme.mjs: controleert of deze README de echte opbouw beschrijft
+                     import-partner-feed.mjs: imports a partner product feed into the database (npm run import:feed)
 ```
 
 **Uitbreiden:** een partner toevoegen = `packages/shared/src/data/partners.js` + producten in
@@ -222,6 +226,8 @@ het blok *Opbouw*, de scripts of de api-tabel hierboven aan.
 | `POST` | `/api/actions` | Actie `{ type, ... }` toepassen (enkel gekende actietypes), geeft de nieuwe state terug |
 | `GET` | `/api/actions/recent?limit=20` | Laatste acties uit het logboek (max. 100) |
 | `GET` | `/api/insights?kind=&customerType=` | Geanonimiseerde groepen + aanbevelingen voor KBC Loop Insights (`kind`: alle/herstelling/herhaalaankoop, `customerType`: alle/particulier/kmo) |
+| `GET` | `/api/catalog` | Partner catalogue from the database: `{ categories, partners, products }`, same shapes as `packages/shared/src/data` |
+| `GET` | `/api/catalog/partners/:id` | One partner with its `products` (`id` must match `^[a-z0-9-]{1,64}$`: otherwise `400`; unknown partner: `404`) |
 | `WS` | `/api/live` | Subprotocol `kbc-loop`; stuurt `{ type: 'state', version, state }` bij verbinden en bij elke wijziging. Enkel lezen. |
 
 Instellingen van de api (omgevingsvariabelen, zie `apps/api/src/config.js`):
@@ -248,6 +254,27 @@ Instellingen van de front-ends (bij het bouwen ingebakken, dus **geen geheimen**
 | `VITE_API_KEY` | web, insights | Zelfde waarde als `API_KEY`, als die gezet is |
 | `EXPO_PUBLIC_API_URL` | app | Adres van de api (standaard zelf gevonden via de Expo-devserver) |
 | `EXPO_PUBLIC_API_KEY` | app | Zelfde waarde als `API_KEY`, als die gezet is |
+
+## Partner catalogue and product feeds
+
+On startup the api creates the tables `partners` and `products` in the same SQLite database and seeds them
+once from `packages/shared/src/data` (idempotent: nothing happens when partners already exist). Categories
+stay in the shared data. The catalogue is read-only over HTTP (`GET /api/catalog`,
+`GET /api/catalog/partners/:id`); partners deliver their own catalogue as a JSON feed, imported via the CLI:
+
+```bash
+npm run import:feed -- apps/api/data-examples/partner-feed.example.json            # into DB_PATH or apps/api/data/kbc-loop.db
+node scripts/import-partner-feed.mjs <feed.json> --db apps/api/data/kbc-loop.db    # explicit database
+```
+
+A feed is `{ partner, products }` with the fields of `partners.js` and `products.js`: `partner` has `id`,
+`name`, `short` (optional), `tagline` and `category` (a known category id); each product has `id`, `name`,
+`detail`, `icon`, `for`, `monthly`, `buyPrice`, `termMonths`, `co2Kg`, `includes` and optionally
+`expectedRepairs`, `insuranceMonthly`, `energySavingMonthly`, `connected` and `payPerUse` (`partnerId` comes from the
+feed's partner). Validation (`apps/api/src/partnerFeed.js`) is strict: unknown fields, wrong types,
+out-of-range or non-finite numbers, too-long strings, duplicate ids and files over 512 KB are rejected and nothing
+is written. A valid feed is upserted in one transaction and replaces that partner's previous products; product ids
+that belong to another partner are refused. A running api picks up the import on the next request.
 
 ## Beveiliging
 

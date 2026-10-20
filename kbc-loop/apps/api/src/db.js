@@ -4,6 +4,7 @@ import { mkdirSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { DatabaseSync } from 'node:sqlite'
 import { createInitialState, loopReducer } from '@kbc-loop/shared/state/loopReducer.js'
+import { openCatalog } from './catalog.js'
 
 export function openDb(path) {
   if (path !== ':memory:') mkdirSync(dirname(path), { recursive: true, mode: 0o700 })
@@ -25,6 +26,9 @@ export function openDb(path) {
     );
   `)
 
+  // Partner catalogue (tables partners + products), seeded from the shared data when empty
+  const catalog = openCatalog(db)
+
   const select = db.prepare('SELECT version, state FROM loop_state WHERE id = 1')
   const upsert = db.prepare(`INSERT INTO loop_state (id, version, state, updated_at) VALUES (1, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET version = excluded.version, state = excluded.state, updated_at = excluded.updated_at`)
@@ -44,6 +48,7 @@ export function openDb(path) {
 
   return {
     read,
+    catalog,
 
     // Actie toepassen in één transactie: lezen, reducer, wegschrijven, loggen.
     apply(action) {
