@@ -32,6 +32,62 @@ function useFitScale(ref) {
   return scale
 }
 
+/** Scale that fits the phone into the viewport for the large overlay (never above 1). */
+function useViewportScale(active) {
+  const calc = () => Math.min(1, (window.innerHeight - 96) / (SCREEN_H + BEZEL * 2), (window.innerWidth - 32) / (SCREEN_W + BEZEL * 2))
+  const [scale, setScale] = useState(1)
+  useEffect(() => {
+    if (!active) return undefined
+    const on = () => setScale(calc())
+    on()
+    window.addEventListener('resize', on)
+    return () => window.removeEventListener('resize', on)
+  }, [active])
+  return scale
+}
+
+/** The phone frame with the app inside, at a given scale. */
+function Phone({ scale, loading, onLoad }) {
+  return (
+    <div className="lp-phone-box" style={{ width: (SCREEN_W + BEZEL * 2) * scale, height: (SCREEN_H + BEZEL * 2) * scale }}>
+      <div className="lp-phone" style={{ transform: `scale(${scale})` }}>
+        <span className="lp-phone-notch" aria-hidden="true" />
+        {loading && <div className="lp-phone-skel" aria-hidden="true" />}
+        <iframe src={SAFE_URL} title="KBC Loop mobile app (demo)" loading="lazy" width={SCREEN_W} height={SCREEN_H}
+          sandbox="allow-scripts allow-same-origin allow-forms" referrerPolicy="no-referrer" onLoad={onLoad} />
+      </div>
+    </div>
+  )
+}
+
+/** Large, centred app simulator over the page. Closes with the × button, Escape or a click on the backdrop. */
+function AppOverlay({ onClose }) {
+  const scale = useViewportScale(true)
+  const closeRef = useRef(null)
+  const [loading, setLoading] = useState(true)
+  useEffect(() => {
+    const opener = document.activeElement
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    closeRef.current?.focus()
+    const onKey = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+      opener?.focus?.()
+    }
+  }, [onClose])
+  return (
+    <div className="lp-appx-overlay" role="dialog" aria-modal="true" aria-label="KBC Loop mobile app" onClick={(e) => { if (e.target === e.currentTarget) onClose() }}>
+      <button type="button" ref={closeRef} className="lp-appx-close" onClick={onClose} aria-label="Close the app">
+        <LoopIcon name="x" size={20} />
+      </button>
+      <Phone scale={scale} loading={loading} onLoad={() => setLoading(false)} />
+    </div>
+  )
+}
+
 /**
  * "Explore the app": the real KBC Loop mobile app (Expo web, APP_URL) in a CSS phone frame. It talks to the same api,
  * so actions sync live with this page. When the frame does not load in time a fallback card with the link is shown.
@@ -40,15 +96,13 @@ export function AppPreview() {
   const fitRef = useRef(null)
   const scale = useFitScale(fitRef)
   const [state, setState] = useState(SAFE_URL ? 'loading' : 'failed') // loading | ready | failed
+  const [large, setLarge] = useState(false)
 
   useEffect(() => {
     if (state !== 'loading') return undefined
     const t = setTimeout(() => setState((s) => (s === 'loading' ? 'failed' : s)), LOAD_TIMEOUT)
     return () => clearTimeout(t)
   }, [state])
-
-  const w = (SCREEN_W + BEZEL * 2) * scale
-  const h = (SCREEN_H + BEZEL * 2) * scale
 
   return (
     <section className="lp-section lp-appx" aria-labelledby="lp-appx-title">
@@ -59,9 +113,9 @@ export function AppPreview() {
           {HIGHLIGHTS.map((t) => <li key={t}><LoopIcon name="check" size={16} />{t}</li>)}
         </ul>
         {SAFE_URL && (
-          <a className="lp-btn" href={SAFE_URL} target="_blank" rel="noopener noreferrer">
-            Open full screen<LoopIcon name="arrow" size={16} />
-          </a>
+          <button type="button" className="lp-btn" onClick={() => setLarge(true)}>
+            Open the app large<LoopIcon name="arrow" size={16} />
+          </button>
         )}
       </div>
       <div className="lp-appx-fit" ref={fitRef}>
@@ -71,17 +125,10 @@ export function AppPreview() {
             {SAFE_URL && <a className="lp-btn lp-sm" href={SAFE_URL} target="_blank" rel="noopener noreferrer">Open the app</a>}
           </div>
         ) : (
-          <div className="lp-phone-box" style={{ width: w, height: h }}>
-            <div className="lp-phone" style={{ transform: `scale(${scale})` }}>
-              <span className="lp-phone-notch" aria-hidden="true" />
-              {state === 'loading' && <div className="lp-phone-skel" aria-hidden="true" />}
-              <iframe src={SAFE_URL} title="KBC Loop mobile app (demo)" loading="lazy" width={SCREEN_W} height={SCREEN_H}
-                sandbox="allow-scripts allow-same-origin allow-forms" referrerPolicy="no-referrer"
-                onLoad={() => setState('ready')} />
-            </div>
-          </div>
+          <Phone scale={scale} loading={state === 'loading'} onLoad={() => setState('ready')} />
         )}
       </div>
+      {large && <AppOverlay onClose={() => setLarge(false)} />}
     </section>
   )
 }

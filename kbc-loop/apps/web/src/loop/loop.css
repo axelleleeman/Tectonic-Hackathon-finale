@@ -505,3 +505,12 @@ a.lp-tile:hover .lp-tile-arrow { color: var(--lp-accent); transform: translateX(
 .lp-item-click { cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease, translate .15s ease; }
 .lp-item-click:hover { border-color: var(--lp-accent); box-shadow: 0 6px 18px rgba(2, 49, 127, .08); }
 @media (prefers-reduced-motion: no-preference) { .lp-item-click:hover { translate: 0 -1px; } }
+
+/* Large app simulator overlay */
+.lp-appx-overlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 48px 16px; background: rgba(4, 14, 32, .78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+@media (prefers-reduced-motion: no-preference) { .lp-appx-overlay { animation: lp-fade-in .2s ease both; } }
+@keyframes lp-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.lp-appx-close { position: fixed; top: 16px; right: 16px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: #FFFFFF; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .24); cursor: pointer; }
+.lp-appx-close:hover { background: rgba(255, 255, 255, .22); }
+.lp-appx-close:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 3px; }
+.lp-appx-close .lp-i { color: #FFFFFF; stroke: #FFFFFF; stroke-width: 2.2; }
