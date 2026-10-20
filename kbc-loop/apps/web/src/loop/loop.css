@@ -578,3 +578,12 @@ a.lp-tile:hover .lp-tile-arrow { color: var(--lp-accent); transform: translateX(
 .lp .lp-eco-text { background: var(--lp-eco-ink); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
 @media (forced-colors: active) { .lp .lp-eco-text { color: CanvasText; -webkit-text-fill-color: CanvasText; background: none; } }
 .lp-value.lp-eco-surface .lp-value-ic { background: var(--lp-eco-soft); color: var(--lp-eco); }
+
+/* Kate tips: level chip in the section heading (the tips themselves: kate/tipFlow.css) */
+.lp .lp-kate-level { margin-left: auto; display: inline-flex; align-items: center; gap: var(--s1); min-height: 32px; padding: 0 var(--s3); border-radius: var(--r-pill); border: 0; background: var(--lp-accent-soft); color: var(--lp-accent); font: inherit; font-size: .8125rem; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.lp .lp-kate-level:hover { background: var(--lp-line-strong); }
+
+/* Scroll-linked words: each word goes from dim to full as the section scrolls through the viewport (--p 0 → 1). */
+.lp-scrub .lp-word { opacity: clamp(.14, calc(var(--p, 1) * (var(--n, 1) + 1.5) - var(--i, 0)), 1); translate: 0 calc((1 - clamp(0, calc(var(--p, 1) * (var(--n, 1) + 1.5) - var(--i, 0)), 1)) * 6px); transition: opacity .12s linear, translate .12s linear; }
+.lp-rv-ready .lp-scrub .lp-word, .lp-rv-ready.lp-in .lp-scrub .lp-word { transition-delay: 0s !important; }
+@media (prefers-reduced-motion: reduce) { .lp-scrub .lp-word { opacity: 1; translate: none; } }

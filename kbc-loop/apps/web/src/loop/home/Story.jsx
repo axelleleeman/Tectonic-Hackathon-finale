@@ -1,19 +1,26 @@
 // Story moments on the start screen: problem, solution, triple win and "You stay in control" (the real Kate level).
 import { useState } from 'react'
 import { LoopIcon } from '../LoopIcon.jsx'
-import { useReveal } from '../useReveal.js'
+import { useReveal, useScrollProgress } from '../useReveal.js'
 import { KateLevelPicker } from '../consent/KateLevelPicker.jsx'
 
-/** Words that reveal one by one (decorative; the screen-reader text sits next to them). */
+/**
+ * Words that light up one by one as you scroll (driven by `--p` from useScrollProgress on the section).
+ * Decorative: the screen-reader text sits next to them.
+ */
 export function Words({ text }) {
-  return text.split(' ').map((w, i) => (
-    <span key={`${w}-${i}`} className="lp-rv lp-word" style={{ '--i': i }}>{w} </span>
-  ))
+  const words = text.split(' ')
+  return (
+    <span className="lp-scrub" style={{ '--n': words.length }}>
+      {words.map((w, i) => <span key={`${w}-${i}`} className="lp-word" style={{ '--i': i }}>{w} </span>)}
+    </span>
+  )
 }
 
 /** A calm story moment: small label, one big line revealed word by word, one small supporting line. */
 export function StoryMoment({ id, label, line, sub }) {
   const [ref] = useReveal({ threshold: 0.4 })
+  useScrollProgress(ref)
   const after = line.split(' ').length + 2
   return (
     <section ref={ref} id={id} className="lp-stmt lp-moment" aria-label={label}>

@@ -1,9 +1,10 @@
 import { LoopIcon } from '../LoopIcon.jsx'
-import { useReveal } from '../useReveal.js'
+import { useReveal, useScrollProgress } from '../useReveal.js'
 import { StayInControl, StoryMoment, TripleWin, Words } from './Story.jsx'
 
 function Statement({ id, text, panel = false }) {
   const [ref] = useReveal({ threshold: 0.4 })
+  useScrollProgress(ref)
   return (
     <section ref={ref} id={id} className={`lp-stmt ${panel ? 'lp-stmt-panel' : ''}`}>
       <div className={panel ? 'lp-panel lp-rv' : 'lp-wrap'}>

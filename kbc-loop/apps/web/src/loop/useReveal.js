@@ -43,3 +43,41 @@ export function useCountUp(value, run) {
   }, [value, run])
   return n
 }
+
+/**
+ * Scroll-linked progress for word-by-word text: writes `--p` (0 → 1) on the element while it moves through the
+ * viewport (0 when its top reaches 85% of the screen, 1 when its middle passes 45%). Words fade in and out with the
+ * scroll position. Under prefers-reduced-motion everything is simply shown (`--p: 1`).
+ */
+export function useScrollProgress(ref) {
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return undefined
+    if (reduced()) { el.style.setProperty('--p', '1'); return undefined }
+    let raf = 0
+    let active = false
+    const update = () => {
+      raf = 0
+      const r = el.getBoundingClientRect()
+      const vh = window.innerHeight
+      const start = vh * 0.85
+      const end = vh * 0.45 - r.height / 2
+      const p = Math.min(1, Math.max(0, (start - r.top) / (start - end)))
+      el.style.setProperty('--p', p.toFixed(3))
+    }
+    const onScroll = () => { if (active && !raf) raf = requestAnimationFrame(update) }
+    const io = 'IntersectionObserver' in window
+      ? new IntersectionObserver(([e]) => { active = e.isIntersecting; if (active) onScroll() }, { rootMargin: '20% 0px' })
+      : null
+    if (io) io.observe(el); else active = true
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    update()
+    return () => {
+      io?.disconnect()
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      cancelAnimationFrame(raf)
+    }
+  }, [ref])
+}
