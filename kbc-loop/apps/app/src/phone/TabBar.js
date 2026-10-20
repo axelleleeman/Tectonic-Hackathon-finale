@@ -27,7 +27,9 @@ export function TabBar({ active, onSelect }) {
         return (
           <Press key={t.id} role="tab" aria-selected={on} label={t.label}
             onPress={t.disabled ? undefined : () => onSelect(t.id)} style={[styles.tab, on && styles.on]}>
-            <Icon name={t.icon} size={24} color={color} fill={on ? colors.kmNavy : 'none'} />
+            {/* Outline icons (the loop symbol) get a bolder stroke when active instead of a fill */}
+            <Icon name={t.icon} size={24} color={color}
+              fill={on && !t.outline ? colors.kmNavy : 'none'} strokeWidth={on && t.outline ? 2.6 : 1.8} />
             <T style={[styles.label, { color }, on && styles.labelOn]} numberOfLines={1}>{t.label}</T>
           </Press>
         )

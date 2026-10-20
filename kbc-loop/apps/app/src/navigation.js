@@ -15,5 +15,6 @@ export const TABS = [
   { id: 'mykbc', label: 'Mijn KBC', icon: 'list' },
   { id: 'invest', label: 'Beleggen', icon: 'piggy', disabled: true },
   { id: 'business', label: 'Zakelijk', icon: 'briefcase', disabled: true },
-  { id: 'shop', label: 'Aanbod', icon: 'layers' },
+  // The offers tab carries the KBC Loop symbol: that is where KBC Loop lives in the app.
+  { id: 'shop', label: 'Aanbod', icon: 'loop', outline: true },
 ]
