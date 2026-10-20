@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From data to Kate</title>
+<script src="kate-flow.js" defer></script>
+<meta name="description" content="How KBC LOOP turns an anonymised spending pattern and a group insight into a personal Kate recommendation.">
+<style>
+  :root {
+    --bg: #F3F6FA; --surface: #FFFFFF; --surface2: #EAF0F7; --ink: #0B1F3A; --muted: #5A6B82; --line: #DCE4EE;
+    --navy: #0B2A5B; --navy2: #123A78; --accent: #0A64B8; --accent-soft: rgba(10, 100, 184, .09); --eco: #0B7A4B; --eco-soft: rgba(11, 122, 75, .1);
+    --warn: #B4540A; --shadow: 0 10px 30px rgba(6, 24, 47, .08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #07152B; --surface: #0E1F3A; --surface2: #132A4C; --ink: #EAF1FA; --muted: #9DB0C8; --line: #1F3558;
+      --accent: #4AABEE; --accent-soft: rgba(74, 171, 238, .14); --eco: #3FC98A; --eco-soft: rgba(63, 201, 138, .14); --warn: #F0A15A; --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #07152B; --surface: #0E1F3A; --surface2: #132A4C; --ink: #EAF1FA; --muted: #9DB0C8; --line: #1F3558;
+    --accent: #4AABEE; --accent-soft: rgba(74, 171, 238, .14); --eco: #3FC98A; --eco-soft: rgba(63, 201, 138, .14); --warn: #F0A15A; --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--bg); color: var(--ink); font: 400 16px/1.5 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+  .top { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; background: var(--navy); color: #EEF3FA; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .08em; }
+  .ring { width: 20px; height: 20px; border-radius: 50%; border: 3px solid #4AABEE; }
+  .top small { color: #A9BCD6; font-weight: 500; letter-spacing: 0; margin-left: 6px; }
+  .theme { border: 1px solid rgba(255, 255, 255, .25); background: transparent; color: inherit; border-radius: 999px; padding: 6px 14px; font: inherit; font-size: .875rem; cursor: pointer; }
+  .hero { background: linear-gradient(180deg, var(--navy) 0%, var(--navy2) 100%); color: #FFFFFF; padding: 40px 24px 96px; border-radius: 0 0 32px 32px; }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  .eyebrow { color: #A9BCD6; font-size: .8125rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; margin: 0 0 8px; }
+  h1 { font-size: clamp(1.75rem, 3vw + .5rem, 2.75rem); line-height: 1.15; margin: 0 0 10px; letter-spacing: -.01em; text-wrap: balance; }
+  .lead { color: #D3DFEE; max-width: 60ch; margin: 0; }
+  .flow { display: grid; grid-template-columns: minmax(0, 1fr) 56px minmax(0, 1fr) 56px minmax(0, 1fr); align-items: stretch; gap: 0; margin-top: -64px; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .step { display: inline-flex; align-items: center; gap: 8px; font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--accent); }
+  .step b { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #FFFFFF; font-size: .75rem; letter-spacing: 0; }
+  h2 { margin: 0; font-size: 1.25rem; line-height: 1.25; }
+  .sub { margin: 0; color: var(--muted); font-size: .9375rem; }
+  .op { display: grid; place-items: center; }
+  .op span { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); color: var(--accent); font-size: 1.5rem; font-weight: 600; }
+  .op svg { width: 22px; height: 22px; stroke: var(--accent); stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .tx { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .tx li { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 10px 12px; border-radius: 14px; background: var(--surface2); font-size: .875rem; }
+  .tx li span { color: var(--muted); font-size: .8125rem; }
+  .tx li strong { font-variant-numeric: tabular-nums; }
+  .tx li.hit { background: var(--accent-soft); outline: 1px solid var(--accent); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: .75rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: var(--surface2); color: var(--muted); }
+  .tag.on { background: var(--accent-soft); color: var(--accent); }
+  .big { font-size: 2.25rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .kpi { background: var(--surface2); border-radius: 16px; padding: 12px 14px; }
+  .kpi .label { font-size: .8125rem; color: var(--muted); }
+  .kpi .val { font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .bar { height: 8px; border-radius: 999px; background: var(--surface2); overflow: hidden; }
+  .bar i { display: block; height: 100%; width: var(--w); background: var(--accent); border-radius: inherit; transition: width 1.2s cubic-bezier(.2, .8, .2, 1) .6s; }
+  .js .bar i { width: 0; }
+  .js .in .bar i { width: var(--w); }
+  .rule { font-size: .875rem; padding: 12px 14px; border-radius: 14px; border: 1px dashed var(--line); color: var(--muted); }
+  .rule code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .8125rem; color: var(--ink); }
+  .phone { margin: 4px auto 0; width: 100%; max-width: 300px; border-radius: 32px; padding: 10px; background: #0A1322; box-shadow: 0 0 0 2px #26324A, var(--shadow); }
+  .screen { border-radius: 24px; background: #F3F6FA; padding: 14px; display: grid; gap: 10px; color: #0B1F3A; }
+  .notif { background: #FFFFFF; border: 1px solid #CFE3F7; border-radius: 16px; padding: 10px 12px; display: grid; gap: 4px; box-shadow: 0 6px 16px rgba(6, 24, 47, .08); }
+  .notif .app { font-size: .6875rem; color: #5A6B82; display: flex; align-items: center; gap: 6px; }
+  .notif .app i { width: 14px; height: 14px; border-radius: 4px; background: #0B2A5B; display: inline-block; }
+  .notif strong { font-size: .875rem; }
+  .notif p { margin: 0; font-size: .8125rem; color: #33445C; }
+  .offer { background: #FFFFFF; border-radius: 16px; padding: 12px; display: grid; gap: 8px; }
+  .offer-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .offer-head b { font-size: .9375rem; }
+  .offer-head span { font-size: .875rem; font-weight: 700; color: #0A64B8; white-space: nowrap; }
+  .offer ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: .75rem; color: #33445C; }
+  .offer li::before { content: "✓"; color: #0B7A4B; font-weight: 700; margin-right: 6px; }
+  .btns { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  .btn { border: 0; border-radius: 999px; padding: 8px 12px; font: 600 .8125rem/1 inherit; background: #0A64B8; color: #FFFFFF; text-align: center; }
+  .btn.ghost { background: transparent; color: #5A6B82; }
+  .why { font-size: .75rem; color: #5A6B82; }
+  .privacy { margin: 40px auto 56px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .p { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 18px 20px; display: grid; gap: 6px; }
+  .p h3 { margin: 0; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+  .p h3::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--eco); box-shadow: 0 0 0 4px var(--eco-soft); }
+  .p p { margin: 0; color: var(--muted); font-size: .9375rem; }
+  .foot { text-align: center; color: var(--muted); font-size: .8125rem; padding: 0 16px 32px; }
+  /* Reveal in sequence: data → insight → Kate */
+  .js .reveal { opacity: 0; translate: 0 16px; transition: opacity .6s ease, translate .6s cubic-bezier(.2, .8, .2, 1); }
+  .js .in .reveal { opacity: 1; translate: 0 0; }
+  .in .d1 { transition-delay: .1s; } .in .d2 { transition-delay: .5s; } .in .d3 { transition-delay: .9s; } .in .d4 { transition-delay: 1.3s; } .in .d5 { transition-delay: 1.7s; }
+  @media (prefers-reduced-motion: reduce) { .js .reveal, .js .bar i { transition: none; } .js .reveal { opacity: 1; translate: 0 0; } .js .bar i { width: var(--w); } }
+  @media (max-width: 960px) {
+    .flow { grid-template-columns: minmax(0, 1fr); gap: 12px; margin-top: -56px; }
+    .op svg { rotate: 90deg; }
+    .privacy { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .hero { padding: 28px 16px 80px; } .wrap { padding: 0 16px; } .hero .wrap { padding: 0; } .top { padding: 12px 16px; }
+    .card { padding: 20px 16px; border-radius: 20px; }
+  }
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="ring" aria-hidden="true"></span>KBC LOOP <small>From data to Kate</small></div>
+    <button class="theme" type="button" id="theme" aria-label="Switch light or dark mode">Theme</button>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">How a recommendation is made</p>
+      <h1>A spending pattern plus a group insight becomes one helpful Kate tip</h1>
+      <p class="lead">Only with consent, only from anonymised groups, and always with a "Why am I seeing this?".</p>
+    </div>
+  </section>
+
+  <main class="wrap" id="flow">
+    <div class="flow">
+      <!-- 1. Data insight: the customer's own spending pattern -->
+      <article class="card reveal d1" aria-labelledby="c1">
+        <span class="step"><b>1</b>Data insight</span>
+        <h2 id="c1">Spending pattern</h2>
+        <p class="sub">Lotte's recent transactions, read by KBC with her consent.</p>
+        <ul class="tx">
+          <li class="hit">GSM Fix Gent <strong>− € 179,00</strong><span>18 Oct · phone repair</span></li>
+          <li>Delhaize Gent <strong>− € 42,60</strong><span>19 Oct · groceries</span></li>
+          <li>KBC Loop · Philips <strong>− € 6,00</strong><span>5 Oct · subscription</span></li>
+        </ul>
+        <div class="tags" aria-label="Detected signals">
+          <span class="tag on">Phone repair</span><span class="tag on">Phone 34 months old</span><span class="tag">Already a KBC Loop customer</span>
+        </div>
+      </article>
+
+      <div class="op reveal d2" aria-hidden="true"><span>+</span></div>
+
+      <!-- 2. Insight: anonymised group from KBC Loop Insights -->
+      <article class="card reveal d3" aria-labelledby="c2">
+        <span class="step"><b>2</b>Insight</span>
+        <h2 id="c2">Customers like Lotte</h2>
+        <p class="sub">Anonymised group in KBC Loop Insights (groups under 100 customers are never shown).</p>
+        <div><span class="big">11.224</span> <span class="sub">customers recently paid for a phone repair</span></div>
+        <div class="kpis">
+          <div class="kpi"><div class="label">Replace within 6 months</div><div class="val">57%</div></div>
+          <div class="kpi"><div class="label">Avg. repair cost</div><div class="val">€ 164</div></div>
+        </div>
+        <div>
+          <div class="sub" style="font-size:.8125rem;margin-bottom:6px">Likely to choose borrowing</div>
+          <div class="bar" role="img" aria-label="38 percent"><i style="--w: 38%"></i></div>
+        </div>
+        <p class="rule">Rule: <code>phone repair</code> + <code>device ≥ 30 months</code> + <code>consent</code> → suggest a repair-included phone.</p>
+      </article>
+
+      <div class="op reveal d4" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+
+      <!-- 3. Kate recommendation in the app -->
+      <article class="card reveal d5" aria-labelledby="c3">
+        <span class="step"><b>3</b>Kate recommendation</span>
+        <h2 id="c3">One personal, explainable tip</h2>
+        <p class="sub">Shown in the KBC app and on KBC LOOP. Lotte decides.</p>
+        <div class="phone" aria-hidden="true">
+          <div class="screen">
+            <div class="notif">
+              <div class="app"><i></i>KBC Mobile · now</div>
+              <strong>Kate tip</strong>
+              <p>Your phone was just repaired. Why not borrow one that is always repaired for free?</p>
+            </div>
+            <div class="offer">
+              <div class="offer-head"><b>Smartphone · ReFone</b><span>€ 29 / mo</span></div>
+              <ul><li>Free repairs within 48 h</li><li>Insurance via KBC</li><li>+250 Kate Coins on return</li></ul>
+              <div class="btns"><span class="btn">View offer</span><span class="btn ghost">Not now</span></div>
+              <div class="why">Why am I seeing this? A € 179 repair on 18 Oct and a 34-month-old phone.</div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <section class="privacy" aria-label="Privacy by design">
+      <div class="p"><h3>Consent first</h3><p>No tips without the customer's choice in "Your data". Off is always one tap away.</p></div>
+      <div class="p"><h3>Anonymised groups</h3><p>Marketing only sees groups of 100+ customers, never names or single transactions.</p></div>
+      <div class="p"><h3>Explainable</h3><p>Every tip shows why it appears and can be dismissed. Kate never buys anything for you.</p></div>
+    </section>
+  </main>
+
+  <p class="foot">Concept prototype for the Tectonic Hackathon, not an official KBC page. Customers, figures and partners are fictional examples.</p>
+
+</body>
+</html>
