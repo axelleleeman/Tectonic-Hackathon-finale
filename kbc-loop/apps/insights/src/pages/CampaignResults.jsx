@@ -5,7 +5,7 @@ import { PageHead } from '../components/PageHead.jsx'
 import { StatusPill } from '../components/StatusPill.jsx'
 import { Segmented } from '../components/Segmented.jsx'
 import { Icon } from '../components/Icon.jsx'
-import { ResultsPanel } from '../campaign/ResultsPanel.jsx'
+import { ResultsHero, ResultsPanel } from '../campaign/ResultsPanel.jsx'
 import { StopCampaign } from '../campaign/StopCampaign.jsx'
 import { LiveIndicator } from '../components/LiveIndicator.jsx'
 import { campaignCsvRows, csvFileName, downloadCsv } from '../campaign/exportCsv.js'
@@ -34,8 +34,22 @@ export function CampaignResults({ state, actions, segments, segmentId, status })
 
   return (
     <>
-      <a className="ins-backlink" href={href.campaigns}><Icon name="back" size={16} />All campaigns</a>
-      <PageHead eyebrow={<StatusPill status={d.status} />} title={s.label}>
+      <PageHead eyebrow={<StatusPill status={d.status} />} title={s.label} back={{ href: href.campaigns, label: 'All campaigns' }}
+        below={(
+          <>
+            <div className="ins-toolbar">
+              <div className="ins-row">
+                {d.status === 'running' ? <LiveIndicator status={status} /> : <span className="ins-eyebrow">Final results</span>}
+                <span className="ins-eyebrow">Day {num(r.day)} · simulated</span>
+              </div>
+              <div className="ins-row">
+                {d.status === 'running' && <Segmented label="Show results as of" name="sim" value={offset} options={SIM_DAYS} onChange={setOffset} />}
+                <button type="button" className="ins-btn ins-btn-sm" onClick={exportCsv}><Icon name="download" size={16} />Export CSV</button>
+              </div>
+            </div>
+            <ResultsHero results={r} segment={s} />
+          </>
+        )}>
         {AUDIENCE_LABEL[d.audience]} · {euro(d.budget)} · since {formatDate(d.startedOn)}
       </PageHead>
 
@@ -45,17 +59,6 @@ export function CampaignResults({ state, actions, segments, segmentId, status })
           <span>Matching customers see this message as a tip from Kate in KBC Mobile while the campaign runs.</span>
         </p>
       )}
-
-      <div className="ins-toolbar">
-        <div className="ins-row">
-          {d.status === 'running' ? <LiveIndicator status={status} /> : <span className="ins-eyebrow">Final results</span>}
-          <span className="ins-eyebrow">Day {num(r.day)} · simulated</span>
-        </div>
-        <div className="ins-row">
-          {d.status === 'running' && <Segmented label="Show results as of" name="sim" value={offset} options={SIM_DAYS} onChange={setOffset} />}
-          <button type="button" className="ins-btn ins-btn-sm" onClick={exportCsv}><Icon name="download" size={16} />Export CSV</button>
-        </div>
-      </div>
 
       <ResultsPanel results={r} product={s.product} message={d.message} />
 

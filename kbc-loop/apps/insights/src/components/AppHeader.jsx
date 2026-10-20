@@ -9,7 +9,7 @@ export function AppHeader({ page, theme, onToggleTheme, runningCount, status }) 
   const toLight = theme === 'dark'
   const themeLabel = toLight ? 'Switch to light mode' : 'Switch to dark mode'
   return (
-    <header className="ins-top">
+    <header className="ins-top ins-navy">
       <div className="ins-wrap ins-top-in">
         <a className="ins-brand" href={href.overview} aria-label="KBC LOOP Insights, overview">
           <span className="ins-mark" aria-hidden="true" /><b>KBC LOOP</b><span className="ins-brand-sub">Insights</span>

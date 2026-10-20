@@ -54,3 +54,25 @@ export function campaignList(state) {
 export const SIM_DAYS = [[0, 'Today'], [7, 'In 1 week'], [30, 'In 1 month']]
 export const simDate = (offset) => addDays(TODAY, offset)
 export { TODAY }
+
+/** Weighted average of a percentage over groups, e.g. the trend of all spending patterns weighted by group size. */
+export function weightedPct(segments, pctOf, weightOf) {
+  const total = segments.reduce((sum, s) => sum + weightOf(s), 0)
+  return total ? Math.round(segments.reduce((sum, s) => sum + pctOf(s) * weightOf(s), 0) / total) : 0
+}
+
+/**
+ * Deterministic mini trend for a KPI tile: `n` points that end at `value` and start `pct` % lower,
+ * with a small, stable wobble per seed (no randomness, so every render and screenshot is identical).
+ */
+export function trendSeries(seed, value, pct, n = 8) {
+  const h = [...String(seed)].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 9973, 17)
+  const start = value / (1 + pct / 100)
+  return Array.from({ length: n }, (_, i) => {
+    if (i === n - 1) return value
+    const wobble = (((h * (i + 3)) % 7) - 3) / 100
+    return Math.max(0, (start + ((value - start) * i) / (n - 1)) * (1 + wobble))
+  })
+}
+
+export const signedPct = (n) => `${n > 0 ? '+' : ''}${n}%`
