@@ -4,9 +4,11 @@
 import { useEffect, useMemo } from 'react'
 import { useLoop } from '@kbc-loop/web-ui/useLoop.js'
 import { useTheme } from '@kbc-loop/web-ui/useTheme.js'
+import { MIN_GROUP_SIZE } from '@kbc-loop/shared/config/index.js'
 import { bindActions } from '@kbc-loop/shared/state/actions.js'
 import { AppHeader } from './components/AppHeader.jsx'
 import { Loading } from './components/Loading.jsx'
+import { ErrorBanner } from './components/ErrorBanner.jsx'
 import { useRoute } from './useRoute.js'
 import { ALL, useInsights } from './useInsights.js'
 import { Overview } from './pages/Overview.jsx'
@@ -17,7 +19,7 @@ import { Wizard } from './campaign/Wizard.jsx'
 
 export default function InsightsApp() {
   const { theme, toggle } = useTheme('kbc-loop-insights-theme')
-  const { state, dispatch, error } = useLoop()
+  const { state, dispatch, error, status } = useLoop()
   const actions = useMemo(() => bindActions(dispatch), [dispatch])
   const { data, error: loadError } = useInsights(ALL)
   const route = useRoute()
@@ -30,14 +32,19 @@ export default function InsightsApp() {
 
   const ready = state && data
   const page = route.page === 'campaigns' && route.id ? (route.id === 'new' ? 'wizard' : 'results') : route.page
-  const ctx = ready ? { state, actions, segments: data.segments, data, go: route.go } : null
+  const ctx = ready ? { state, actions, segments: data.segments, data, go: route.go, status } : null
 
   return (
     <div className="ins loop-theme" data-theme={theme}>
       <a className="ins-skip" href="#main">Skip to content</a>
-      <AppHeader page={route.page} theme={theme} onToggleTheme={toggle} runningCount={state?.campaigns?.length ?? 0} />
+      <AppHeader page={route.page} theme={theme} onToggleTheme={toggle} runningCount={state?.campaigns?.length ?? 0} status={status} />
       <main id="main" className="ins-wrap ins-main">
         {!ready && <Loading error={error ?? loadError} />}
+        {ready && (error || status === 'offline') && (
+          <ErrorBanner title="Connection to the KBC Loop server lost">
+            {error ? `${error}. ` : ''}Figures may be out of date; the dashboard reconnects automatically.
+          </ErrorBanner>
+        )}
         {ready && page === 'groups' && <Groups {...ctx} />}
         {ready && page === 'campaigns' && <Campaigns {...ctx} />}
         {ready && page === 'wizard' && <Wizard key={route.params.get('group') ?? 'new'} {...ctx} initialGroup={route.params.get('group')} />}
@@ -45,7 +52,11 @@ export default function InsightsApp() {
         {ready && !['groups', 'campaigns', 'wizard', 'results'].includes(page) && <Overview {...ctx} />}
       </main>
       <footer className="ins-wrap ins-foot">
-        Prototype · fictional, anonymised data
+        <p>
+          <b>Data source:</b> aggregated, anonymised spending patterns from the KBC Loop api (<code>GET /api/insights</code>).
+          Groups under {MIN_GROUP_SIZE} customers are hidden and only customers who gave consent can be reached.
+        </p>
+        <p>Prototype · fictional data · campaign results are simulated from each group&apos;s figures.</p>
       </footer>
     </div>
   )

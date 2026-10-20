@@ -21,8 +21,12 @@ export function ResultsPanel({ results: r, message }) {
 
       <div className="ins-split">
         <section className="ins-card ins-pad">
-          <BarChart title="Funnel"
-            rows={funnel.map(([id, label, value]) => ({ id, label, value, display: num(value) }))} />
+          <BarChart title="Funnel" caption={`Customers per stage, out of ${num(r.target)} targeted`} valueHeader="Customers"
+            formatTick={(v) => num(v)}
+            rows={funnel.map(([id, label, value], i) => ({
+              id, label, value, display: num(value),
+              detail: i === 0 ? `${num(r.reachedPct)}% of the target audience` : `${num(funnel[i - 1][2] ? Math.round((value / funnel[i - 1][2]) * 100) : 0)}% of ${funnel[i - 1][1].toLowerCase()}`,
+            }))} />
         </section>
         <section className="ins-card ins-pad" aria-labelledby="msg-h">
           <h2 id="msg-h" className="ins-h2">Message sent</h2>

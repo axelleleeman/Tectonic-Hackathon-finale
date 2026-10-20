@@ -8,6 +8,7 @@ import { TopOpportunities } from './TopOpportunities.jsx'
 import { href } from '../useRoute.js'
 
 const CHART_ROWS = 6
+const compactEuro = (v) => (v >= 1000 ? `€ ${num(v / 1000, 1)}k` : `€ ${num(v)}`)
 
 /** First screen: four headline numbers, one chart and the three best opportunities. */
 export function Overview({ state, segments, data }) {
@@ -37,9 +38,12 @@ export function Overview({ state, segments, data }) {
         <section className="ins-card ins-pad">
           <BarChart
             title="Potential per month"
+            caption={`Top ${Math.min(CHART_ROWS, segments.length)} groups by monthly rental revenue if every expected contract is signed`}
+            valueHeader="Potential / month"
+            formatTick={compactEuro}
             rows={segments.slice(0, CHART_ROWS).map((s) => ({
               id: s.id, label: s.label, value: s.monthlyRevenue, display: eur(s.monthlyRevenue),
-              detail: `${num(s.customers)} customers · ${s.product.name} from ${s.partner}`,
+              detail: `${num(s.reachable)} of ${num(s.customers)} customers reachable · ${s.product.name} from ${s.partner}`,
             }))}
             footer={rest > 0 && <p className="ins-chart-more"><a href={href.groups}>{rest} more group{rest > 1 ? 's' : ''}</a></p>}
           />
