@@ -1,5 +1,5 @@
-// KBC Loop-categorieën uit de gedeelde catalogus (Axelle's rijen): per categorie een fototegel met
-// het aantal partners en daarna de producten, met een "In gebruik"-badge voor wat de klant al leent.
+// KBC Loop categories from the shared catalogue: per category a photo tile with the number of partners,
+// followed by the products, with an "In use" badge for what the customer already borrows. All tappable.
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { euro } from '@kbc-loop/shared/engine/format.js'
 import { Photo } from '../../ui/Photo.js'
@@ -13,19 +13,19 @@ function CategoryRow({ category: c, inUse, actions }) {
   const partners = `${c.partners.length} partner${c.partners.length > 1 ? 's' : ''}`
   return (
     <View>
-      <SectionHead title={c.name} right={<HeadLink onPress={openCategory}>Alles tonen</HeadLink>} />
+      <SectionHead title={c.name} right={<HeadLink onPress={openCategory} label={`${c.name}: show all products`}>Show all</HeadLink>} />
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.bleed} contentContainerStyle={styles.tileRow}>
-        <Press style={[styles.tile, styles.photoTile]} onPress={openCategory} label={`${c.name}: ${partners}`}>
+        <Press style={[styles.tile, styles.photoTile]} onPress={openCategory} label={`${c.name}: ${partners}. Open the category`}>
           <Photo photoKey={c.id} tint={c.tint} icon={c.icon} iconSize={34} style={styles.tilePhoto} />
           <T style={styles.photoTileText}>{partners}</T>
         </Press>
         {c.partners.flatMap((pa) => pa.products).map((p) => (
-          <Press key={p.id} style={styles.tile} label={`${p.name}, ${euro(p.monthly)} per maand`}
+          <Press key={p.id} style={styles.tile} label={`${p.name}, ${euro(p.monthly)} per month${inUse(p.id) ? ', in use' : ''}. View product`}
             onPress={() => actions.navigate('product', { productId: p.id, signalId: null, categoryId: c.id })}>
-            {inUse(p.id) ? <View style={styles.inUse}><T style={styles.inUseText}>In gebruik</T></View> : null}
+            {inUse(p.id) ? <View style={styles.inUse}><T style={styles.inUseText}>In use</T></View> : null}
             <T style={styles.tileIcon}>{p.icon}</T>
             <T style={styles.tileName}>{p.name}</T>
-            <T style={styles.tileSmall}>{euro(p.monthly)}/maand</T>
+            <T style={styles.tileSmall}>{euro(p.monthly)}/month</T>
           </Press>
         ))}
       </ScrollView>

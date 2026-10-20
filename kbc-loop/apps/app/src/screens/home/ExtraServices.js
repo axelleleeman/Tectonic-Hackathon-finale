@@ -1,10 +1,11 @@
-// "Extra diensten": favorieten en een horizontale lijst van andere diensten.
-// KBC Loop (Axelle: nieuw, enige klikbare dienst) staat bovenaan; de rest is grijs en niet klikbaar.
+// "Extra services": favourites and a horizontal pager with other services.
+// KBC Loop (new, the only tappable service) is vivid at the top; everything else is dimmed.
 import { useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { T } from '../../ui/T.js'
 import { Press } from '../../ui/Press.js'
 import { BadgeNew } from '../common.js'
+import { Dimmed } from '../../ui/Dimmed.js'
 import { Glyph } from './icons.js'
 import { Dots, Section, shared } from './parts.js'
 import { colors } from '../../theme.js'
@@ -14,58 +15,77 @@ const PEEK = 62
 const PAD = 16
 
 const SERVICES = [
-  { id: 'loop', title: 'KBC Loop', sub: 'Lenen in plaats van kopen', icon: 'loop', isNew: true },
-  { id: 'energy', title: 'Energie-inzichten', sub: 'Inzicht krijgen in je energieverbruik', icon: 'chart' },
-  { id: 'bike', title: 'Deelfiets', sub: 'Een fiets huren voor een dag', icon: 'signpost' },
-  { id: 'split', title: 'Groepsuitgaven verdelen', sub: 'Je uitgaven vlot verdelen en opvolgen', icon: 'people' },
-  { id: 'jobs', title: 'Werken bij KBC', sub: 'Al onze vacatures bekijken', icon: 'briefcaseSmall' },
-  { id: 'docs', title: 'Digitale documenten', sub: 'Je documenten veilig bewaren', icon: 'docs' },
+  { id: 'loop', title: 'KBC Loop', sub: 'Borrow instead of buying', icon: 'loop', isNew: true },
+  { id: 'energy', title: 'Energy insights', sub: 'Get insight into your energy use', icon: 'chart' },
+  { id: 'bike', title: 'Shared bike', sub: 'Rent a bike for a day', icon: 'signpost' },
+  { id: 'split', title: 'Split group expenses', sub: 'Share and track expenses easily', icon: 'people' },
+  { id: 'jobs', title: 'Working at KBC', sub: 'See all our vacancies', icon: 'briefcaseSmall' },
+  { id: 'docs', title: 'Digital documents', sub: 'Keep your documents safe', icon: 'docs' },
 ]
 
 const chunk = (list, n) => list.reduce((pages, x, i) => (i % n ? pages[pages.length - 1].push(x) : pages.push([x]), pages), [])
 
-function ServiceRow({ s, onLoop }) {
-  const loop = s.id === 'loop'
-  const content = (
+function ServiceBody({ s }) {
+  return (
     <>
-      <View style={styles.icon}><Glyph name={s.icon} size={26} color={loop ? colors.kmBlue : colors.offIcon} strokeWidth={1.7} /></View>
+      <View style={styles.icon}><Glyph name={s.icon} size={26} color={colors.kmBlue} strokeWidth={1.7} /></View>
       <View style={styles.text}>
         <View style={styles.nameRow}>
-          <T style={[styles.name, !loop && styles.off]} numberOfLines={1}>{s.title}</T>
+          <T style={styles.name} numberOfLines={1}>{s.title}</T>
           {s.isNew ? <BadgeNew style={styles.badge} /> : null}
         </View>
-        <T style={[styles.sub, !loop && styles.off]} numberOfLines={1}>{s.sub}</T>
+        <T style={styles.sub} numberOfLines={1}>{s.sub}</T>
       </View>
-      <Glyph name="heart" size={26} color={loop ? colors.kmBlue : colors.offIcon} strokeWidth={1.5} />
+      <Glyph name="heart" size={26} color={colors.kmBlue} strokeWidth={1.5} />
     </>
   )
-  if (!loop) return <View style={styles.row}>{content}</View>
-  return <Press style={styles.row} onPress={onLoop} label="KBC Loop openen">{content}</Press>
+}
+
+/** One pager page: the KBC Loop row is tappable, the other services are dimmed together. */
+function ServicePage({ services, onLoop }) {
+  const loop = services.find((s) => s.id === 'loop')
+  const others = services.filter((s) => s !== loop)
+  return (
+    <>
+      {loop ? (
+        <Press style={styles.row} onPress={onLoop} label="KBC Loop: borrow instead of buying. Open the KBC Loop offers">
+          <ServiceBody s={loop} />
+        </Press>
+      ) : null}
+      {others.length ? (
+        <Dimmed radius={10}>
+          {others.map((s) => <View key={s.id} style={styles.row}><ServiceBody s={s} /></View>)}
+        </Dimmed>
+      ) : null}
+    </>
+  )
 }
 
 export function ExtraServices({ onLoop }) {
   const [width, setWidth] = useState(0)
   const pageW = Math.max(0, width - PEEK)
   return (
-    <Section title="Extra diensten" link="Bekijk meer">
+    <Section title="Extra services" link="See more">
       <View style={[shared.card, styles.card]} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
-        <View style={styles.favHead}>
-          <T style={[styles.h3, styles.flush]}>Je favorieten</T>
-          <Dots />
-        </View>
-        <View style={styles.favs}>
-          {FAVORITES.map((f) => (
-            <View key={f} style={styles.fav}><Glyph name={f} size={30} color={colors.offIcon} strokeWidth={1.6} /></View>
-          ))}
-          <View style={styles.addFav}><Glyph name="plus" size={13} color="#fff" strokeWidth={3} /></View>
-        </View>
-        <T style={[styles.h3, styles.otherHead]}>Onze andere extra diensten</T>
+        <Dimmed>
+          <View style={styles.favHead}>
+            <T style={[styles.h3, styles.flush]}>Your favourites</T>
+            <Dots />
+          </View>
+          <View style={styles.favs}>
+            {FAVORITES.map((f) => (
+              <View key={f} style={styles.fav}><Glyph name={f} size={30} color={colors.kmNavy} strokeWidth={1.6} /></View>
+            ))}
+            <View style={styles.addFav}><Glyph name="plus" size={13} color="#fff" strokeWidth={3} /></View>
+          </View>
+        </Dimmed>
+        <T style={[styles.h3, styles.otherHead]}>Our other extra services</T>
         {pageW ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} snapToInterval={pageW} decelerationRate="fast"
             style={styles.pager} contentContainerStyle={styles.pagerContent}>
             {chunk(SERVICES, 3).map((page) => (
               <View key={page[0].id} style={{ width: pageW }}>
-                {page.map((s) => <ServiceRow key={s.id} s={s} onLoop={onLoop} />)}
+                <ServicePage services={page} onLoop={onLoop} />
               </View>
             ))}
           </ScrollView>
@@ -95,5 +115,4 @@ const styles = StyleSheet.create({
   name: { fontSize: 18, fontWeight: '500', flexShrink: 1 },
   badge: { marginLeft: 6 },
   sub: { color: colors.kmSub, fontSize: 12.5 },
-  off: { color: colors.kmGrey },
 })

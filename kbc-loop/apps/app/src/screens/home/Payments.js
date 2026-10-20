@@ -1,9 +1,7 @@
-// Laatste drie betalingen van de fictieve klant. Verrichtingen die een Kate-tip uitlokten krijgen een lichtblauwe
-// achtergrond (zoals bij Axelle). "Verberg betalingen" klapt de lijst in (enkel UI-state).
-import { useState } from 'react'
+// The last three payments of the fictional customer. Transactions that triggered a Kate tip get a light-blue
+// background. Shown dimmed on Home (not part of KBC Loop), so the "Hide payments" toggle is static.
 import { StyleSheet, View } from 'react-native'
 import { T } from '../../ui/T.js'
-import { Press } from '../../ui/Press.js'
 import { Amount } from '../../ui/Amount.js'
 import { Glyph } from './icons.js'
 import { colors } from '../../theme.js'
@@ -11,21 +9,19 @@ import { colors } from '../../theme.js'
 const shortDate = (iso) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`
 
 export function Payments({ transactions, hotIds }) {
-  const [open, setOpen] = useState(true)
   return (
     <View style={styles.wrap}>
-      {open ? transactions.slice(0, 3).map((t) => (
+      {transactions.slice(0, 3).map((t) => (
         <View key={t.id} style={[styles.row, hotIds.includes(t.id) && styles.hot]}>
           <T style={styles.date}>{shortDate(t.date)}</T>
           <T style={styles.merchant} numberOfLines={1}>{t.merchant}</T>
           <Amount value={t.amount} style={styles.amount} />
         </View>
-      )) : null}
-      <Press style={styles.toggle} onPress={() => setOpen((v) => !v)} label={open ? 'Verberg betalingen' : 'Toon betalingen'}
-        aria-expanded={open}>
-        <Glyph name={open ? 'up' : 'down'} size={16} color={colors.kmBlue} strokeWidth={2} />
-        <T style={styles.toggleText}>{open ? 'Verberg betalingen' : 'Toon betalingen'}</T>
-      </Press>
+      ))}
+      <View style={styles.toggle}>
+        <Glyph name="up" size={16} color={colors.kmBlue} strokeWidth={2} />
+        <T style={styles.toggleText}>Hide payments</T>
+      </View>
     </View>
   )
 }

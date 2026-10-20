@@ -1,4 +1,4 @@
-// "Financieel nieuws": twee fictieve koppen met generieke iconen (geen logo's van uitgevers). Niet klikbaar.
+// "Financial news": two fictional headlines with generic icons (no publisher logos). Shown dimmed on Home.
 import { StyleSheet, View } from 'react-native'
 import { T } from '../../ui/T.js'
 import { Glyph } from './icons.js'
@@ -6,13 +6,13 @@ import { Dots, Section, shared } from './parts.js'
 import { colors } from '../../theme.js'
 
 const ARTICLES = [
-  { id: 'a1', icon: 'news', round: false, title: 'Europese Centrale Bank houdt rente stabiel: wat betekent dat voor je spaargeld?' },
-  { id: 'a2', icon: 'chart', round: true, title: 'Beursnieuws: Europese aandelen sluiten hoger na sterke kwartaalcijfers' },
+  { id: 'a1', icon: 'news', round: false, title: 'Central bank keeps interest rates stable: what does it mean for your savings?' },
+  { id: 'a2', icon: 'chart', round: true, title: 'Markets: European shares close higher after strong quarterly results' },
 ]
 
 export function News() {
   return (
-    <Section title="Financieel nieuws">
+    <Section title="Financial news">
       <View style={[shared.card, styles.card]}>
         <Dots style={styles.dots} />
         {ARTICLES.map((a) => (
@@ -21,7 +21,7 @@ export function News() {
             <T style={styles.title} numberOfLines={2}>{a.title}</T>
           </View>
         ))}
-        <T style={styles.more}>{ARTICLES.length} nieuwe artikels</T>
+        <T style={styles.more}>{ARTICLES.length} new articles</T>
       </View>
     </Section>
   )

@@ -1,10 +1,10 @@
-// Kleine bouwstenen die op meerdere schermen terugkomen.
+// Small building blocks shared by several screens.
 import { StyleSheet, View } from 'react-native'
 import { T } from '../ui/T.js'
 import { Press } from '../ui/Press.js'
 import { colors } from '../theme.js'
 
-/** Sectiekop met titel en optionele link rechts ("Alle communicatie", "Alles tonen" …). */
+/** Section heading with a title and an optional link on the right ("Show all" …). */
 export function SectionHead({ title, right }) {
   return (
     <View style={styles.head}>
@@ -14,14 +14,14 @@ export function SectionHead({ title, right }) {
   )
 }
 
-export function HeadLink({ children, onPress }) {
+export function HeadLink({ children, onPress, label }) {
   return (
-    <Press onPress={onPress} focusable={Boolean(onPress)}><T style={styles.link}>{children}</T></Press>
+    <Press onPress={onPress} label={label} hitSlop={8}><T style={styles.link}>{children}</T></Press>
   )
 }
 
 export function BadgeNew({ style }) {
-  return <View style={[styles.badge, style]}><T style={styles.badgeText}>Nieuw</T></View>
+  return <View style={[styles.badge, style]}><T style={styles.badgeText}>New</T></View>
 }
 
 const styles = StyleSheet.create({

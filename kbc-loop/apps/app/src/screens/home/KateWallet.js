@@ -1,4 +1,5 @@
-// "Kate Wallet": blauwe promokaart met eenvoudige illustratie en kaarttegels (generieke iconen, geen merken).
+// "Kate Wallet": blue promo card with a simple illustration and card tiles (generic icons, no brands).
+// Not part of KBC Loop: Home shows it dimmed.
 import { StyleSheet, View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import Svg, { Path, Rect } from 'react-native-svg'
@@ -30,8 +31,8 @@ export function KateWallet() {
         <View style={styles.art}><PhoneArt /></View>
         <Dots color="#fff" style={styles.dots} />
         <T style={styles.title}>Kate Wallet</T>
-        <T style={styles.text}>Bewaar je betaalkaarten en klantenkaarten op één plek om ze overal snel te kunnen gebruiken.</T>
-        <Pill label="Open Kate Wallet" mutedColor="rgba(255,255,255,0.75)" style={styles.pill} />
+        <T style={styles.text}>Keep your payment and loyalty cards in one place so you can use them quickly anywhere.</T>
+        <Pill label="Open Kate Wallet" color="#fff" style={styles.pill} />
         <View style={styles.tiles}>
           {TILES.map((t) => (
             <View key={t} style={styles.tile}>

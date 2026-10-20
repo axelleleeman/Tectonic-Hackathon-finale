@@ -1,4 +1,4 @@
-// KBC Loop-banner bovenaan Aanbod (Axelle's promo): leen in plaats van te kopen.
+// KBC Loop banner at the top of the Loop tab: borrow instead of buying.
 import { StyleSheet, View } from 'react-native'
 import { Icon } from '../../ui/Icon.js'
 import { PillButton } from '../../ui/Button.js'
@@ -12,9 +12,9 @@ export function LoopHero({ onDiscover }) {
       <View style={styles.body}>
         <BadgeNew style={styles.badge} />
         <T style={styles.text}>
-          <T style={[styles.text, styles.bold]}>KBC Loop</T>: leen in plaats van te kopen. De partner blijft eigenaar en herstelt, KBC regelt financiering en verzekering.
+          <T style={[styles.text, styles.bold]}>KBC Loop</T>: borrow instead of buying. The partner stays the owner and repairs, KBC takes care of financing and insurance.
         </T>
-        <PillButton onPress={onDiscover}>Ontdek de partners</PillButton>
+        <PillButton onPress={onDiscover} label="Discover the KBC Loop partners">Discover the partners</PillButton>
       </View>
       <View style={styles.icon}><Icon name="loop" size={40} color={colors.kmBlue} /></View>
     </View>

@@ -1,27 +1,40 @@
-// Kopbalk zoals in KBC Mobile, in drie varianten:
-//  search: tandwiel + Kate-zoekbalk ("Hoe kan ik je helpen?" met vergrootglas en Kate-label) + belletje (Start)
-//  title:  tandwiel + grote titel + belletje + Kate-knop (Mijn KBC, Aanbod)
-//  back:   terug + titel + Kate-knop (detailschermen)
-// Tikken op de zoekbalk of de Kate-knop opent het Kate-scherm (zie kate/KateScreen).
+// Header as in KBC Mobile, in three variants:
+//  search: gear + Kate search bar (placeholder with magnifier and Kate label) + bell (Home)
+//  title:  gear + large title + bell + Kate button (My KBC, Loop)
+//  back:   back + title + Kate button (detail screens)
+// Kate stays vivid (she helps with KBC Loop) and opens the Kate screen (see kate/KateScreen).
+// The gear and the bell are not part of KBC Loop: they are dimmed and non-interactive.
 import { StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Icon } from '../ui/Icon.js'
 import { Press } from '../ui/Press.js'
 import { T } from '../ui/T.js'
+import { Dimmed } from '../ui/Dimmed.js'
 import { colors } from '../theme.js'
 
 export const ROUND_SIZE = 44
 
-function RoundButton({ icon, label, onPress, dot, kate }) {
+function RoundButton({ icon, label, onPress, kate }) {
   return (
-    <Press label={label} onPress={onPress} style={[styles.round, kate && styles.roundKate]} focusable={Boolean(onPress)}>
+    <Press label={label} onPress={onPress} style={[styles.round, kate && styles.roundKate]}>
       <Icon name={icon} size={kate ? 22 : 20} color={kate ? colors.kmBlue : colors.kmNavy} />
-      {dot ? <View style={styles.dot} /> : null}
     </Press>
   )
 }
 
-/** Het Kate-merkje: blauwe lijntjes in een lichtblauw rondje. */
+/** A KBC Mobile header button that is not part of the demo: dimmed and non-interactive. */
+function DimmedRound({ icon, dot }) {
+  return (
+    <Dimmed radius={ROUND_SIZE / 2}>
+      <View style={styles.round}>
+        <Icon name={icon} size={20} color={colors.kmNavy} />
+        {dot ? <View style={styles.dot} /> : null}
+      </View>
+    </Dimmed>
+  )
+}
+
+/** The Kate mark: blue lines in a light-blue circle. */
 export function KateMark({ size = 11 }) {
   const d = Math.round(size * 1.6)
   return (
@@ -31,7 +44,7 @@ export function KateMark({ size = 11 }) {
   )
 }
 
-/** "Kate" met merkje, zoals rechts in de zoekbalk. */
+/** "Kate" with its mark, as on the right of the search bar. */
 export function KateLabel() {
   return <View style={styles.kateWord}><KateMark /><T style={styles.kateText}>Kate</T></View>
 }
@@ -42,21 +55,21 @@ export function AppBar({ variant, title, placeholder, onBack, onKate }) {
     <View style={[styles.appbar, { paddingTop: insets.top + 6 }]} role="banner">
       {variant === 'search' ? (
         <>
-          <RoundButton icon="gear" label="Instellingen" />
-          <Press style={styles.search} onPress={onKate} label={`Kate: ${placeholder}`}>
+          <DimmedRound icon="gear" />
+          <Press style={styles.search} onPress={onKate} label={`Ask Kate: ${placeholder}`}>
             <Icon name="search" size={18} color={colors.kmGrey} />
             <T style={styles.placeholder} numberOfLines={1}>{placeholder}</T>
             <KateLabel />
           </Press>
-          <RoundButton icon="bell" label="Berichten" dot />
+          <DimmedRound icon="bell" dot />
         </>
       ) : (
         <>
           {variant === 'back'
-            ? <RoundButton icon="back" label="Terug" onPress={onBack} />
-            : <RoundButton icon="gear" label="Instellingen" />}
+            ? <RoundButton icon="back" label="Back" onPress={onBack} />
+            : <DimmedRound icon="gear" />}
           <T style={variant === 'title' ? styles.titleBig : styles.titleBack} role="heading" numberOfLines={1}>{title}</T>
-          {variant === 'title' ? <RoundButton icon="bell" label="Berichten" dot /> : null}
+          {variant === 'title' ? <DimmedRound icon="bell" dot /> : null}
           <RoundButton icon="kate" label="Open Kate" onPress={onKate} kate />
         </>
       )}

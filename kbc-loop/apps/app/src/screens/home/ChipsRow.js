@@ -1,7 +1,8 @@
-// Rij met "My…"-knoppen. MyLoop (nieuw, van KBC Loop) is de enige klikbare.
+// Row of "My…" chips. MyLoop (new, from KBC Loop) is the only vivid, tappable one; the rest is dimmed.
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { T } from '../../ui/T.js'
 import { Press } from '../../ui/Press.js'
+import { Dimmed } from '../../ui/Dimmed.js'
 import { Glyph } from './icons.js'
 import { GUTTER, shared } from './parts.js'
 import { colors } from '../../theme.js'
@@ -15,17 +16,21 @@ const CHIPS = [
 export function ChipsRow({ onLoop }) {
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[shared.bleed, styles.wrap]} contentContainerStyle={styles.row}>
-      <View style={styles.wallet} aria-hidden><Glyph name="purse" size={18} color="#fff" /></View>
-      <Press style={[styles.chip, styles.loop]} onPress={onLoop} label="MyLoop openen">
+      <Dimmed radius={CHIP_H / 2}>
+        <View style={styles.wallet}><Glyph name="purse" size={18} color="#fff" /></View>
+      </Dimmed>
+      <Press style={[styles.chip, styles.loop]} onPress={onLoop} label="Open MyLoop: borrow instead of buy with KBC Loop">
         <Glyph name="loop" size={17} color={colors.kmBlue} strokeWidth={2} />
         <T style={[styles.text, styles.loopText]}>MyLoop</T>
         <View style={styles.newDot} />
       </Press>
       {CHIPS.map((c) => (
-        <View key={c.id} style={styles.chip}>
-          <Glyph name={c.icon} size={17} color={colors.kmNavy} strokeWidth={1.5} />
-          <T style={styles.text}>{c.label}</T>
-        </View>
+        <Dimmed key={c.id} radius={CHIP_H / 2}>
+          <View style={styles.chip}>
+            <Glyph name={c.icon} size={17} color={colors.kmNavy} strokeWidth={1.5} />
+            <T style={styles.text}>{c.label}</T>
+          </View>
+        </Dimmed>
       ))}
     </ScrollView>
   )
