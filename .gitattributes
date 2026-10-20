@@ -1,0 +1,4 @@
+# Altijd LF in de repo, ook vanuit Windows (voorkomt valse merge-conflicten)
+* text=auto eol=lf
+*.png binary
+*.jpg binary

@@ -11,7 +11,7 @@ financiering en verzekering.
 
 | Perspectief | Wat je ziet |
 |---|---|
-| **Klant** (KBC Mobile) | Startscherm in de stijl van KBC Mobile met de nieuwe knop **MyLoop** naast MyHome en MyMobility, Kate-tips in "Voor jou" op basis van verrichtingen, KBC Loop met categorieën en partners, kopen vs. lenen, Mijn KBC met levenscyclus, defect melden → herstel, inleveren → nieuw leven, Kate Coins |
+| **Klant** (KBC Mobile) | App in de stijl van KBC Mobile (menubalk Start · Mijn KBC · Beleggen · Zakelijk · Aanbod) met de nieuwe knop **MyLoop**, Kate-tips in "Voor jou" op basis van verrichtingen, KBC Loop bij Extra diensten en in Aanbod, KBC Loop met categorieën en partners, kopen vs. lenen, Mijn KBC met levenscyclus, defect melden → herstel, inleveren → nieuw leven, Kate Coins |
 | **Philips** (partnerweergave) | Actieve contracten, terugkerende omzet, voorspelde defecten via sensoren, live herstelaanvragen |
 | **KBC** (interne weergave) | Loop-klanten, gefinancierd volume, terugkerende marge, CO₂-impact, triple win |
 
@@ -111,7 +111,10 @@ De container draait als niet-root gebruiker (nginx-unprivileged) en zet beveilig
 
 ## Onaf / disclaimers
 
-- Conceptprototype, geen officiële KBC-app. Het KBC-logo is enkel gebruikt voor deze hackathon-demo; geen Kate-icoon.
+- Conceptprototype, geen officiële KBC-app of -website. De webweergave bootst de KBC-appspagina na, met het
+  KBC-logo, de hero-foto en de app-iconen uit een screenshot (`public/img/site/`). Enkel bedoeld voor de
+  hackathonpresentatie; niet publiek online zetten zonder toestemming van KBC. De klantenapp bootst de
+  stijl van KBC Mobile na met eigen iconen; logo's van andere merken zijn niet overgenomen.
 - Klanten, rekeningen en bedragen zijn fictief en indicatief. Philips (Signify) is een voorbeeldpartner,
   geen bestaande samenwerking; alle andere partners zijn fictief.
 - Geen echte bank-API's: data staat in `src/data/`. Volgende stap: PSD2/transactiedata, KBC Partner Hub,
