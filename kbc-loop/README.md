@@ -392,13 +392,20 @@ that belong to another partner are refused. A running api picks up the import on
   The static server does not serve files outside `STATIC_DIR`.
 - **https only outside localhost**: the shared API client refuses `http`/`ws` to other addresses, except in
   development mode.
-- **Container**: runs as the non-root user `node`, code is read-only, only `/data` is writable, npm is not in
+- **Container**: runs as the non-root user `node` (UID 1000), code is read-only, only `/data` is writable, npm is not in
   the runtime image.
 - **No secrets in the repo**: `.env` files and databases are in `.gitignore` and `.dockerignore`.
   Note: `EXPO_PUBLIC_*` and `VITE_*` variables end up readable in the app, web or Insights bundle and are therefore
   **not secrets**. `EXPO_PUBLIC_API_KEY`/`VITE_API_KEY` only shield the API from casual requests.
 - **npm install scripts are disabled**: npm 12 does not run package install scripts by default, and the
   Dockerfile installs with `npm ci --ignore-scripts` exactly as in `package-lock.json`.
+- **Dependency scan (Aikido)**: all open findings are in Expo's build tooling (`@expo/cli`, Metro), which only runs
+  on the developer's laptop and is not in the runtime image (`apps/api` only depends on `ws`).
+  - `uuid` (via `xcode`) and `zod` (via `@expo/cli`) are lifted to fixed versions with `overrides` in `package.json`
+    (checked: `expo start` and `expo export` still work).
+  - `braces` 3.0.3 (via Metro's file watcher) and `node-forge` 1.4.0 (Expo code signing for EAS Updates) have no
+    fixed version on npm yet. Not reachable: braces only gets glob patterns from our own config, and we do not use
+    Expo code signing. Accepted for the demo; update Expo as soon as a fix is released.
 
 ## Deploying (Google Cloud Run)
 
