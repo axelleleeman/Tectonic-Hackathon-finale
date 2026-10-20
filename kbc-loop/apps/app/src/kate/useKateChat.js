@@ -8,7 +8,7 @@ import {
 } from '@kbc-loop/shared/kate/conversation.js'
 
 // Engine screen names → app screens.
-const APP_SCREENS = { repair: 'repair', product: 'product', overview: 'mykbc' }
+const APP_SCREENS = { repair: 'repair', product: 'product', overview: 'shop' }
 
 let nextId = 1
 const msg = (from, text) => ({ id: nextId++, from, text })

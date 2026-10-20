@@ -49,7 +49,29 @@ export function KateLabel() {
   return <View style={styles.kateWord}><KateMark /><T style={styles.kateText}>Kate</T></View>
 }
 
-export function AppBar({ variant, title, placeholder, onBack, onKate }) {
+/** The signed-in customer's initials; tapping switches between the personal and the business persona. */
+function PersonaButton({ persona, onPress }) {
+  const next = persona.type === 'kmo' ? 'personal' : 'business'
+  return (
+    <Press onPress={onPress} label={`Signed in as ${persona.fullName ?? persona.name}. Switch to the ${next} customer`}
+      style={[styles.round, persona.type === 'kmo' ? styles.avatarBiz : styles.avatar]}>
+      <T style={styles.avatarText}>{persona.avatar}</T>
+    </Press>
+  )
+}
+
+/** Notifications bell with an unread count; without `onPress` it stays dimmed as in KBC Mobile. */
+function Bell({ unread = 0, onPress }) {
+  if (!onPress) return <DimmedRound icon="bell" dot />
+  return (
+    <Press label={unread ? `Notifications, ${unread} unread` : 'Notifications'} onPress={onPress} style={styles.round}>
+      <Icon name="bell" size={20} color={colors.kmNavy} />
+      {unread ? <View style={styles.badge}><T style={styles.badgeText}>{unread > 9 ? '9+' : unread}</T></View> : null}
+    </Press>
+  )
+}
+
+export function AppBar({ variant, title, placeholder, onBack, onKate, onPersona, persona, onBell, unread }) {
   const insets = useSafeAreaInsets()
   return (
     <View style={[styles.appbar, { paddingTop: insets.top + 6 }]} role="banner">
@@ -61,15 +83,15 @@ export function AppBar({ variant, title, placeholder, onBack, onKate }) {
             <T style={styles.placeholder} numberOfLines={1}>{placeholder}</T>
             <KateLabel />
           </Press>
-          <DimmedRound icon="bell" dot />
+          <Bell unread={unread} onPress={onBell} />
         </>
       ) : (
         <>
           {variant === 'back'
             ? <RoundButton icon="back" label="Back" onPress={onBack} />
-            : <DimmedRound icon="gear" />}
+            : persona && onPersona ? <PersonaButton persona={persona} onPress={onPersona} /> : <DimmedRound icon="gear" />}
           <T style={variant === 'title' ? styles.titleBig : styles.titleBack} role="heading" numberOfLines={1}>{title}</T>
-          {variant === 'title' ? <DimmedRound icon="bell" dot /> : null}
+          {variant === 'title' ? <Bell unread={unread} onPress={onBell} /> : null}
           <RoundButton icon="kate" label="Open Kate" onPress={onKate} kate />
         </>
       )}
@@ -83,6 +105,11 @@ const styles = StyleSheet.create({
     width: ROUND_SIZE, height: ROUND_SIZE, borderRadius: ROUND_SIZE / 2, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center',
     boxShadow: '0px 4px 16px rgba(18, 40, 76, 0.12)',
   },
+  avatar: { backgroundColor: colors.kmNavy },
+  avatarBiz: { backgroundColor: colors.newGreen },
+  avatarText: { color: '#fff', fontSize: 14, fontWeight: '700', letterSpacing: 0.3 },
+  badge: { position: 'absolute', top: 2, right: 0, minWidth: 18, height: 18, paddingHorizontal: 4, borderRadius: 9, backgroundColor: colors.kmBlue, alignItems: 'center', justifyContent: 'center', borderWidth: 1.5, borderColor: '#fff' },
+  badgeText: { color: '#fff', fontSize: 10, fontWeight: '700' },
   roundKate: { boxShadow: '0px 0px 0px 1.5px #cfe6f7, 0px 4px 16px rgba(18, 40, 76, 0.12)' },
   dot: { position: 'absolute', top: 7, right: 7, width: 10, height: 10, borderRadius: 5, backgroundColor: colors.kmRed },
   search: {

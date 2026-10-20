@@ -10,13 +10,13 @@ const SEGMENTS = [
   { id: 'impact', label: 'Impact' },
 ]
 
-export function Shop({ customer, items, coins, actions }) {
+export function Shop({ customer, items, signals, coins, actions }) {
   const [segment, setSegment] = useState('home')
   return (
     <>
       <Segmented options={SEGMENTS} value={segment} onChange={setSegment} />
       {segment === 'home'
-        ? <LoopHome customer={customer} items={items} actions={actions} />
+        ? <LoopHome customer={customer} items={items} signals={signals} actions={actions} />
         : <LoopImpact items={items} coins={coins} actions={actions} />}
     </>
   )

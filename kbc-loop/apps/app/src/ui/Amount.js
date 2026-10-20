@@ -1,10 +1,10 @@
-// Bedrag zoals in KBC Mobile: "2 483,17 EUR" met kleinere decimalen.
+// Amount as in KBC Mobile: "2.483,17 EUR" (Belgian format) with smaller decimals and tabular figures.
 import { StyleSheet } from 'react-native'
 import { T } from './T.js'
 
 export function Amount({ value, unit = 'EUR', style }) {
   const [int, dec] = Math.abs(value).toFixed(2).split('.')
-  const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+  const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
   const size = StyleSheet.flatten(style)?.fontSize ?? 15
   const smaller = { fontSize: Math.round(size * 0.78) }
   return (
@@ -15,6 +15,6 @@ export function Amount({ value, unit = 'EUR', style }) {
 }
 
 const styles = StyleSheet.create({
-  amount: { flexShrink: 0 },
+  amount: { flexShrink: 0, fontVariant: ['tabular-nums'] },
   unit: { fontWeight: '600' },
 })

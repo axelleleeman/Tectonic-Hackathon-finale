@@ -1,6 +1,7 @@
 // Parts of the cost overview: category bars, a product row and the upcoming payments list.
 import { StyleSheet, View } from 'react-native'
 import { productById } from '@kbc-loop/shared/engine/catalog.js'
+import { num } from '@kbc-loop/shared/engine/format.js'
 import { Press } from '../../ui/Press.js'
 import { T } from '../../ui/T.js'
 import { ProductArt } from '../item/ProductArt.js'
@@ -8,7 +9,7 @@ import { Glyph } from '../item/Glyph.js'
 import { dateText, money } from '../item/format.js'
 import { colors } from '../../theme.js'
 
-const shareText = (n) => `${n.toLocaleString('en-GB', { maximumFractionDigits: 1 })}%`
+const shareText = (n) => `${num(n, 1)}%`
 
 export function CategoryBars({ categories }) {
   return (
