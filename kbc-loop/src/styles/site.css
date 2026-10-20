@@ -1,102 +1,39 @@
-/* Websitepagina nagebouwd op de pagina "Alle apps van KBC" (maten gemeten op een screenshot van 1440 px breed).
-   Alles wat klikbaar lijkt maar het niet is, staat lichtgrijs; enkel KBC Loop (en Overzicht) werkt. */
+/* Webweergave: exacte screenshot van "Alle apps van KBC" met KBC Loop als echte HTML erbovenop.
+   Maten in de afbeelding zijn op 1439 css-px breed; tekst schaalt mee via container-eenheden (cqw). */
 @import '@fontsource/nunito-sans/400.css';
 @import '@fontsource/nunito-sans/600.css';
 @import '@fontsource/nunito-sans/700.css';
 
-.site {
-  --site-navy: #133562; --site-blue: #4eabe9; --site-green: #439786;
-  --off: #b9c2cc; --off-bg: #eceff2; --site-line: #dfe4e9;
-  background: #fff; min-height: 100vh; color: var(--site-navy);
-  font-family: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-}
-.off-link { color: var(--off) !important; cursor: default; user-select: none; display: inline-flex; align-items: center; gap: 4px; }
+.site { --kbc-navy: #133562; --kbc-blue: #4eabe9; background: #fff; min-height: 100vh; }
+.shot { position: relative; max-width: 1439px; margin: 0 auto; container-type: inline-size;
+  font-family: 'MuseoSans', 'Museo Sans', 'Nunito Sans', system-ui, sans-serif; }
+.shot img { display: block; width: 100%; height: auto; user-select: none; }
+.shot img.faded { opacity: .42; }
+.shot > * { position: absolute; }
+.shot > img { position: static; }
+.wash { background: rgba(255, 255, 255, .6); pointer-events: none; }
+.shot-cover { background: #fff; }
+.shot-hit { cursor: pointer; }
 
-/* Kop */
-.site-head { padding: 0 31px; }
-.site-top { display: flex; align-items: center; height: 58px; border-bottom: 1px solid var(--site-line); font-size: 14.5px; }
-.site-segments { display: flex; gap: 23px; flex: 1; }
-.site-segments .current { box-shadow: 0 2px 0 var(--off); padding-bottom: 2px; }
-.site-search { width: 320px; height: 35px; display: flex; align-items: center; justify-content: space-between; padding: 0 11px;
-  border: 1px solid #cfd6dd; border-radius: 4px; color: var(--off); margin-right: 22px; }
-.site-contact { margin-right: 30px; }
-.site-lang { font-size: 13px; }
-.site-main { display: flex; align-items: center; height: 89px; }
-.site-logo { width: 52px; height: auto; margin: 0 46px 0 6px; }
-.site-menu { display: flex; gap: 25px; flex: 1; font-weight: 700; font-size: 16px; }
-.site-menu .off-link { gap: 6px; }
-.site-btn { height: 40px; display: inline-flex; align-items: center; padding: 0 25px; border-radius: 20px; font-size: 16.5px;
-  background: var(--off-bg); color: var(--off); cursor: default; user-select: none; }
-.site-btn + .site-btn { margin-left: 17px; }
+/* Tabblad KBC Loop, op de plek waar een volgend tabblad zou staan */
+.shot-tab { display: flex; align-items: center; gap: .5em; padding: 0 0 calc(5 / 1439 * 100cqw); white-space: nowrap;
+  font-size: calc(16.5 / 1439 * 100cqw); color: var(--kbc-blue); font-weight: 600; }
+.shot-tab.on { box-shadow: inset 0 calc(-2 / 1439 * 100cqw) 0 var(--kbc-blue); }
+.shot-tab em, .shot-card em { font-style: normal; font-size: .66em; font-weight: 700; background: #e4003a; color: #fff;
+  padding: .1em .6em; border-radius: 99px; }
 
-/* Hero met foto */
-.site-hero { position: relative; height: 271px; display: flex; align-items: center; padding: 0 23px;
-  background: #f4f6f8 url('../assets/site/hero-apps.jpg') center / cover no-repeat; }
-.site-hero h1 { margin: 20px 0 0; font-size: 30px; font-weight: 600; letter-spacing: -.005em; color: var(--site-navy); max-width: 50%; line-height: 1.2; }
+/* Kaart KBC Loop naast Bolero, zelfde opbouw als de andere app-kaarten */
+.shot-card { display: flex; flex-direction: column; align-items: flex-start; text-align: left; cursor: pointer;
+  font-size: calc(16 / 1439 * 100cqw); line-height: 1.5; color: var(--kbc-navy); border-radius: .6em; padding: 0; }
+.shot-card:hover .shot-card-link { color: var(--kbc-navy); }
+.shot-card-head { display: flex; align-items: center; gap: 1em; width: 100%; height: 3em; }
+.shot-card-icon { width: 3em; height: 3em; border-radius: .5em; background: var(--kbc-blue); color: #fff; display: grid; place-items: center; flex: none; }
+.shot-card-icon svg { width: 1.75em; height: 1.75em; }
+.shot-card-head b { display: flex; flex-direction: column; font-size: 1.32em; font-weight: 600; line-height: 1.05; color: var(--kbc-blue); }
+.shot-card-head em { margin-left: auto; align-self: flex-start; }
+.shot-card-text { margin-top: 1.8em; }
+.shot-card-link { color: var(--kbc-blue); text-decoration: underline; text-underline-offset: .25em; text-decoration-thickness: 1px; }
 
-.kbc-live { position: absolute; right: 52px; bottom: -30px; width: 276px; text-align: center; }
-.kbc-live-pill { display: flex; align-items: center; justify-content: space-between; height: 70px; margin-left: 38px; padding: 0 0 0 20px;
-  background: #fff; border-radius: 35px; box-shadow: 0 6px 18px rgba(19, 53, 98, .12); font-size: 13px; line-height: 1.3; color: var(--off); text-align: left; }
-.kbc-live-pill > span:first-child { width: 132px; }
-.kbc-live-dot { position: relative; width: 66px; height: 66px; flex: none; margin-right: -2px; border-radius: 50%; background: #c7ced6;
-  box-shadow: 0 0 0 4px #e3e8ed, 0 0 0 7px #f1f4f6; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
-.kbc-live-dot i { width: 5px; height: 5px; border-radius: 50%; background: #e6ebef; margin-bottom: 4px; }
-.kbc-live-dot b { font-size: 10.5px; font-weight: 400; }
-.kbc-live-dot small { font-size: 5.5px; }
-.kbc-live p { margin: 6px 0 0; font-size: 11.5px; line-height: 1.55; color: var(--off); }
-
-/* Inhoud */
-.site-body { padding: 0 25px 40px 23px; }
-.crumbs { display: flex; align-items: center; gap: 6px; padding: 23px 0 0; height: 44px; font-size: 13px; }
-.crumbs .off-link { text-decoration: underline; text-underline-offset: 3px; }
-.crumbs svg { color: var(--off); }
-.site-tabs { display: flex; gap: 24px; margin-top: 62px; border-bottom: 1px solid var(--site-line); font-size: 17px; }
-.site-tabs > * { padding: 0 0 10px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
-.site-tabs button { color: var(--site-navy); font: inherit; }
-.site-tabs button.on { border-bottom-color: var(--site-blue); }
-.loop-tab { display: inline-flex; align-items: center; gap: 8px; color: var(--site-blue) !important; font-weight: 700 !important; }
-.loop-tab em, .app-card em { font-style: normal; font-size: 11px; font-weight: 700; background: #e4003a; color: #fff; padding: 1px 8px; border-radius: 99px; }
-
-.apps-grid { display: grid; grid-template-columns: repeat(4, 165px) 190px; column-gap: 65px; margin: 70px 0 0 266px; }
-.app-card { min-height: 290px; display: flex; flex-direction: column; align-items: flex-start; text-align: left; font: inherit; font-size: 16px; line-height: 1.5; color: var(--site-navy); padding: 0; }
-.app-card p { margin: 29px 0 0; }
-.app-card-head { display: flex; align-items: center; gap: 16px; height: 48px; width: 100%; }
-.app-card-head b { display: flex; flex-direction: column; white-space: nowrap; font-size: 21px; font-weight: 600; line-height: 1.05; color: var(--site-blue); }
-.app-card-head em { margin-left: auto; align-self: flex-start; }
-.app-icon { width: 48px; height: 48px; border-radius: 8px; flex: none; }
-.app-link { color: var(--site-blue); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
-.app-dl { margin-top: auto; }
-.app-dl small { display: block; font-size: 11px; color: #c3cad1; margin-bottom: 8px; }
-.app-dl span { display: inline-block; width: 36px; height: 12px; margin-right: 6px; border-radius: 3px; background: var(--off-bg); }
-
-.off-card { color: var(--off); cursor: default; }
-.off-card .app-card-head b, .off-card .app-link { color: var(--off); }
-.off-card .app-icon { filter: grayscale(1) opacity(.35); }
-
-.loop-card { min-height: 0; align-self: start; cursor: pointer; border-radius: 12px; outline: 2px solid var(--site-blue); outline-offset: 12px; }
-.loop-card:hover { background: #f2f9fe; box-shadow: 0 0 0 12px #f2f9fe; }
-.app-icon.loop { display: grid; place-items: center; background: var(--site-blue); color: #fff; }
-.loop-card .app-link { font-weight: 700; }
-
-.site .stage { min-height: auto; padding: 48px 0 32px; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: var(--ink); }
+.site .stage { min-height: auto; padding: 48px 16px 32px; font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: var(--ink); }
 .site .stage[hidden] { display: none; }
 .site-disclaimer { text-align: center; padding: 24px 16px; }
-
-@media (max-width: 1300px) {
-  .site-search { width: 220px; }
-  .apps-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 48px 40px; margin-left: 0; }
-}
-@media (max-width: 1100px) {
-  .site-top, .site-btn { display: none; }
-  .site-menu { gap: 18px; font-size: 15px; flex-wrap: wrap; }
-}
-@media (max-width: 760px) {
-  .site-head, .site-body { padding-left: 16px; padding-right: 16px; }
-  .site-menu { display: none; }
-  .site-hero { height: 200px; padding: 0 16px; background-position: 70% center; }
-  .site-hero h1 { font-size: 26px; max-width: 70%; }
-  .kbc-live { display: none; }
-  .site-tabs { gap: 18px; font-size: 16px; margin-top: 32px; overflow-x: auto; }
-  .site-tabs > * { white-space: nowrap; }
-  .apps-grid { margin-top: 40px; }
-}
