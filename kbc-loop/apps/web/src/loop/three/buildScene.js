@@ -9,10 +9,10 @@
 import * as THREE from 'three'
 
 const R = 2 // loop radius
-const L = 6.4 // length of the straight line
+const L = 5.4 // length of the straight line
 const NX = 120
 const NZ = 56
-const MORPH = 1.5 // seconds
+const MORPH = 2 // seconds
 const PRODUCTS = 4
 // Station labels and ticks are switched off: the scene stays wordless (the hero shows one caption below it).
 // Format when enabled: [label, position 0..1 along the line / loop].
@@ -70,7 +70,7 @@ function labelSprite(text, track, big) {
 // The hero is navy in both page themes, so the theme argument (kept for the LoopScene API) is not used.
 export function buildScene(canvas, reduce, theme, { compact = false } = {}) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75))
   renderer.outputColorSpace = THREE.SRGBColorSpace
   renderer.toneMapping = THREE.ACESFilmicToneMapping
   renderer.toneMappingExposure = P.exposure
@@ -207,7 +207,7 @@ export function buildScene(canvas, reduce, theme, { compact = false } = {}) {
     cam.aspect = w / h
     cam.updateProjectionMatrix()
     narrow = compact || w < 760
-    baseScale = compact ? 0.62 : narrow ? 0.55 : 0.7
+    baseScale = compact ? 0.66 : narrow ? 0.6 : 0.8
     pts.position.x = narrow ? 0 : 2
   }
 
@@ -247,7 +247,7 @@ export function buildScene(canvas, reduce, theme, { compact = false } = {}) {
     curve.getPoint(1, end); capB.position.copy(end)
 
     // Layout: the line sits more to the centre, the loop to the right of the copy (centred on phones)
-    group.position.set(narrow ? 0 : 2.15 + 0.45 * e, compact ? 0.2 : narrow ? 0.3 : 0, 0)
+    group.position.set(narrow ? 0 : 2.2 + 0.2 * e, compact ? 0.2 : narrow ? 0.3 : 0, 0)
     group.scale.setScalar(baseScale)
 
     // Act 1: one product along the line, then off the edge
