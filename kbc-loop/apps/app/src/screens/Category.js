@@ -1,52 +1,68 @@
-// Categorie: partners met elk een horizontale rij producten, plus verwante KBC-diensten.
-import { ScrollView, StyleSheet, View } from 'react-native'
+// Service catalogue ("+" on the Loop tab). Without a category: the service categories for this customer type.
+// With a category: its partners as sub-sections (name + tagline), each with compact product rows → product screen.
+import { StyleSheet, View } from 'react-native'
 import { categoriesFor } from '@kbc-loop/shared/engine/catalog.js'
 import { euro } from '@kbc-loop/shared/engine/format.js'
 import { servicesForCategory } from '@kbc-loop/shared/engine/integrations.js'
-import { Photo } from '../ui/Photo.js'
+import { Icon } from '../ui/Icon.js'
+import { ProductImage } from '../ui/ProductImage.js'
 import { ServiceChips } from '../ui/ServiceChips.js'
 import { Press } from '../ui/Press.js'
 import { T } from '../ui/T.js'
-import { boxes, colors } from '../theme.js'
+import { boxes, cardShadow, colors } from '../theme.js'
+
+function CategoryList({ categories, actions }) {
+  return (
+    <>
+      <T style={styles.blurb}>Choose a service to borrow instead of buy.</T>
+      <View style={styles.list}>
+        {categories.map((c, i) => (
+          <Press key={c.id} style={[styles.catRow, i > 0 && styles.divider]} label={`${c.name}. Open the category`}
+            onPress={() => actions.navigate('category', { categoryId: c.id })}>
+            <View style={styles.catIcon}><T style={styles.catEmoji}>{c.icon}</T></View>
+            <View style={styles.flex}>
+              <T style={styles.catName}>{c.name}</T>
+              <T style={styles.sub} numberOfLines={1}>{c.partners.length} partner{c.partners.length > 1 ? 's' : ''} · {c.productCount} products</T>
+            </View>
+            <Icon name="chevron" size={16} color={colors.kmGrey} strokeWidth={2} />
+          </Press>
+        ))}
+      </View>
+    </>
+  )
+}
 
 export function Category({ customer, categoryId, items, actions }) {
-  const cat = categoriesFor(customer.type).find((c) => c.id === categoryId)
-  if (!cat) return null
+  const categories = categoriesFor(customer.type)
+  const cat = categoryId ? categories.find((c) => c.id === categoryId) : null
+  if (!cat) return <CategoryList categories={categories} actions={actions} />
   const inUse = (id) => items.some((i) => i.productId === id && !i.returned)
   const services = servicesForCategory(cat.id)
 
   return (
     <>
-      <Photo photoKey={cat.id} tint={cat.tint} icon={cat.icon} style={styles.hero}>
-        <T style={styles.heroTitle}>{cat.name}</T>
-        <T style={styles.heroSub}>{cat.blurb}</T>
-      </Photo>
+      <T style={styles.title} role="heading">{cat.name}</T>
+      {cat.blurb ? <T style={styles.blurb}>{cat.blurb}</T> : null}
 
       {cat.partners.map((pa) => (
         <View key={pa.id} style={styles.partner}>
-          <View style={styles.partnerHead}>
-            <View style={styles.logo}><T style={styles.logoText}>{pa.short.slice(0, 2)}</T></View>
-            <View style={styles.partnerText}>
-              <T style={styles.partnerName}>{pa.name}</T>
-              <T style={styles.partnerTag}>{pa.tagline}</T>
-            </View>
-          </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
-            {pa.products.map((p) => (
-              <Press key={p.id} style={styles.card}
+          <T style={styles.partnerName}>{pa.name}</T>
+          <T style={styles.sub}>{pa.tagline}</T>
+          <View style={styles.list}>
+            {pa.products.map((p, i) => (
+              <Press key={p.id} style={[styles.prodRow, i > 0 && styles.divider]} label={`${p.name}, ${euro(p.monthly)} per month${inUse(p.id) ? ', in use' : ''}. View product`}
                 onPress={() => actions.navigate('product', { productId: p.id, signalId: null, categoryId: cat.id })}>
-                <T style={styles.icon}>{p.icon}</T>
-                <T style={styles.name}>{p.name}</T>
-                <T style={styles.small}>{p.detail}</T>
-                <T style={styles.from}>{inUse(p.id) ? '✓ in use' : `${euro(p.monthly)}/month`}</T>
+                <ProductImage product={p} style={styles.thumb} />
+                <T style={[styles.flex, styles.prodName]} numberOfLines={2}>{p.name}</T>
+                <T style={inUse(p.id) ? styles.inUse : styles.price}>{inUse(p.id) ? 'In use' : `${euro(p.monthly)}/month`}</T>
               </Press>
             ))}
-          </ScrollView>
+          </View>
         </View>
       ))}
 
       {services.length > 0 ? (
-        <View style={boxes.kbcBox}>
+        <View style={[boxes.kbcBox, styles.services]}>
           <T style={boxes.kbcBoxTitle}>Also at KBC</T>
           <ServiceChips services={services} />
         </View>
@@ -56,20 +72,22 @@ export function Category({ customer, categoryId, items, actions }) {
 }
 
 const styles = StyleSheet.create({
-  hero: { height: 150, borderRadius: 18, marginBottom: 6 },
-  heroTitle: { color: '#fff', fontSize: 19, fontWeight: '700' },
-  heroSub: { color: 'rgba(255,255,255,0.9)', fontSize: 13, lineHeight: 18, marginTop: 2 },
-  partner: { marginTop: 16 },
-  partnerHead: { flexDirection: 'row', gap: 10, alignItems: 'center', marginBottom: 8 },
-  logo: { width: 36, height: 36, borderRadius: 10, backgroundColor: '#fff', borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
-  logoText: { fontWeight: '800', fontSize: 13, color: colors.navy },
-  partnerText: { flex: 1 },
-  partnerName: { fontWeight: '700', color: colors.navy },
-  partnerTag: { color: colors.muted, fontSize: 12, lineHeight: 16 },
-  row: { gap: 10, paddingBottom: 4 },
-  card: { width: 148, padding: 12, backgroundColor: '#fff', borderRadius: 14, gap: 2, borderWidth: 1, borderColor: colors.line },
-  icon: { fontSize: 26, lineHeight: 34 },
-  name: { fontWeight: '700', color: colors.ink },
-  small: { color: colors.muted, fontSize: 12 },
-  from: { marginTop: 6, fontWeight: '700', color: colors.navy, fontSize: 14 },
+  title: { fontSize: 21, fontWeight: '700', color: colors.kmNavy, marginTop: 6 },
+  blurb: { color: colors.kmSub, fontSize: 14, lineHeight: 19, marginTop: 4 },
+  list: { backgroundColor: '#fff', borderRadius: 14, marginTop: 10, overflow: 'hidden', ...cardShadow },
+  divider: { borderTopWidth: 1, borderTopColor: colors.kmLine },
+  flex: { flex: 1 },
+  catRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, paddingHorizontal: 14 },
+  catIcon: { width: 40, height: 40, borderRadius: 12, backgroundColor: colors.kmSky, alignItems: 'center', justifyContent: 'center' },
+  catEmoji: { fontSize: 20 },
+  catName: { fontSize: 15, fontWeight: '600', color: colors.ink },
+  sub: { color: colors.kmSub, fontSize: 12.5, marginTop: 2 },
+  partner: { marginTop: 22 },
+  partnerName: { fontSize: 16, fontWeight: '700', color: colors.kmNavy },
+  prodRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, paddingHorizontal: 12 },
+  thumb: { width: 56, height: 42, borderRadius: 8 },
+  prodName: { fontSize: 14.5, fontWeight: '600', color: colors.ink },
+  price: { fontSize: 14, fontWeight: '600', color: colors.kmNavy },
+  inUse: { fontSize: 13, fontWeight: '700', color: colors.newGreen },
+  services: { marginTop: 22 },
 })

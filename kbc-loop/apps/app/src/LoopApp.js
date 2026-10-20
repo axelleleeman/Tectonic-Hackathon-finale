@@ -23,7 +23,6 @@ import { Repair } from './screens/Repair.js'
 import { ItemScreen } from './screens/item/ItemScreen.js'
 import { ChromeContext } from './screens/item/chrome.js'
 import { CostOverview } from './screens/costs/CostOverview.js'
-import { CostsEntry } from './screens/costs/CostsEntry.js'
 import { KateScreen } from './kate/KateScreen.js'
 import { Connecting, ConnectionError, OfflineBanner } from './ConnectionScreens.js'
 
@@ -49,7 +48,11 @@ export default function LoopApp() {
   }, [screenId])
   const previous = () => [...history.current].reverse().find((s) => s !== screenId) ?? null
 
-  const goBack = chrome?.back ?? (meta.back && state ? () => actions.navigate(meta.back(state.active, previous())) : null)
+  const goBack = chrome?.back ?? (meta.back && state ? () => {
+    const target = meta.back(state.active, previous())
+    if (Array.isArray(target)) actions.navigate(...target)
+    else actions.navigate(target)
+  } : null)
 
   const chromeApi = useMemo(() => ({
     set: (c) => setChrome(c),
@@ -103,16 +106,10 @@ export default function LoopApp() {
   if (!state) return error ? <ConnectionError error={error} fatal={fatal} /> : <Connecting />
 
   const shared = { customer, items, signals, actions }
-  const toCosts = () => actions.navigate('costs')
   const screen = {
     home: () => <Home {...shared} coins={coins} consent={state.consent} />,
     mykbc: () => <MyKbc {...shared} coins={coins} />,
-    shop: () => (
-      <>
-        <CostsEntry items={items} onPress={toCosts} style={styles.costsEntry} />
-        <Shop {...shared} />
-      </>
-    ),
+    shop: () => <Shop {...shared} coins={coins} />,
     category: () => <Category {...shared} categoryId={state.active.categoryId} />,
     product: () => <Product customer={customer} productId={state.active.productId} signal={activeSignal} actions={actions} />,
     done: () => <Done productId={state.active.productId} actions={actions} />,
@@ -154,5 +151,4 @@ const styles = StyleSheet.create({
   body: { flex: 1 },
   bg: { position: 'absolute', top: 0, left: 0, right: 0, height: 380 },
   content: { paddingTop: 14, paddingHorizontal: 16, paddingBottom: 150 },
-  costsEntry: { marginBottom: 14 },
 })

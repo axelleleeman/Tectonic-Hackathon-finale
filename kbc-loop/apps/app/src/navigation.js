@@ -1,5 +1,5 @@
 // Per screen: header type, title, back destination and active tab (as in KBC Mobile).
-// back(active, previousScreen) returns the screen to go back to.
+// back(active, previousScreen) returns the screen to go back to, or [screen, active] to also set the active ids.
 // The tabs themselves come from the shared single source of truth, so app and web always match.
 import { TABS } from '@kbc-loop/shared/navigation/tabs.js'
 
@@ -9,7 +9,8 @@ export const SCREENS = {
   home: { bar: 'search', placeholder: 'How can I help you?', tab: 'home' },
   mykbc: { bar: 'title', title: 'My KBC', tab: 'mykbc' },
   shop: { bar: 'title', title: 'Loop', tab: 'loop' },
-  category: { bar: 'back', title: 'KBC Loop', tab: 'loop', back: () => 'shop' },
+  // Without a category: the service catalogue; with one: its partners. Back goes category → catalogue → Loop.
+  category: { bar: 'back', title: 'Add a product', tab: 'loop', back: (a) => (a.categoryId ? ['category', { categoryId: null }] : 'shop') },
   product: { bar: 'back', title: 'KBC Loop', tab: 'loop', back: (a) => (a.categoryId ? 'category' : a.signalId ? 'home' : 'shop') },
   done: { bar: 'back', title: 'KBC Loop', tab: 'mykbc', back: () => 'mykbc' },
   repair: { bar: 'back', title: 'Repair', tab: 'mykbc', back: (a) => (a.itemKey ? 'item' : 'mykbc') },
