@@ -64,7 +64,10 @@ export function createLoopClient(baseUrl, { apiKey = null, allowInsecure = false
       setStatus('offline')
       setTimeout(connect, Math.min(5000, 500 * 2 ** retries++))
     }
-    socket.onerror = () => socket?.close()
+    // Eén keer sluiten: in Node 22.22+ vuurt close() opnieuw onerror af, wat anders een oneindige lus gaf.
+    const ws = socket
+    let closing = false
+    socket.onerror = () => { if (closing) return; closing = true; ws.close() }
   }
 
   return {

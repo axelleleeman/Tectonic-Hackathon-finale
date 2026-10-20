@@ -23,3 +23,7 @@ export const MIN_GROUP_SIZE = 100
 
 // Verwachte omzetting van een Kate-inzicht naar een contract (zie pilotcijfers).
 export const EXPECTED_CONVERSION = 0.18
+
+// Herhaalde herstellingen: vanaf dit aantal betalingen voor hetzelfde toestel binnen het venster
+// stelt Kate voor om het toestel te lenen (product as a service) in plaats van het zelf te bezitten.
+export const REPEAT_REPAIR = { threshold: 3, windowDays: 365 }

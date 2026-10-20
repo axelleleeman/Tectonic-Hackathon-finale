@@ -78,7 +78,7 @@ export const products = [
   // ── Appliances ──────────────────────────────────────────────────────────────────────────────
   // WashCycle
   p({ id: 'washer', partnerId: 'washcycle', icon: '🫧', for: ['particulier'], name: 'Washing machine', detail: 'A-rated, 8 kg',
-    monthly: 15, buyPrice: 649, expectedRepairs: 220, termMonths: 60, co2Kg: 160,
+    monthly: 19.9, buyPrice: 1099, expectedRepairs: 350, termMonths: 60, co2Kg: 160,
     includes: ['Delivery and installation', 'Repair within 48 hours', 'Parts are reused', 'Take-back'] }),
   p({ id: 'dryer', partnerId: 'washcycle', icon: '🌀', for: ['particulier'], name: 'Heat-pump dryer', detail: 'A+++, 8 kg',
     monthly: 14, buyPrice: 749, expectedRepairs: 200, termMonths: 60, co2Kg: 150,

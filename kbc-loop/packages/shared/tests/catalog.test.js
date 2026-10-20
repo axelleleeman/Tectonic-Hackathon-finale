@@ -13,7 +13,7 @@ test('elk product verwijst naar een bestaande partner', () => {
 test('bundel wordt opgesplitst en krijgt korting', () => {
   const b = productById('bundle-home')
   assert.deepEqual(expandProduct('bundle-home'), ['lamp-home', 'washer', 'fridge'])
-  assert.ok(b.monthly < 6 + 15 + 12)
+  assert.ok(b.monthly < 6 + 19.9 + 12)
   assert.equal(b.partnerIds.length, 3)
 })
 

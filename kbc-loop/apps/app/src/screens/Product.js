@@ -11,6 +11,7 @@ import { LinkButton, PrimaryButton } from '../ui/Button.js'
 import { Press } from '../ui/Press.js'
 import { T } from '../ui/T.js'
 import { CostCompare } from './CostCompare.js'
+import { RepairPattern } from './RepairPattern.js'
 import { boxes, colors, type } from '../theme.js'
 
 export function Product({ customer, productId, signal, actions }) {
@@ -33,6 +34,8 @@ export function Product({ customer, productId, signal, actions }) {
           <View key={i} style={styles.check}><T style={styles.checkMark}>✓</T><T style={styles.checkText}>{i}</T></View>
         ))}
       </View>
+
+      {signal?.pattern ? <RepairPattern pattern={signal.pattern} /> : null}
 
       {signal ? (
         <>

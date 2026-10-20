@@ -80,7 +80,9 @@ COPY apps/api/package.json apps/api/
 COPY apps/api/src apps/api/src
 COPY --from=build /src/apps/web/dist /srv/public
 
-USER node
+# Niet-root, met numerieke UID:GID (= gebruiker node in het officiële image), zodat scanners
+# en Kubernetes (runAsNonRoot) zeker weten dat het geen root is. De code blijft eigendom van root.
+USER 1000:1000
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD ["node", "-e", "fetch('http://127.0.0.1:' + (process.env.PORT || 8080) + '/api/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
