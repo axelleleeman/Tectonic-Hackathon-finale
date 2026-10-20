@@ -5,6 +5,8 @@ export function bindActions(dispatch) {
     setView: (view) => dispatch({ type: 'SET_VIEW', view }),
     switchCustomer: (customerId) => dispatch({ type: 'SWITCH_CUSTOMER', customerId }),
     setConsent: (value) => dispatch({ type: 'SET_CONSENT', value }),
+    // preferences: { kateTips?, insights?, partners?, telemetry? } (booleans only)
+    setDataPreferences: (preferences) => dispatch({ type: 'SET_DATA_PREFERENCES', preferences }),
     navigate: (screen, active = {}) => dispatch({ type: 'NAVIGATE', screen, active }),
     openKate: () => dispatch({ type: 'OPEN_KATE' }),
     closeKate: () => dispatch({ type: 'CLOSE_KATE' }),

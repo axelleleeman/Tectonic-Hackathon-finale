@@ -1,0 +1,46 @@
+/* Consent: profile banner on the start screen and the #loop/consent page. Uses the tokens from loop.css. */
+.cs-banner { display: flex; align-items: center; gap: var(--s4); padding: var(--s4) var(--s5); margin: 0 0 var(--s5); }
+.cs-banner-icon, .cs-ok { display: grid; place-items: center; width: 36px; height: 36px; flex: none; border-radius: var(--r-pill); background: var(--lp-accent-soft); color: var(--lp-accent); }
+.cs-banner-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.cs-banner-text b { color: var(--lp-ink); }
+.cs-banner-text small { color: var(--lp-muted); font-size: .9rem; }
+
+.cs { max-width: 760px; }
+.cs-h1 { font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.2; margin: var(--s4) 0 var(--s3); color: var(--lp-ink); }
+.cs-lead { color: var(--lp-muted); margin: 0 0 var(--s5); line-height: 1.55; }
+.cs-h2 { font-size: 1.1rem; margin: 0 0 var(--s3); color: var(--lp-ink); }
+
+.cs-list { list-style: none; margin: 0; padding: 0; }
+.cs-row { display: flex; align-items: center; gap: var(--s4); padding: var(--s4) var(--s5); }
+.cs-row + .cs-row { border-top: 1px solid var(--lp-line); }
+.cs-row-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--s1); }
+.cs-row-text b { color: var(--lp-ink); }
+.cs-row-text small { color: var(--lp-muted); line-height: 1.5; }
+.cs-who { color: var(--lp-dim); }
+
+.cs-switch { position: relative; flex: none; display: inline-flex; align-items: center; gap: var(--s2); padding: 0; border: 0; background: none; color: var(--lp-muted); font: inherit; font-size: .85rem; cursor: pointer; }
+.cs-switch::before { content: ''; width: 44px; height: 26px; border-radius: var(--r-pill); background: var(--lp-off); transition: background .15s; }
+.cs-knob { position: absolute; left: 3px; top: 50%; width: 20px; height: 20px; margin-top: -10px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .25); transition: transform .15s; }
+.cs-switch[aria-checked='true']::before { background: var(--lp-btn); }
+.cs-switch[aria-checked='true'] .cs-knob { transform: translateX(18px); }
+.cs-switch[aria-checked='true'] .cs-state { color: var(--lp-ink); }
+.cs-state { min-width: 2em; }
+.cs-switch:focus-visible { outline: 2px solid var(--lp-accent); outline-offset: 4px; border-radius: var(--r-sm); }
+
+.cs-actions { display: flex; justify-content: flex-end; gap: var(--s3); margin: var(--s5) 0 var(--s6); }
+.cs-actions .lp-btn { min-width: 140px; justify-content: center; }
+
+.cs-done { display: flex; align-items: center; gap: var(--s4); padding: var(--s4) var(--s5); margin-bottom: var(--s6); }
+.cs-done div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.cs-done small { color: var(--lp-muted); }
+
+.cs-never ul { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s2); }
+.cs-never li { display: flex; gap: var(--s2); align-items: flex-start; color: var(--lp-muted); }
+.cs-never li svg { flex: none; margin-top: 3px; color: var(--lp-eco); }
+
+@media (max-width: 560px) {
+  .cs-banner { flex-wrap: wrap; padding: var(--s4); }
+  .cs-row { padding: var(--s4); }
+  .cs-actions .lp-btn { flex: 1; min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .cs-switch::before, .cs-knob { transition: none; } }

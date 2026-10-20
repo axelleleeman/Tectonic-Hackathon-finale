@@ -280,7 +280,7 @@ components:
       enum: [RESET, SET_VIEW, SWITCH_CUSTOMER, SET_CONSENT, NAVIGATE, OPEN_KATE, CLOSE_KATE, DISMISS_SIGNAL,
              BORROW, REPORT_DEFECT, ADVANCE_REPAIR, CLOSE_REPAIR, RETURN_ITEM, UPGRADE_ITEM, TRIGGER_TELEMETRY,
              TOGGLE_CAMPAIGN, START_CAMPAIGN, STOP_CAMPAIGN, REDEEM_REWARD, MARK_NOTIFICATIONS_READ,
-             PARTNER_UPDATE_REPAIR]
+             PARTNER_UPDATE_REPAIR, SET_DATA_PREFERENCES]
     Action:
       type: object
       required: [type]
@@ -304,6 +304,7 @@ components:
         | REDEEM_REWARD | `rewardId` |
         | MARK_NOTIFICATIONS_READ | `ids` (array, ≤ 100) |
         | PARTNER_UPDATE_REPAIR | `itemKey`, `status` (scheduled / on-the-way / in-progress / repaired), `customerId` (optional) |
+        | SET_DATA_PREFERENCES | `preferences`: object with booleans `kateTips`, `insights`, `partners`, `telemetry` (only these keys) |
       properties:
         type: { $ref: '#/components/schemas/ActionType' }
       additionalProperties: true

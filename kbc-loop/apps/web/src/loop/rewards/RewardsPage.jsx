@@ -54,8 +54,13 @@ function Confirm({ step, coins, onConfirm, onCancel, onDone }) {
   )
 }
 
+/** Full page (own <main>) or embedded in the start-screen Rewards tab (no breadcrumb, no landmark). */
+function Wrap({ embedded, children }) {
+  return embedded ? <div className="rw rw-embedded">{children}</div> : <main className="lp-wrap lp-main rw">{children}</main>
+}
+
 /** Kate Coins rewards (#loop/rewards): balance, rewards to redeem and the redemption history. */
-export function RewardsPage({ loop, actions, onBack }) {
+export function RewardsPage({ loop, actions, onBack, embedded = false }) {
   const { state, customer, coins = 0 } = loop
   const [step, setStep] = useState(null) // { reward, busy?, done? }
   const history = [...(state?.redemptions?.[customer?.id] ?? [])].reverse()
@@ -69,13 +74,15 @@ export function RewardsPage({ loop, actions, onBack }) {
   }
 
   return (
-    <main className="lp-wrap lp-main rw">
-      <nav className="pp-crumbs" aria-label="Breadcrumb">
-        <ol>
-          <li><button type="button" className="pp-crumb-back" onClick={onBack}><LoopIcon name="back" size={16} />Your home</button></li>
-          <li aria-current="page">Rewards</li>
-        </ol>
-      </nav>
+    <Wrap embedded={embedded}>
+      {!embedded && (
+        <nav className="pp-crumbs" aria-label="Breadcrumb">
+          <ol>
+            <li><button type="button" className="pp-crumb-back" onClick={onBack}><LoopIcon name="back" size={16} />Your home</button></li>
+            <li aria-current="page">Rewards</li>
+          </ol>
+        </nav>
+      )}
 
       <section className="rw-balance lp-card" aria-label="Balance">
         <span className="lp-eyebrow">Kate Coins</span>
@@ -111,6 +118,6 @@ export function RewardsPage({ loop, actions, onBack }) {
           </ul>
         ) : <p className="rw-empty">Nothing redeemed yet.</p>}
       </section>
-    </main>
+    </Wrap>
   )
 }

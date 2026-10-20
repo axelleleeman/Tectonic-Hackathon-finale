@@ -114,7 +114,8 @@ kbc-loop/
     shared/          @kbc-loop/shared: plain JavaScript, no React
       src/config/      demo settings (date, CO₂ factor, Kate Coins, bundle discount, KBC margin, technician slot)
       src/data/        data only: categories, partners, products (+ bundles), customers, repairIssues,
-                       pilotStats, spendSegments, kbcServices, rewards (Kate Coins rewards: rewards, rewardById)
+                       pilotStats, spendSegments, kbcServices, rewards (Kate Coins rewards: rewards, rewardById),
+                       dataChoices (copy for the data-preferences screen on web and app)
       src/engine/      logic: rules, signals, catalog, pricing, impact, dashboards, insights, kateIntents …
                        costs.js: cost overview per item and customer (paid, remaining, split, upcoming payments)
                        upgrades.js: upgrade options and quote for a borrowed product

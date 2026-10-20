@@ -18,7 +18,10 @@ export function YourHome({ sections, flashKey, onOpen, onBrowse, onAdd }) {
         </button>
       </div>
       {owned.length === 0 && (
-        <div className="lp-card lp-empty"><p>Nothing in your home yet.</p></div>
+        <div className="lp-card lp-empty">
+          <p>Nothing in your home yet. Borrow your first product for one monthly price.</p>
+          <button type="button" className="lp-btn lp-sm" onClick={() => onBrowse()}>Browse the catalogue</button>
+        </div>
       )}
       {owned.map((s) => (
         <CategorySection key={s.category.id} category={s.category} rows={s.rows} flashKey={flashKey} onOpen={onOpen} onBrowse={onBrowse} />

@@ -11,6 +11,8 @@ import { SectionHeader } from '../../ui/SectionHeader.js'
 import { space, tabular } from '../../ui/tokens.js'
 import { KateTips } from './KateTips.js'
 import { colors } from '../../theme.js'
+import { ConsentCard } from '../consent/ConsentScreen.js'
+import { useLoopState } from '../rewards/useLoopState.js'
 
 /** Active items grouped per category, in catalogue order. */
 export function homeGroups(items, customerType) {
@@ -33,8 +35,10 @@ export function homeGroups(items, customerType) {
 export function LoopHome({ customer, items, signals, actions }) {
   const groups = homeGroups(items, customer.type)
   const add = () => actions.navigate('category', { categoryId: null })
+  const prefs = useLoopState()?.dataPreferences?.[customer.id] ?? { completedOn: null } // old state: not completed
   return (
     <View>
+      <ConsentCard preferences={prefs} onReview={() => actions.navigate('consent')} />
       <View style={styles.head}>
         <T style={styles.title} role="heading">Your home</T>
         <Press onPress={add} style={styles.add} label="Add a product" hitSlop={6}>

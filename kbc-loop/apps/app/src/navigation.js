@@ -22,6 +22,7 @@ export const SCREENS = {
   item: { bar: 'back', title: 'My product', tab: 'loop', back: (_, prev) => (BACK_TARGETS.includes(prev) ? prev : 'shop') },
   rewards: { bar: 'back', title: 'Rewards', tab: 'loop', back: () => 'shop' },
   inbox: { bar: 'back', title: 'Notifications', tab: 'loop', back: () => 'shop' },
+  consent: { bar: 'back', title: 'Your data', tab: 'loop', back: () => 'shop' },
   costs: { bar: 'back', title: 'Costs', tab: 'loop', back: (_, prev) => (BACK_TARGETS.includes(prev) && prev !== 'item' ? prev : 'shop') },
 }
 

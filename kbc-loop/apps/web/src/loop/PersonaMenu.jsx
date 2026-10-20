@@ -10,7 +10,7 @@ const TYPE_LABEL = { particulier: 'Private', kmo: 'Business' }
  * Avatar button in the app bar with a small menu to switch between the private and the business persona.
  * Closes on Escape, on an outside click and after a choice; focus returns to the avatar.
  */
-export function PersonaMenu({ customer, onSwitch }) {
+export function PersonaMenu({ customer, onSwitch, onConsent, consentDone }) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef(null)
   const btnRef = useRef(null)
@@ -51,6 +51,15 @@ export function PersonaMenu({ customer, onSwitch }) {
               {c.id === customer.id && <LoopIcon name="check" size={16} />}
             </button>
           ))}
+          {onConsent && (
+            <button type="button" role="menuitem" className="lp-pitem" onClick={() => { setOpen(false); onConsent() }}>
+              <span className="lp-pitem-av" aria-hidden="true"><LoopIcon name="shield" size={16} /></span>
+              <span className="lp-min0">
+                <b>Your data</b>
+                <small>{consentDone ? 'Review your choices' : 'Complete your profile'}</small>
+              </span>
+            </button>
+          )}
         </div>
       )}
     </div>

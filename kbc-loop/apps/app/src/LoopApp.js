@@ -23,6 +23,7 @@ import { ChromeContext } from './screens/item/chrome.js'
 import { CostOverview } from './screens/costs/CostOverview.js'
 import { RewardsScreen } from './screens/rewards/RewardsScreen.js'
 import { InboxScreen, inboxList } from './screens/inbox/InboxScreen.js'
+import { ConsentScreen } from './screens/consent/ConsentScreen.js'
 import { KateScreen } from './kate/KateScreen.js'
 import { Connecting, ConnectionError, OfflineBanner } from './ConnectionScreens.js'
 
@@ -126,6 +127,7 @@ export default function LoopApp() {
     costs: () => <CostOverview items={items} actions={actions} />,
     rewards: () => <RewardsScreen state={state} customer={customer} coins={coins} actions={actions} />,
     inbox: () => <InboxScreen state={state} actions={actions} />,
+    consent: () => <ConsentScreen preferences={loop.dataPreferences} actions={actions} />,
   }[screenId] ?? (() => null)
 
   const banner = actionError ? `Action failed: ${actionError}` : status === 'offline' ? 'Offline: reconnecting…' : null
