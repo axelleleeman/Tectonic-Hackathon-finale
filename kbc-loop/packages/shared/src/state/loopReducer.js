@@ -9,11 +9,12 @@ import { rewardById } from '../data/rewards.js'
 
 // Allowed values; anything else is ignored so the shared state never breaks.
 export const VIEWS = ['klant', 'partner', 'kbc']
-export const SCREENS = ['home', 'mykbc', 'shop', 'category', 'product', 'done', 'repair', 'item', 'costs', 'rewards', 'inbox']
+export const SCREENS = ['home', 'mykbc', 'shop', 'category', 'product', 'done', 'repair', 'item', 'costs', 'rewards', 'inbox', 'consent']
 export const ACTION_TYPES = [
   'RESET', 'SET_VIEW', 'SWITCH_CUSTOMER', 'SET_CONSENT', 'NAVIGATE', 'OPEN_KATE', 'CLOSE_KATE', 'DISMISS_SIGNAL',
   'BORROW', 'REPORT_DEFECT', 'ADVANCE_REPAIR', 'CLOSE_REPAIR', 'RETURN_ITEM', 'UPGRADE_ITEM', 'TRIGGER_TELEMETRY',
   'TOGGLE_CAMPAIGN', 'START_CAMPAIGN', 'STOP_CAMPAIGN', 'REDEEM_REWARD', 'MARK_NOTIFICATIONS_READ', 'PARTNER_UPDATE_REPAIR',
+  'SET_DATA_PREFERENCES',
 ]
 
 export const MAX_ISSUE_LENGTH = 120
@@ -23,12 +24,19 @@ export const MAX_NOTIFICATION_IDS = 100
 
 // Repair status reported by a partner, and the repair step (1–3) it corresponds to
 export const PARTNER_REPAIR_STATUSES = ['scheduled', 'on-the-way', 'in-progress', 'repaired']
-const PARTNER_STATUS_STEP = { scheduled: 1, 'on-the-way': 2, 'in-progress': 2, repaired: 3 }
+// Step 2 ("technician visit") is reached once the technician is at work, not while on the way.
+const PARTNER_STATUS_STEP = { scheduled: 1, 'on-the-way': 1, 'in-progress': 2, repaired: 3 }
 
 // Kate campaigns started from KBC Loop Insights
 export const CAMPAIGN_AUDIENCES = ['consented', 'consented-active']
 export const MAX_CAMPAIGN_BUDGET = 100_000
 export const MAX_CAMPAIGN_MESSAGE_LENGTH = 280
+
+// Data preferences a customer chooses on the consent screen. kateTips mirrors state.consent.
+export const DATA_PREFERENCE_KEYS = ['kateTips', 'insights', 'partners', 'telemetry']
+/** Privacy by default: only Kate tips follow the existing consent; everything else is off. */
+export const defaultDataPreferences = (consent = false) =>
+  ({ kateTips: Boolean(consent), insights: false, partners: false, telemetry: false, completedOn: null })
 
 const ACTIVE_KEYS = ['productId', 'signalId', 'itemKey', 'categoryId']
 const isId = (v) => typeof v === 'string' && v.length > 0 && v.length <= MAX_ID_LENGTH
@@ -62,6 +70,7 @@ export function createInitialState() {
     campaignDetails: {}, // { [segmentId]: { segmentId, audience, budget, message, channel, startedOn, status } }
     redemptions: perCustomer(() => []), // [{ id, rewardId, on }]
     readNotifications: perCustomer(() => []), // ids of notifications the customer has seen
+    dataPreferences: perCustomer(() => defaultDataPreferences(true)), // { kateTips, insights, partners, telemetry, completedOn }
   }
 }
 
@@ -159,6 +168,15 @@ function partnerUpdateRepair(state, { customerId, itemKey, status }) {
 
 const returned = (i) => ({ ...i, returned: true, repair: null, returnedOn: TODAY })
 
+/** Only known keys with boolean values; anything else makes the whole action invalid. */
+function setDataPreferences(state, prefs) {
+  if (!prefs || typeof prefs !== 'object' || Array.isArray(prefs)) return state
+  const entries = Object.entries(prefs)
+  if (!entries.length || entries.some(([k, v]) => !DATA_PREFERENCE_KEYS.includes(k) || typeof v !== 'boolean')) return state
+  const next = forCustomer(state, 'dataPreferences', (p) => ({ ...p, ...prefs, completedOn: TODAY }), defaultDataPreferences(state.consent))
+  return 'kateTips' in prefs ? { ...next, consent: prefs.kateTips } : next
+}
+
 export function loopReducer(state, action) {
   switch (action?.type) {
     case 'RESET':
@@ -172,8 +190,14 @@ export function loopReducer(state, action) {
       if (!customers.some((c) => c.id === action.customerId)) return state
       return { ...state, ...home, view: 'klant', customerId: action.customerId }
 
-    case 'SET_CONSENT':
-      return { ...state, consent: Boolean(action.value) }
+    case 'SET_CONSENT': {
+      const consent = Boolean(action.value)
+      const next = forCustomer(state, 'dataPreferences', (p) => ({ ...p, kateTips: consent }), defaultDataPreferences(state.consent))
+      return { ...next, consent }
+    }
+
+    case 'SET_DATA_PREFERENCES':
+      return setDataPreferences(state, action.preferences)
 
     case 'NAVIGATE':
       if (!SCREENS.includes(action.screen)) return state

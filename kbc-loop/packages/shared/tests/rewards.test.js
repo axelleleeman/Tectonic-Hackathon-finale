@@ -69,8 +69,10 @@ test('a partner updates the repair status of any customer', () => {
   s = loopReducer(s, { type: 'PARTNER_UPDATE_REPAIR', customerId: 'lotte', itemKey: 'lotte-0', status: 'on-the-way' })
   assert.deepEqual(
     { step: s.items.lotte[0].repair.step, partnerStatus: s.items.lotte[0].repair.partnerStatus, updatedOn: s.items.lotte[0].repair.updatedOn },
-    { step: 2, partnerStatus: 'on-the-way', updatedOn: TODAY },
+    { step: 1, partnerStatus: 'on-the-way', updatedOn: TODAY },
   )
+  s = loopReducer(s, { type: 'PARTNER_UPDATE_REPAIR', customerId: 'lotte', itemKey: 'lotte-0', status: 'in-progress' })
+  assert.equal(s.items.lotte[0].repair.step, 2)
   s = loopReducer(s, { type: 'PARTNER_UPDATE_REPAIR', customerId: 'lotte', itemKey: 'lotte-0', status: 'repaired' })
   assert.equal(s.items.lotte[0].repair.step, 3)
   assert.equal(s.items.lotte[0].repairs, 2)
