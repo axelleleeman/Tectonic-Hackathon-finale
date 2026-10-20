@@ -1,0 +1,6 @@
+/* Stijlen per onderdeel; zie src/styles/ */
+@import './styles/tokens.css';
+@import './styles/layout.css';
+@import './styles/phone.css';
+@import './styles/screens.css';
+@import './styles/dashboard.css';

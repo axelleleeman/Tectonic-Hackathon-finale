@@ -1,0 +1,32 @@
+.phone { width: 380px; height: 780px; background: #111; border-radius: 48px; padding: 14px; position: relative; box-shadow: 0 30px 60px rgba(0, 54, 101, .25); }
+.notch { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); width: 120px; height: 26px; background: #111; border-radius: 0 0 16px 16px; z-index: 6; }
+.screen { position: relative; background: var(--bg-app); height: 100%; border-radius: 36px; overflow: hidden; display: flex; flex-direction: column; }
+.statusbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 26px 4px; font-size: 13px; font-weight: 600; background: #fff; }
+.sb-icons { display: flex; gap: 4px; align-items: center; }
+.appbar { display: flex; align-items: center; gap: 10px; background: #fff; color: var(--navy); padding: 8px 16px 12px; border-bottom: 1px solid var(--line); }
+.appbar-title { font-weight: 700; font-size: 16px; flex: 1; text-align: center; }
+.avatar { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: #dbe7f2; color: var(--navy); font-weight: 700; font-size: 13px; }
+.icon-btn { width: 36px; height: 36px; display: grid; place-items: center; color: var(--navy); }
+.kate-btn { width: 36px; height: 36px; border-radius: 50%; background: conic-gradient(from 200deg, var(--blue), var(--navy), var(--blue)); padding: 2px; }
+.kate-btn span { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%; background: #fff; color: var(--navy); font-weight: 800; font-size: 15px; }
+.content { flex: 1; overflow-y: auto; padding: 14px 16px 20px; }
+.tabbar { display: flex; border-top: 1px solid var(--line); background: #fff; padding: 6px 0 16px; }
+.tabbar button { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11px; color: var(--muted); }
+.tabbar button:disabled { opacity: 1; }
+.tabbar button.on { color: var(--navy); font-weight: 700; }
+.tabbar button.on svg { color: var(--blue); }
+
+/* Kate */
+.kate-dot { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--navy); color: #fff; font-weight: 800; font-size: 12px; flex: none; }
+.sheet-backdrop { position: absolute; inset: 0; background: rgba(0, 20, 40, .35); display: flex; align-items: flex-end; z-index: 5; animation: fade .2s; }
+.sheet { background: #fff; width: 100%; border-radius: 22px 22px 0 0; padding: 10px 16px 24px; animation: up .25s ease; }
+.sheet-grip { width: 40px; height: 4px; background: var(--line); border-radius: 2px; margin: 0 auto 14px; }
+.kate-msg { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 8px; }
+.kate-msg p { margin: 0; background: #eef4f9; padding: 10px 12px; border-radius: 4px 14px 14px 14px; font-size: 14px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.chips button { border: 1.5px solid var(--navy); color: var(--navy); border-radius: 99px; padding: 7px 12px; font-size: 13px; font-weight: 600; }
+.kate-input { display: flex; border: 1px solid var(--line); border-radius: 99px; padding: 4px 4px 4px 14px; }
+.kate-input input { flex: 1; border: 0; font: inherit; font-size: 14px; outline: none; background: none; }
+.kate-input button { width: 34px; height: 34px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; }
+
+@media (max-width: 760px) { .phone { width: 100%; max-width: 380px; } }

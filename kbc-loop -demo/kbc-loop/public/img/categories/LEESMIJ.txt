@@ -1,0 +1,12 @@
+Zet hier foto's (liefst liggend, ± 1200x800, .jpg) met deze bestandsnamen:
+
+  hero.jpg         grote foto bovenaan KBC Loop
+  energie.jpg      Elektriciteit & energie
+  toestellen.jpg   Huishoudtoestellen
+  elektronica.jpg  Elektronica
+  mobiliteit.jpg   Mobiliteit
+  gezin.jpg        Gezin & baby
+  zaak.jpg         Voor je zaak
+
+Ontbreekt een foto, dan toont de app automatisch een illustratie.
+Gebruik enkel foto's die je mag gebruiken (eigen foto's of bv. Unsplash/Pexels-licentie).
