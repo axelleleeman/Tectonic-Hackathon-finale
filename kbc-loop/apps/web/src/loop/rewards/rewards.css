@@ -28,3 +28,7 @@
 .lp .lp-imp-hero-btn:focus-visible { outline: 2px solid var(--lp-accent); outline-offset: 4px; }
 .lp-imp-hero-btn .lp-imp-note::after { content: ' →'; color: var(--lp-accent); }
 .lp-share-row { display: flex; justify-content: flex-start; }
+/* "Plant a tree": the subtle eco surface as a row tint, without its own border box */
+.rw-list .rw-row.lp-eco-surface { border-left: 0; border-right: 0; border-bottom: 0; border-radius: 0; }
+.rw-list .rw-row.lp-eco-surface:first-child { border-top: 0; }
+.rw-row.lp-eco-surface .rw-icon { background: var(--lp-eco-soft); color: var(--lp-eco); }

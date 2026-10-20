@@ -8,6 +8,7 @@ import { ProductImage } from '../../ui/ProductImage.js'
 import { Icon } from '../../ui/Icon.js'
 import { Press } from '../../ui/Press.js'
 import { T } from '../../ui/T.js'
+import { EcoSurface } from '../../ui/EcoSurface.js'
 import { cardShadow, colors, type } from '../../theme.js'
 import { secondLifeMonthly } from '../borrowContract.js'
 import { PartnerLogo, categoryName, productsOfPartner } from './catalogueParts.js'
@@ -27,7 +28,7 @@ export function PartnerScreen({ customer, partnerId, items, actions }) {
     ['Service area', orDash(profile.serviceArea)],
     ['Repair time', orDash(profile.repairSlaHours, (h) => `Within ${h} hours`)],
     ['Technicians', orDash(profile.technicians, num)],
-    ['Refurbished', orDash(profile.refurbishRate, (r) => `${r}% of returns`)],
+    ['Refurbished', orDash(profile.refurbishRate, (r) => `${r}% of returns`), true],
   ]
 
   return (
@@ -50,15 +51,18 @@ export function PartnerScreen({ customer, partnerId, items, actions }) {
 
       <T style={type.h4} role="heading">Key facts</T>
       <View style={styles.grid}>
-        {facts.map(([label, value]) => (
-          <View key={label} style={styles.fact}>
-            <T style={styles.factLabel}>{label}</T>
-            <T style={styles.factValue} numberOfLines={2}>{value}</T>
-          </View>
-        ))}
+        {facts.map(([label, value, eco]) => {
+          const Box = eco ? EcoSurface : View
+          return (
+            <Box key={label} style={styles.fact}>
+              <T style={styles.factLabel}>{label}</T>
+              <T style={styles.factValue} numberOfLines={2}>{value}</T>
+            </Box>
+          )
+        })}
       </View>
       {profile.co2PerUnitKg ? (
-        <T style={styles.co2}>± {num(profile.co2PerUnitKg)} kg CO₂ avoided per product over its term.</T>
+        <EcoSurface style={styles.co2Box}><T style={styles.co2}>± {num(profile.co2PerUnitKg)} kg CO₂ avoided per product over its term.</T></EcoSurface>
       ) : null}
 
       {profile.certifications?.length ? (
@@ -86,7 +90,7 @@ export function PartnerScreen({ customer, partnerId, items, actions }) {
             <View style={styles.flex}>
               <T style={styles.prodName} numberOfLines={2}>{p.name}</T>
               <T style={styles.prodDetail} numberOfLines={1}>{p.detail}</T>
-              {secondLifeMonthly(p) ? <T style={styles.refurb}>Refurbished · {euro(secondLifeMonthly(p), 2)}/month</T> : null}
+              {secondLifeMonthly(p) ? <EcoSurface style={styles.refurb}><T style={styles.refurbText}>Refurbished · {euro(secondLifeMonthly(p), 2)}/month</T></EcoSurface> : null}
             </View>
             <View style={styles.priceCol}>
               <T style={inUse(p.id) ? styles.inUse : styles.price}>{inUse(p.id) ? 'In use' : `${euro(p.monthly)}/month`}</T>
@@ -113,7 +117,8 @@ const styles = StyleSheet.create({
   fact: { width: '48.5%', backgroundColor: '#fff', borderRadius: 12, paddingVertical: 10, paddingHorizontal: 12, ...cardShadow },
   factLabel: { fontSize: 12, color: colors.kmSub },
   factValue: { fontSize: 14.5, fontWeight: '700', color: colors.kmNavy, marginTop: 2 },
-  co2: { color: colors.savingInk, fontSize: 13, marginTop: 10 },
+  co2Box: { borderRadius: 12, paddingVertical: 10, paddingHorizontal: 12, marginTop: 10 },
+  co2: { color: colors.savingInk, fontSize: 13 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   chip: { paddingVertical: 4, paddingHorizontal: 10, borderRadius: 99, borderWidth: 1, borderColor: colors.boxLine, backgroundColor: '#fff', color: colors.navy, fontSize: 12.5, fontWeight: '600', overflow: 'hidden' },
   card: { backgroundColor: '#fff', borderRadius: 14, paddingVertical: 6, paddingHorizontal: 12, ...cardShadow },
@@ -126,7 +131,8 @@ const styles = StyleSheet.create({
   thumb: { width: 64, height: 48, borderRadius: 8 },
   prodName: { fontSize: 14.5, fontWeight: '600', color: colors.ink },
   prodDetail: { fontSize: 12.5, color: colors.kmSub, marginTop: 2 },
-  refurb: { alignSelf: 'flex-start', marginTop: 4, paddingVertical: 2, paddingHorizontal: 8, borderRadius: 99, backgroundColor: colors.savingBg, color: colors.savingInk, fontSize: 11.5, fontWeight: '700', overflow: 'hidden' },
+  refurb: { alignSelf: 'flex-start', marginTop: 4, paddingVertical: 2, paddingHorizontal: 8, borderRadius: 99 },
+  refurbText: { color: colors.savingInk, fontSize: 11.5, fontWeight: '700' },
   priceCol: { alignItems: 'flex-end', gap: 4 },
   price: { fontSize: 14, fontWeight: '600', color: colors.kmNavy },
   inUse: { fontSize: 13, fontWeight: '700', color: colors.newGreen },

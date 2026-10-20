@@ -29,6 +29,23 @@ function loopMark(ctx, x, y, s, color) {
   ctx.restore()
 }
 
+/** Super subtle half-transparent blue→green surface with a hairline, behind the sustainability (CO₂) figure. */
+function ecoPanel(ctx, x, y, w, h, r = 28) {
+  ctx.save()
+  ctx.beginPath()
+  if (ctx.roundRect) ctx.roundRect(x, y, w, h, r)
+  else ctx.rect(x, y, w, h)
+  const g = ctx.createLinearGradient(x, y, x + w, y + h)
+  g.addColorStop(0, 'rgba(74, 171, 238, .12)')
+  g.addColorStop(1, 'rgba(63, 201, 138, .17)')
+  ctx.fillStyle = g
+  ctx.fill()
+  ctx.strokeStyle = 'rgba(92, 200, 138, .28)'
+  ctx.lineWidth = 2
+  ctx.stroke()
+  ctx.restore()
+}
+
 function figure(ctx, { x, y, label, value, unit, color }) {
   ctx.fillStyle = MUTED
   ctx.font = `500 34px ${FONT}`
@@ -75,6 +92,7 @@ export function drawImpactCard({ name, totals, coins }) {
   ctx.font = `400 34px ${FONT}`
   ctx.fillText(`${name ? `${name} · ` : ''}${TODAY.slice(0, 4)}`, x, 386)
 
+  ecoPanel(ctx, x - 40, 474, W - 2 * x + 80, 286)
   figure(ctx, { x, y: 540, label: 'CO₂ saved', value: num(totals.co2Kg), unit: 'kg', color: ECO })
   ctx.fillStyle = MUTED
   ctx.font = `400 34px ${FONT}`

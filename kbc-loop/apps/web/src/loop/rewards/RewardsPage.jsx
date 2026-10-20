@@ -10,7 +10,7 @@ import './rewards.css'
 function RewardRow({ reward, coins, onPick }) {
   const short = reward.cost > coins
   return (
-    <li className="rw-row">
+    <li className={`rw-row ${reward.id === 'plant-tree' ? 'lp-eco-surface' : ''}`}>
       <span className="rw-icon"><RewardIcon reward={reward} /></span>
       <span className="rw-text">
         <b>{reward.title}</b>

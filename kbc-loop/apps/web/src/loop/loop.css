@@ -522,3 +522,22 @@ a.lp-tile:hover .lp-tile-arrow { color: var(--lp-accent); transform: translateX(
 .lp-appx-close:hover { background: rgba(255, 255, 255, .22); }
 .lp-appx-close:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 3px; }
 .lp-appx-close .lp-i { color: #FFFFFF; stroke: #FFFFFF; stroke-width: 2.2; }
+
+/* ---------- Eco surface: sustainability elements only (CO₂, second life, refurbished, plant a tree) ----------
+   A super subtle, half-transparent blue→green wash (deck ring #4AABEE → #3FC98A) with a hairline in the same
+   family, layered over the element's own surface. Text keeps its normal colours, so contrast stays AA. */
+.lp[data-theme="light"] {
+  --lp-eco-grad: linear-gradient(135deg, rgba(74, 171, 238, .08) 0%, rgba(63, 201, 138, .12) 100%);
+  --lp-eco-line: rgba(47, 160, 140, .22);
+  --lp-eco-ink: linear-gradient(120deg, #0A64B8 0%, #0B7A4D 70%);
+}
+.lp[data-theme="dark"] {
+  --lp-eco-grad: linear-gradient(135deg, rgba(74, 171, 238, .12) 0%, rgba(63, 201, 138, .17) 100%);
+  --lp-eco-line: rgba(92, 200, 138, .26);
+  --lp-eco-ink: linear-gradient(120deg, #6BBDF2 0%, #5CC88A 70%);
+}
+.lp .lp-eco-surface { background: var(--lp-eco-grad), var(--lp-surface); border: 1px solid var(--lp-eco-line); }
+/* Gradient-tinted figure: both end colours meet AA on the surface on their own. */
+.lp .lp-eco-text { background: var(--lp-eco-ink); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+@media (forced-colors: active) { .lp .lp-eco-text { color: CanvasText; -webkit-text-fill-color: CanvasText; background: none; } }
+.lp-value.lp-eco-surface .lp-value-ic { background: var(--lp-eco-soft); color: var(--lp-eco); }

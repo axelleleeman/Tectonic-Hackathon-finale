@@ -67,3 +67,7 @@
   .cp-partner { flex-wrap: wrap; }
   .pa-head { flex-direction: column; gap: var(--s3); }
 }
+/* Sustainability facts: the subtle eco surface (loop.css) with a little breathing room */
+.cp-facts li.cp-fact-eco { margin: -6px 0 -6px -8px; padding: 6px 8px; border-radius: var(--r-sm); }
+.cp-facts .cp-fact-eco .lp-i { color: var(--lp-eco); }
+.pa-facts .pa-fact-eco { margin: -8px -10px; padding: 8px 10px; border-radius: var(--r-sm); }

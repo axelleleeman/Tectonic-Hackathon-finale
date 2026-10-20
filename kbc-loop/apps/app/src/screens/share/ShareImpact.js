@@ -7,6 +7,7 @@ import { TODAY } from '@kbc-loop/shared/config/index.js'
 import { Icon } from '../../ui/Icon.js'
 import { Press } from '../../ui/Press.js'
 import { T } from '../../ui/T.js'
+import { EcoSurface } from '../../ui/EcoSurface.js'
 import { colors } from '../../theme.js'
 
 const YEAR = TODAY.slice(0, 4)
@@ -39,8 +40,10 @@ export function ImpactCard({ name, totals, coins }) {
       </View>
       <T style={styles.title}>My impact</T>
       <T style={styles.meta}>{name ? `${name} · ` : ''}{YEAR}</T>
-      <Figure label="CO₂ saved" value={num(totals.co2Kg)} unit="kg" color={ECO} />
-      <T style={styles.meta}>≈ {num(totals.carKm)} km less driving by car</T>
+      <EcoSurface tone="dark" style={styles.eco}>
+        <Figure label="CO₂ saved" value={num(totals.co2Kg)} unit="kg" color={ECO} />
+        <T style={styles.meta}>≈ {num(totals.carKm)} km less driving by car</T>
+      </EcoSurface>
       <View style={styles.rule} />
       <View style={styles.row}>
         <Figure label="Kate Coins" value={num(coins)} />
@@ -88,6 +91,7 @@ const styles = StyleSheet.create({
   title: { color: INK, fontSize: 26, fontWeight: '700' },
   meta: { color: MUTED, fontSize: 14 },
   fig: { flex: 1, marginTop: 16 },
+  eco: { borderRadius: 14, paddingHorizontal: 12, paddingBottom: 12, marginHorizontal: -12, marginTop: 4 },
   figLabel: { color: MUTED, fontSize: 13, fontWeight: '600' },
   figValue: { fontSize: 40, fontWeight: '700', letterSpacing: -1 },
   figUnit: { fontSize: 18, fontWeight: '600' },
