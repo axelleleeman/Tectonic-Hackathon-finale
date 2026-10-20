@@ -98,7 +98,8 @@ kbc-loop/
     web-ui/          @kbc-loop/web-ui: shared web building blocks for apps/web and apps/insights
       src/api.js       API_URL, APP_URL, INSIGHTS_URL and the client
       src/useLoop.js   React hook: live state + actions
-      src/components/  Connecting, Icon, icons, KbcLogo, ServiceChips, Stat
+      src/useTheme.js  light/dark theme (follows the system until the user picks one; used by Insights)
+      src/components/  Connecting, Icon, icons, KbcLogo, ProductImage (photo or illustration), ServiceChips, Stat
       src/kate/        Kate for the web: KateLauncher (header button), KatePanel (chat drawer), Kate, useKateConversation
       src/styles/      tokens, components, layout, dashboard, loop-theme
       src/assets/      KBC logo
@@ -144,8 +145,10 @@ kbc-loop/
 **KBC Loop Insights** (`apps/insights`, in production at `/kbc/`): internal tool for KBC staff. Shows, anonymised,
 which products customers often buy or have repaired (e.g. payments to bike shops or phone repairers), what that
 costs per year and which rental product you could offer that group (data from `GET /api/insights`). Groups
-under 100 customers are never shown. With *Start campaign via Kate* the campaign appears live in the KBC
-dashboard on the web.
+under 100 customers are never shown. Overview (four KPIs, one chart, top 3 opportunities), Campaigns and Groups;
+a campaign is planned in four steps (group → Kate message with phone preview → audience and budget → review) and
+then shows simulated live results (`engine/campaigns.js`). Running campaigns appear live in the KBC dashboard on
+the web. Same style as the KBC LOOP page (IBM Plex Sans, light and dark theme).
 
 ## Getting started (development)
 
