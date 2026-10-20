@@ -11,7 +11,7 @@ export function YourHome({ sections, flashKey, onOpen, onBrowse, onAdd }) {
   return (
     <section className="lp-home" id="lp-home" aria-labelledby="lp-home-title">
       <div className="lp-home-head">
-        <h2 id="lp-home-title">Your home</h2>
+        <h2 id="lp-home-title" className="lp-sr">Your home</h2>
         <button type="button" className="lp-add" onClick={onAdd}>
           <LoopIcon name="plus" size={18} />
           <span>Add a product</span>
