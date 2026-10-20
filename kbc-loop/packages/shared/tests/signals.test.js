@@ -6,7 +6,7 @@ import { customers } from '../src/data/index.js'
 const lotte = customers.find((c) => c.id === 'lotte')
 const jonas = customers.find((c) => c.id === 'jonas')
 const peeters = customers.find((c) => c.id === 'peeters')
-const lamp = { key: 'lotte-0', productId: 'lamp-home', repairs: 0, repair: null, returned: false, room: 'keuken' }
+const lamp = { key: 'lotte-0', productId: 'lamp-home', repairs: 0, repair: null, returned: false, room: 'kitchen' }
 const base = { consent: true, dismissed: [], items: [] }
 
 test('gsm-herstelling geeft een voorstel om een gsm te lenen', () => {

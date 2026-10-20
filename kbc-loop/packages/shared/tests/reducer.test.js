@@ -19,7 +19,7 @@ test('een bundel lenen voegt elk product apart toe', () => {
 
 test('herstelling doorloopt 3 stappen en levert Kate Coins op', () => {
   const s = run(
-    { type: 'REPORT_DEFECT', itemKey: 'lotte-0', issue: 'Lamp flikkert' },
+    { type: 'REPORT_DEFECT', itemKey: 'lotte-0', issue: 'Light flickers' },
     { type: 'ADVANCE_REPAIR', itemKey: 'lotte-0' },
     { type: 'ADVANCE_REPAIR', itemKey: 'lotte-0' },
     { type: 'ADVANCE_REPAIR', itemKey: 'lotte-0' }, // mag niet verder dan stap 3

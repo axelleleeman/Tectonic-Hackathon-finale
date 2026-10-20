@@ -24,7 +24,7 @@ test('kosten: kopen telt herstellingen en losse verzekering mee', () => {
   assert.equal(c.saving, c.buy - c.borrow)
 })
 
-test('kmo ziet de categorie "Voor je zaak", particulier niet', () => {
+test('business customers see "For your business", personal customers do not', () => {
   assert.ok(categoriesFor('kmo').some((c) => c.id === 'zaak'))
   assert.ok(!categoriesFor('particulier').some((c) => c.id === 'zaak'))
 })

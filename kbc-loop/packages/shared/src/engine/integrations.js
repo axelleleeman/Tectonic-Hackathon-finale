@@ -10,7 +10,7 @@ export function serviceById(id) {
 
 function insuranceFor(categoryId, customerType) {
   if (categoryId === 'mobiliteit') return 'bicycleInsurance'
-  if (categoryId === 'zaak' || (customerType === 'kmo' && categoryId === 'energie')) return 'officeInsurance'
+  if (categoryId === 'zaak' || (customerType === 'kmo' && (categoryId === 'energie' || categoryId === 'toestellen'))) return 'officeInsurance'
   if (categoryId === 'energie' || categoryId === 'toestellen') return 'homeInsurance'
   return null
 }
@@ -19,11 +19,11 @@ function insuranceFor(categoryId, customerType) {
 export function productServices(product, customerType) {
   const cat = categoryOf(product)
   return [
-    { role: 'Financiering', id: 'b2bAsset' },
-    product.payPerUse && { role: 'Betalen per gebruik', id: 'm2m' },
-    insuranceFor(cat.id, customerType) && { role: 'Verzekering', id: insuranceFor(cat.id, customerType) },
-    { role: 'Overnemen op afbetaling', id: 'instalmentHub' },
-    { role: 'Beloning', id: 'kateCoins' },
+    { role: 'Financing', id: 'b2bAsset' },
+    product.payPerUse && { role: 'Pay per use', id: 'm2m' },
+    insuranceFor(cat.id, customerType) && { role: 'Insurance', id: insuranceFor(cat.id, customerType) },
+    { role: 'Buy out in instalments', id: 'instalmentHub' },
+    { role: 'Reward', id: 'kateCoins' },
     { role: 'Impact', id: customerType === 'kmo' ? 'kubeEsg' : 'ecoWise' },
   ].filter(Boolean).map((r) => ({ ...r, ...serviceById(r.id) }))
 }

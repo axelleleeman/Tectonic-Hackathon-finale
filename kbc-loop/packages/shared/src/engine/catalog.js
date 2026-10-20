@@ -16,9 +16,9 @@ function resolveBundle(b) {
     expectedRepairs: sum(parts, 'expectedRepairs'),
     co2Kg: sum(parts, 'co2Kg'),
     includes: [
-      `${Math.round(BUNDLE_DISCOUNT * 100)}% bundelkorting`,
-      ...parts.map((p) => `${p.icon} ${p.name}, herstel inbegrepen`),
-      'Eén maandbedrag, één aanspreekpunt in KBC Mobile',
+      `${Math.round(BUNDLE_DISCOUNT * 100)}% bundle discount`,
+      ...parts.map((p) => `${p.icon} ${p.name}, repairs included`),
+      'One monthly fee, one point of contact in KBC Mobile',
     ],
   }
 }
