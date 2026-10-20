@@ -1,4 +1,4 @@
-// Opzoekfuncties voor producten, bundels en partners.
+// Lookup functions for products, bundles and partners.
 import { products, bundles, partners, categories } from '../data/index.js'
 import { BUNDLE_DISCOUNT } from '../config/index.js'
 
@@ -30,7 +30,7 @@ export function productById(id) {
   return bundle ? resolveBundle(bundle) : null
 }
 
-/** Een bundel wordt bij het lenen opgesplitst in losse producten. */
+/** When borrowed, a bundle is split into its individual products. */
 export function expandProduct(id) {
   const p = productById(id)
   return p?.isBundle ? p.items : p ? [p.id] : []
@@ -53,7 +53,7 @@ export function categoryOf(product) {
   return categories.find((c) => c.id === partner.category)
 }
 
-/** Categorieën met hun partners en producten, gefilterd op klanttype. */
+/** Categories with their partners and products, filtered by customer type. */
 export function categoriesFor(customerType) {
   return categories
     .filter((c) => c.for.includes(customerType))

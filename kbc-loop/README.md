@@ -6,6 +6,30 @@ The partner stays the owner, **repairs** the product when it breaks and takes it
 That gives manufacturers a direct interest in making products that last. KBC spots the right moment, brings
 customer and partner together and arranges financing and insurance.
 
+**The pitch in one paragraph.** Products break because producers earn when you buy again. KBC Loop flips that
+incentive: the customer pays a monthly fee for the result, the producer keeps ownership and earns more the
+longer the product lasts, and KBC orchestrates the ecosystem as bank (signals from transaction data, one split
+payment, financing for producers) and insurer (built-in coverage, fleet and residual-value cover). Customers
+see their costs and CO₂ impact, get repairs with one tap, earn Kate Coins for circular choices, and KBC staff
+use anonymised insights to launch Kate campaigns. Web, app and Insights share one live state.
+
+## Quick start
+
+```bash
+cd kbc-loop
+npm install
+npm run dev          # api :4000, web http://localhost:5173, insights http://localhost:5174, app http://localhost:8081
+npm test             # shared + api tests + README check
+```
+
+Then open http://localhost:5173/#loop. Further reading:
+
+- [docs/DEMO.md](docs/DEMO.md): the 4-minute pitch demo, step by step, with URLs and clicks
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md): diagram, data flow of an action and the security model
+- [docs/openapi.yaml](docs/openapi.yaml): the REST API contract
+- CI: `.github/workflows/ci.yml` (repository root) runs `npm ci --ignore-scripts`, test, lint and build on Node 24
+  for every push and pull request to `main`
+
 ## What the demo shows
 
 | Perspective | What you see |
@@ -79,16 +103,20 @@ npm workspaces monorepo: shared code in `packages/`, everything that runs in `ap
 kbc-loop/
   package.json       npm workspaces (packages/*, apps/*) + scripts dev/test/build/lint
   Dockerfile         production image: builds web + insights + app, runs the api (Cloud Run)
+  docker-compose.yml runs that image locally: healthcheck on /api/health, named volume for the database
+  docs/              openapi.yaml: OpenAPI 3.1 contract of every route, the error format and the /api/live protocol
   packages/
     shared/          @kbc-loop/shared: plain JavaScript, no React
       src/config/      demo settings (date, CO₂ factor, Kate Coins, bundle discount, KBC margin, technician slot)
       src/data/        data only: categories, partners, products (+ bundles), customers, repairIssues,
-                       pilotStats, spendSegments, kbcServices
+                       pilotStats, spendSegments, kbcServices, rewards (Kate Coins rewards: rewards, rewardById)
       src/engine/      logic: rules, signals, catalog, pricing, impact, dashboards, insights, kateIntents …
                        costs.js: cost overview per item and customer (paid, remaining, split, upcoming payments)
                        upgrades.js: upgrade options and quote for a borrowed product
                        campaigns.js: Kate campaign forecasts and results for KBC Loop Insights
-      src/state/       loopReducer.js (all actions, with input validation, pure and tested), actions.js, derive.js
+                       rules.js also turns a running Insights campaign into a Kate tip for matching customers
+      src/state/       loopReducer.js (all actions, with input validation, pure and tested), actions.js,
+                       derive.js (derive, notificationsFor: inbox items, unreadCount)
       src/kate/        Kate's conversation engine (greeting, suggestions, intents, replies as action descriptors),
                        shared by the app's Kate screen and the web's Kate panel
       src/navigation/  tabs.js: the five KBC Mobile tabs (Home, My KBC, Invest, Business, Loop), shared by app and web
@@ -105,9 +133,13 @@ kbc-loop/
       src/assets/      KBC logo
   apps/
     api/             @kbc-loop/api: REST + WebSocket on SQLite
-      src/             index.js (start), server.js (routes), db.js, live.js, security.js, static.js, config.js,
+      src/             index.js (start + graceful shutdown), server.js (routes), db.js, live.js, security.js,
+                       static.js, config.js, errors.js (JSON error format and codes),
+                       logger.js (structured request log + X-Request-Id),
                        catalog.js (partner catalogue tables partners + products, seeded from shared data),
-                       partnerFeed.js (strict validation of a partner product feed)
+                       partnerFeed.js (strict validation of a partner product feed),
+                       errors.js (one JSON error format { error: { code, message } }),
+                       logger.js (structured JSON request logs, LOG_LEVEL silent/error/info)
       data-examples/   partner-feed.example.json: example feed of a fictional partner (GreenSpin)
       tests/
     web/             @kbc-loop/web: Vite + React, dev on http://localhost:5173
@@ -117,7 +149,9 @@ kbc-loop/
       src/loop/        the KBC LOOP page: #loop (metrics with a small three.js loop from three/, "Your home" per
                        category, Kate tips, FAQ), #loop/catalog[/<category>] (alias #loop/marketplace: catalogue per
                        category and partner), #loop/product/<itemKey>, #loop/costs and #loop/presentation (URL only);
-                       header without tabs, dialogs, light and dark theme
+                       header without tabs, dialogs, light and dark theme; rewards/ (#loop/rewards: redeem Kate
+                       Coins), inbox/ (notifications bell and panel in the header), share/ (impact card drawn with
+                       Canvas 2D and downloaded as a PNG)
       src/hooks/       useAutoplay (plays the demo automatically), useHashRoute (KBC apps page ↔ KBC LOOP)
       src/styles/      styling of the site and the phone frame
       src/assets/      screenshot parts of the KBC apps page
@@ -130,12 +164,18 @@ kbc-loop/
       src/phone/       KBC Mobile frame: AppBar (Kate search bar), TabBar (floating menu bar), Fab
       src/kate/        Kate as a full chat screen (KateScreen, header, messages, chips, input field)
       src/screens/     screens: home/ (Home), mykbc/ (My KBC), aanbod/ (Offers), item/, costs/ and the KBC Loop
-                       screens (category, product, buying vs. borrowing, repair …)
+                       screens (category, product, buying vs. borrowing, repair …); rewards/ (redeem Kate Coins),
+                       inbox/ (notifications behind the header bell), share/ (impact card + native Share sheet)
       src/ui/          shared building blocks: Icon, Button, Stat, Photo, KateAvatar, KbcLogo …
       src/             api.js (API address + client), useLoop.js, navigation.js, theme.js
       app.json         Expo config (web under base path /app)
+  docs/              ARCHITECTURE.md (diagram, data flow, security), DEMO.md (pitch script), openapi.yaml (REST API)
   scripts/           check-readme.mjs: checks that this README describes the actual structure
                      import-partner-feed.mjs: imports a partner product feed into the database (npm run import:feed)
+                     check-openapi.mjs: checks that docs/openapi.yaml covers every route and action (npm run docs:check)
+                     demo-reset.mjs: resets the shared demo state via the API (npm run demo:reset)
+                     demo-reset.mjs: resets the shared demo state via the API (npm run demo:reset)
+                     check-openapi.mjs: checks that docs/openapi.yaml covers every route and action (npm run docs:check)
 ```
 
 **Extending:** adding a partner = `packages/shared/src/data/partners.js` + products in
@@ -202,7 +242,10 @@ app refuses everything except `https`/`wss` (except `localhost`).
 ## Tests
 
 ```bash
-npm test             # shared (signals, catalogue, pricing, impact, reducer, insights) + api (routes, security) + README check
+npm test             # shared (signals, catalogue, pricing, impact, reducer, insights) + api (routes, security,
+                     # health/ready, error format, request ids, shutdown) + README check + OpenAPI check
+npm run docs:check   # docs/openapi.yaml documents every route, action type and error code
+npm run demo:reset   # POST { type: 'RESET' } to API_URL (default http://127.0.0.1:4000; https required elsewhere; optional API_KEY)
 ```
 
 Uses Node's built-in test runner (`node --test`), without extra packages. `npm run lint` checks the code of
@@ -225,7 +268,9 @@ API path, update the *Structure* block, the scripts or the API table above.
 
 | Method | Path | What |
 |---|---|---|
-| `GET` | `/api/health` | Status `{ ok: true }` (no key needed, for health checks) |
+| `GET` | `/api/health` | Liveness `{ status: 'ok', uptime, version }` (no key, no rate limit) |
+| `GET` | `/api/ready` | Readiness: `{ status: 'ready' }` when the database answers, otherwise `503` (no key) |
+| `GET` | `/api/ready` | Readiness: `{ status: 'ready' }` when the database answers, otherwise `503` (no key needed, rate limited) |
 | `GET` | `/api/state` | Full demo state `{ version, state }` |
 | `POST` | `/api/actions` | Apply an action `{ type, ... }` (known action types only), returns the new state |
 | `GET` | `/api/actions/recent?limit=20` | Latest actions from the log (max. 100) |
@@ -233,6 +278,19 @@ API path, update the *Structure* block, the scripts or the API table above.
 | `GET` | `/api/catalog` | Partner catalogue from the database: `{ categories, partners, products }`, same shapes as `packages/shared/src/data` |
 | `GET` | `/api/catalog/partners/:id` | One partner with its `products` (`id` must match `^[a-z0-9-]{1,64}$`: otherwise `400`; unknown partner: `404`) |
 | `WS` | `/api/live` | Subprotocol `kbc-loop`; sends `{ type: 'state', version, state }` on connect and on every change. Read only. |
+
+The full contract is in [`docs/openapi.yaml`](docs/openapi.yaml) (OpenAPI 3.1).
+
+**Errors** always have the shape `{ "error": { "code", "message" } }` with a stable `code`: `bad_request` (400),
+`unauthorized` (401), `forbidden_origin` (403), `not_found` (404), `payload_too_large` (413),
+`unsupported_media_type` (415), `rate_limited` (429), `internal` (500) and `unavailable` (503, `/api/ready`). The shared
+client throws an `Error` with `message`, `code` and `status`.
+
+**Request ids and logging**: every response has an `X-Request-Id` header (a valid incoming one,
+`[A-Za-z0-9-]{1,64}`, is reused; otherwise a UUID). Every request is logged as one JSON line on stdout
+(`ts`, `method`, `path` without query string, `status`, `ms`, `requestId`). **Graceful shutdown** on
+`SIGTERM`/`SIGINT`: stop accepting connections, close WebSocket clients with code `1001`, finish in-flight requests,
+close the database, exit (forced after 10 s).
 
 API settings (environment variables, see `apps/api/src/config.js`):
 
@@ -243,10 +301,11 @@ API settings (environment variables, see `apps/api/src/config.js`):
 | `DB_PATH` | `apps/api/data/kbc-loop.db` | SQLite file |
 | `STATIC_DIR` | – | Folder with the built web (+ `kbc/` and `app/`) to serve as well (production) |
 | `ALLOWED_ORIGINS` | local dev servers (5173, 5174, 8081) | Comma-separated list of websites allowed to call the API |
-| `API_KEY` | – | Optional key, required on all API requests except `/api/health` |
+| `API_KEY` | – | Optional key, required on all API requests except `/api/health` and `/api/ready` |
 | `TRUST_PROXY` | – | `true` behind an HTTPS proxy (Cloud Run) |
 | `PROXY_HOPS` | `1` | number of trusted proxies in front of the API; determines which `x-forwarded-for` address counts for rate limiting |
 | `NODE_ENV` | – | `production` enables HSTS |
+| `LOG_LEVEL` | `info` | `info`, `error` or `silent` (silent by default under `node --test`) |
 
 Front-end settings (baked in at build time, so **no secrets**):
 
@@ -288,7 +347,8 @@ that belong to another partner are refused. A running api picks up the import on
 - **Optional API key** (`API_KEY`): via the header `Authorization: Bearer <key>`, or for the WebSocket as
   subprotocol `key.<key>`. Constant-time comparison. Recommended as soon as the API is on a network; the API
   warns at startup when it is not set.
-- **Rate limiting** per IP address: 60 write actions and 600 read requests per minute.
+- **Rate limiting** per IP address: 60 write actions and 600 read requests per minute (checked before the API key,
+  so key guessing is throttled too; `/api/health` is exempt).
 - **Input validation and limits**: known action types only, `application/json` only, body max. 16 kB, filters
   against a fixed list, WebSocket messages max. 1 kB (and clients may not write via the socket), request
   time-outs. Internal errors reveal no details.
@@ -320,7 +380,10 @@ gcloud run deploy kbc-loop --source . --region europe-west1 --max-instances 1
 # VITE_API_KEY/EXPO_PUBLIC_API_KEY must get the same value at build time (the Dockerfile does not do that).
 ```
 
-Local test: `docker build -t kbc-loop . && docker run --rm -p 8080:8080 kbc-loop` and open http://localhost:8080.
+Local test: `docker compose up --build` (or `docker build -t kbc-loop . && docker run --rm -p 8080:8080 kbc-loop`)
+and open http://localhost:8080. `docker-compose.yml` binds to localhost only, keeps the database in the named volume
+`kbc-loop-data` (`/data`), runs with a read-only root filesystem and no capabilities, and uses `/api/health` as
+healthcheck. Optional `API_KEY`, `ALLOWED_ORIGINS` and `LOG_LEVEL` come from a local `.env` file (never committed).
 
 - **SQLite on Cloud Run is temporary**: each instance has its own database, which disappears on a restart or
   new revision. For the demo `--max-instances 1` is enough (one shared state). For real use: a mounted volume

@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-lint-build:
+    name: Test, lint and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: kbc-loop
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: kbc-loop/package-lock.json
+
+      - name: Install dependencies (lockfile only, no install scripts)
+        run: npm ci --ignore-scripts
+
+      - name: Test (shared, api, README check)
+        run: npm test
+
+      - name: Lint (web, insights)
+        run: npm run lint
+
+      - name: Build (web, insights, app web export)
+        run: npm run build

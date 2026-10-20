@@ -1,4 +1,4 @@
-// Impactberekeningen voor Mijn KBC en de dashboards.
+// Impact calculations for My KBC and the dashboards.
 import { productById } from './catalog.js'
 import { CO2_KG_PER_CAR_KM } from '../config/index.js'
 

@@ -1,4 +1,4 @@
-// Koppelt KBC Loop aan bestaande KBC-diensten (zie data/kbcServices.js).
+// Links KBC Loop to existing KBC services (see data/kbcServices.js).
 import { kbcServices, loopSteps, categoryServices } from '../data/kbcServices.js'
 import { categoryOf } from './catalog.js'
 
@@ -15,7 +15,7 @@ function insuranceFor(categoryId, customerType) {
   return null
 }
 
-/** Welke bestaande KBC-diensten regelen dit product achter de schermen? */
+/** Which existing KBC services arrange this product behind the scenes? */
 export function productServices(product, customerType) {
   const cat = categoryOf(product)
   return [

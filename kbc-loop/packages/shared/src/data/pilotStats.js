@@ -1,5 +1,5 @@
-// Basiscijfers van een fictief pilotscenario voor de partner- en KBC-dashboards.
-// De live demo-acties worden hier bovenop geteld.
+// Baseline figures of a fictional pilot scenario for the partner and KBC dashboards.
+// Live demo actions are added on top of these.
 
 export const partnerPilot = {
   signify: {

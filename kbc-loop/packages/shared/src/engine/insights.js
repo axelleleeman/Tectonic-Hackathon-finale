@@ -1,9 +1,9 @@
-// Logica voor KBC Loop Insights: geanonimiseerde groepen → aanbeveling van een huurproduct.
+// Logic for KBC Loop Insights: anonymised groups → recommendation of a rental product.
 import { spendSegments } from '../data/index.js'
 import { EXPECTED_CONVERSION, KBC_MARGIN_RATE, MIN_GROUP_SIZE } from '../config/index.js'
 import { productById, partnerNames } from './catalog.js'
 
-// Eén groep verrijken met het aanbevolen product en het verwachte resultaat.
+// Enriches one group with the recommended product and the expected result.
 export function analyseSegment(seg) {
   const product = productById(seg.productId)
   const rentYearly = product.monthly * 12
@@ -24,7 +24,7 @@ export function analyseSegment(seg) {
   }
 }
 
-// Groepen voor de weergave: gefilterd, kleine groepen verborgen, gesorteerd op potentieel.
+// Groups for display: filtered, small groups hidden, sorted by potential.
 export function insights({ kind = 'alle', customerType = 'alle' } = {}, segments = spendSegments) {
   const filtered = segments.filter((s) => (kind === 'alle' || s.kind === kind) && (customerType === 'alle' || s.customerType === customerType))
   const visible = filtered.filter((s) => s.customers >= MIN_GROUP_SIZE).map(analyseSegment)
