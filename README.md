@@ -5,6 +5,57 @@
 
 ---
 
+## In short
+
+**What it is.** A working prototype of KBC LOOP inside KBC Mobile. Kate spots a pattern in a customer's
+transactions and asks the question the customer hasn't asked yet. For example, Sarah just paid for the
+3rd repair of her washing machine this year, so KBC Mobile sends her a notification: *"Third repair this year,
+Sarah? Rent a washing machine that's always fixed for you: €19.90 a month."* She borrows it from a circular
+partner, who stays the owner and repairs it. KBC handles the financing, insurance and monthly payment.
+Three views share one live state: the customer app (KBC Mobile style), the partner dashboard and KBC's
+internal view (KBC Loop Insights).
+
+**How to run it** (Node 22.13 or newer):
+
+```bash
+cd kbc-loop
+npm install
+npm run dev      # starts api, web, insights and app together
+npm test         # engine, reducer and api tests + README check
+```
+
+| What | Where |
+|---|---|
+| Web with presentation panel, partner and KBC dashboards | http://localhost:5173 |
+| Customer app (KBC Mobile, web version) | http://localhost:8081 (or scan the QR code with Expo Go) |
+| KBC Loop Insights (internal, for KBC staff) | http://localhost:5174/kbc/ |
+| API (REST + WebSocket) | http://127.0.0.1:4000 |
+
+**Demo flow:** in the presentation panel pick **Sarah**: the app shows the notification, *View proposal*
+shows her three repairs and the cost of buying vs. renting, *Borrow* adds the machine, and *Report a defect*
+follows the repair until it is fixed (no calls, no bill). Other personas: **Lotte** (phone repair, a lamp that
+reports wear itself), **Jonas** (new KBC home loan → starter pack), **Bakkerij Peeters** (SME, energy bill
+doubled → Light as a Service). *Play demo* runs a full flow automatically (± 45 s).
+
+**Unfinished / limitations**
+
+- **Fictional data only.** No real banking APIs: PSD2 transaction data, KBC Partner Hub, B2B Asset Financing and
+  machine-to-machine payments are simulated with data in `kbc-loop/packages/shared/src/data/`.
+- **Partners are examples.** Philips (Signify) is an example partner, not an existing collaboration; the other
+  partners are fictional. Prices and CO₂ figures are indicative.
+- **Not built yet as real flows:** the insurance module (claims), the billing split between partner, insurer and
+  KBC, and spending Sustainability/Kate Coins (they can be earned, not yet redeemed).
+- **Kate is rule-based.** Signals come from explainable rules (e.g. 3+ repairs of the same device in 12 months);
+  the chat recognises questions by keywords, it is not a language model.
+- **Demo infrastructure.** SQLite database, no customer login (only an optional API key). On Cloud Run the
+  state resets on every restart and only one instance is supported.
+- **Not public.** The web view imitates the KBC website and app (KBC logo, KBC Mobile style). It is meant only
+  for the hackathon jury, not for public hosting without KBC's permission.
+
+More detail (architecture, API, security, deployment): [`kbc-loop/README.md`](kbc-loop/README.md).
+
+---
+
 ## 1. The problem
 
 We can fly to the moon, build robots and train AI, but we can't build a washing machine that lasts 10 years.
@@ -89,7 +140,7 @@ Real-world precedent: Philips provides **Light-as-a-Service at Schiphol Airport*
 
 ## 5. Project structure
 
-`kbc-loop/` is an npm-workspaces monorepo: shared code lives in `packages/`, everything that runs lives in `apps/`. See [`kbc-loop/README.md`](kbc-loop/README.md) (Dutch) for setup, API and security details.
+`kbc-loop/` is an npm-workspaces monorepo: shared code lives in `packages/`, everything that runs lives in `apps/`. See [`kbc-loop/README.md`](kbc-loop/README.md) for setup, API and security details.
 
 ```
 kbc-loop/
@@ -180,13 +231,15 @@ Coins that are redeemed are funded jointly by KBC and partners, as a loyalty bud
 
 ## 8. Roadmap
 
-- [ ] **MVP:** signal engine on synthetic data, with one category (coffee machines)
-- [ ] Consent screen + offer flow in the KBC Mobile mock
+- [x] Signal engine on synthetic data (repeated repairs, energy spike, new home, device wear)
+- [x] Consent setting + offer flow and notification in the KBC Mobile mock
+- [x] Repair flow: report a defect in the app → partner plans and fixes it
+- [x] Impact view: products in use, repairs instead of replacements, CO₂ avoided, coins earned
+- [x] Categories: lighting, energy, appliances, electronics, mobility, family, business
 - [ ] Insurance module: built-in coverage + claim flow
 - [ ] Billing split (partner / insurance / KBC)
-- [ ] Sustainability Coins: earn rules, wallet in the app, redeem for a discount or lower premium
-- [ ] Impact dashboard: products returned, materials reused, CO₂ avoided, coins earned
-- [ ] Add categories: lighting, washing machines, smartphones
+- [ ] Sustainability Coins: redeem for a discount or lower premium
+- [ ] Real data: PSD2 transactions, KBC Partner Hub, B2B Asset Financing
 
 ## 9. Team
 
