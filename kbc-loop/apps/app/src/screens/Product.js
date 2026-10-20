@@ -1,6 +1,6 @@
 // Voorstel: product, "Waarom zie ik dit?", kostenvergelijking, CO₂ en de KBC-diensten achter de schermen.
-import { useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { productServices, servicesForSignal } from '@kbc-loop/shared/engine/integrations.js'
 import { productById, partnerNames, categoryOf } from '@kbc-loop/shared/engine/catalog.js'
 import { carKmEquivalent } from '@kbc-loop/shared/engine/impact.js'
@@ -11,15 +11,60 @@ import { LinkButton, PrimaryButton } from '../ui/Button.js'
 import { Press } from '../ui/Press.js'
 import { T } from '../ui/T.js'
 import { CostCompare } from './CostCompare.js'
+import { ContractSummary } from './ContractSummary.js'
+import { SIGN_DELAY_MS, contractTerms, rememberContract, secondLifeMonthly } from './borrowContract.js'
 import { RepairPattern } from './RepairPattern.js'
 import { boxes, colors, type } from '../theme.js'
 
 export function Product({ customer, productId, signal, actions }) {
   const [why, setWhy] = useState(false)
+  const [step, setStep] = useState('offer') // 'offer' | 'contract' | 'signing'
+  const [refurbished, setRefurbished] = useState(false)
+  const [agreed, setAgreed] = useState(false)
+  const timer = useRef(null)
+  useEffect(() => () => clearTimeout(timer.current), [])
   const p = productById(productId)
   if (!p) return null
   const cat = categoryOf(p)
   const partner = partnerNames(p)
+  const refurbMonthly = secondLifeMonthly(p)
+  const terms = contractTerms(p, { refurbished })
+
+  // Simulated KBC Sign confirmation (no real authentication), then BORROW of the normal product id.
+  const confirm = () => {
+    setStep('signing')
+    rememberContract(terms)
+    timer.current = setTimeout(() => actions.borrow(p.id), SIGN_DELAY_MS)
+  }
+
+  if (step !== 'offer') {
+    const signing = step === 'signing'
+    return (
+      <>
+        <T style={type.h2} role="heading">Your contract</T>
+        <T style={styles.detail}>Check the terms and confirm with KBC.</T>
+        <ContractSummary terms={terms} partnerName={partner} />
+        <Press style={styles.agree} onPress={signing ? undefined : () => setAgreed(!agreed)} role="checkbox" aria-checked={agreed} label="I agree to the contract terms">
+          <View style={[styles.box, agreed && styles.boxOn]}>{agreed ? <T style={styles.boxTick}>✓</T> : null}</View>
+          <T style={styles.checkText}>I agree to the contract terms</T>
+        </Press>
+        {signing ? (
+          <View style={styles.signing} role="status">
+            <ActivityIndicator color={colors.navy} />
+            <T style={styles.signingText}>Confirming with KBC Sign…</T>
+          </View>
+        ) : (
+          <>
+            <View style={!agreed && styles.dim}>
+              <PrimaryButton onPress={agreed ? confirm : undefined}>Confirm with KBC</PrimaryButton>
+            </View>
+            <LinkButton onPress={() => setStep('offer')}>Back</LinkButton>
+          </>
+        )}
+        <T style={type.fine}>Simulated signature for this prototype. No real authentication takes place.</T>
+      </>
+    )
+  }
 
   return (
     <>
@@ -28,6 +73,17 @@ export function Product({ customer, productId, signal, actions }) {
       <T style={type.h2} role="heading">{p.icon} {p.name}</T>
       <T style={styles.detail}>{p.detail}</T>
       <T style={styles.price}><T style={styles.priceBig}>{euro(p.monthly)}</T> / month · {p.termMonths / 12} years</T>
+      {refurbMonthly ? (
+        <View style={styles.variants} role="radiogroup">
+          {[[false, 'New', p.monthly], [true, 'Refurbished', refurbMonthly]].map(([value, label, monthly]) => (
+            <Press key={label} role="radio" aria-checked={refurbished === value} label={`${label}, ${euro(monthly, 2)} per month`}
+              style={[styles.variant, refurbished === value && styles.variantOn]} onPress={() => setRefurbished(value)}>
+              <T style={styles.variantTitle}>{label}</T>
+              <T style={styles.variantPrice}>{euro(monthly, Number.isInteger(monthly) ? 0 : 2)} / month</T>
+            </Press>
+          ))}
+        </View>
+      ) : null}
 
       <View style={styles.checks}>
         {p.includes.map((i) => (
@@ -65,7 +121,7 @@ export function Product({ customer, productId, signal, actions }) {
         <ServiceChips services={productServices(p, customer.type)} withRole />
       </View>
 
-      <PrimaryButton onPress={() => actions.borrow(p.id)}>Borrow via KBC Loop</PrimaryButton>
+      <PrimaryButton onPress={() => setStep('contract')}>Borrow via KBC Loop</PrimaryButton>
       {signal ? (
         <LinkButton onPress={() => { actions.dismissSignal(signal.id); actions.navigate('home') }}>Not interested, don't show this again</LinkButton>
       ) : null}
@@ -92,5 +148,17 @@ const styles = StyleSheet.create({
   whyItem: { fontSize: 13, color: colors.ink, lineHeight: 18 },
   flex: { flex: 1 },
   basedOn: { marginTop: 8, marginBottom: 6, color: colors.navy, fontWeight: '600', fontSize: 13 },
+  variants: { flexDirection: 'row', gap: 8, marginTop: 12 },
+  variant: { flex: 1, borderWidth: 1, borderColor: colors.line, borderRadius: 12, paddingVertical: 10, paddingHorizontal: 12, backgroundColor: '#fff' },
+  variantOn: { borderColor: colors.navy, borderWidth: 2, paddingVertical: 9, paddingHorizontal: 11 },
+  variantTitle: { fontSize: 14, fontWeight: '700', color: colors.navy },
+  variantPrice: { fontSize: 13, color: colors.muted, marginTop: 2 },
+  agree: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 14 },
+  box: { width: 22, height: 22, borderRadius: 6, borderWidth: 2, borderColor: colors.muted, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },
+  boxOn: { backgroundColor: colors.navy, borderColor: colors.navy },
+  boxTick: { color: '#fff', fontSize: 13, fontWeight: '800' },
+  dim: { opacity: 0.45 },
+  signing: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 18 },
+  signingText: { color: colors.navy, fontWeight: '600', fontSize: 15 },
   whyNote: { color: colors.muted, fontSize: 13, marginTop: 10 },
 })

@@ -1,5 +1,6 @@
 import { COINS, TECHNICIAN_SLOT } from '@kbc-loop/shared/config/index.js'
 import { LoopIcon } from '../LoopIcon.jsx'
+import { partnerStatusLine, updatedLabel } from '../partnerStatus.js'
 
 /** The three repair steps with their state. */
 function trackerSteps(partnerName, preventive) {
@@ -25,6 +26,12 @@ export function RepairTracker({ row, busy, onAdvance, onCloseRepair, compact = f
         <span className={`lp-status ${done ? 'lp-st-ok' : 'lp-st-warn'}`}>{done ? 'Repaired' : `Repair step ${repair.step} of 3`}</span>
         <span className="pp-issue">“{repair.issue}”</span>
       </div>
+      {partnerStatusLine(repair.partnerStatus) && (
+        <p className="pp-partner-status" role="status">
+          <span className="lp-dot" aria-hidden="true" /><b>{partnerStatusLine(repair.partnerStatus)}</b>
+          {updatedLabel(repair.updatedOn) && <small> · {row.partner.short ?? row.partner.name} · {updatedLabel(repair.updatedOn)}</small>}
+        </p>
+      )}
       {(repair.note || repair.photo) && (
         <p className="pp-tracker-meta">
           {repair.note && <>Your note: {repair.note}</>}

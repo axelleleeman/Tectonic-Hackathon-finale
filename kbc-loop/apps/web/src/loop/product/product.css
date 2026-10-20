@@ -201,3 +201,8 @@
   .pp-compare-arrow { justify-self: center; transform: rotate(90deg); }
   .pp-option .pp-thumb-lg { width: 52px; height: 52px; }
 }
+
+/* Live status set by the partner in the partner portal (PARTNER_UPDATE_REPAIR) */
+.pp-partner-status { margin: 0; display: flex; align-items: center; gap: var(--s2); flex-wrap: wrap; font-size: .875rem; }
+.pp-partner-status .lp-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lp-accent); flex: none; }
+.pp-partner-status small { color: var(--lp-muted); font-size: .8125rem; }

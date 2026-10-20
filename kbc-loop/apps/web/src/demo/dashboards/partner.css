@@ -1,0 +1,43 @@
+/* Partner portal (#partner) in the KBC LOOP style: reuses the .lp tokens and components from loop/loop.css.
+   Everything here is prefixed pt- and scoped to the portal content. */
+.pt-brand-sub { font-size: .875rem; font-weight: 500; color: var(--lp-muted); margin-left: var(--s2); padding-left: var(--s3); border-left: 1px solid var(--lp-line-strong); white-space: nowrap; }
+.pt-right { margin-left: auto; }
+.pt-body { padding: var(--s6) 0 var(--s7); max-width: 960px; margin: 0 auto; }
+.pt-title { display: flex; gap: var(--s5); align-items: flex-end; justify-content: space-between; flex-wrap: wrap; margin-bottom: var(--s5); }
+.lp-ui .pt-title h1 { font-size: 1.75rem; margin: var(--s1) 0; }
+.pt-sub { color: var(--lp-muted); font-size: .875rem; margin: 0; }
+.pt-pick { display: grid; gap: var(--s1); min-width: 220px; }
+.pt-pick .lp-select { margin: 0; background: var(--lp-surface); }
+
+.pt-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s3); margin-bottom: var(--s6); }
+.pt-kpi { background: var(--lp-surface); border: 1px solid var(--lp-line); border-radius: var(--r-md); padding: var(--s4); display: grid; gap: 2px; }
+.pt-kpi b { font-size: 1.5rem; font-weight: 600; letter-spacing: -.01em; }
+.pt-kpi span { font-size: .8125rem; color: var(--lp-muted); }
+.pt-kpi small { font-size: .75rem; color: var(--lp-dim); }
+
+.pt-list-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--s3); }
+.lp-ui .pt-list-head h2 { font-size: 1.125rem; }
+.pt-live { display: inline-flex; align-items: center; gap: var(--s2); font-size: .8125rem; color: var(--lp-muted); }
+.pt-live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--lp-eco); box-shadow: 0 0 0 4px var(--lp-eco-soft); }
+.pt-tickets { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); }
+.pt-ticket { padding: var(--s4) var(--s5); display: grid; gap: var(--s2); }
+.pt-ticket-done { opacity: .8; }
+.pt-ticket-head { display: flex; justify-content: space-between; gap: var(--s4); align-items: flex-start; }
+.lp-ui .pt-ticket h3 { font-size: 1rem; }
+.pt-issue { margin: 0; font-size: .9375rem; }
+.pt-meta { margin: 0; font-size: .8125rem; color: var(--lp-muted); overflow-wrap: anywhere; }
+.pt-photo { color: var(--lp-accent); font-weight: 500; }
+.pt-flow { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: var(--s2); }
+.lp .pt-flow .lp-btn.pt-past { opacity: 1; color: var(--lp-eco); border-color: var(--lp-line); cursor: default; }
+.lp .pt-flow .lp-btn.pt-past .lp-i { color: var(--lp-eco); }
+.pt-updated { font-size: .75rem; color: var(--lp-dim); }
+.pt-empty { padding: var(--s5); color: var(--lp-muted); margin: 0; }
+.pt-fine { font-size: .75rem; color: var(--lp-dim); margin-top: var(--s5); }
+
+@media (max-width: 720px) {
+  .pt-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pt-body { padding-top: var(--s5); }
+  .pt-ticket { padding: var(--s4); }
+  .pt-pick { min-width: 0; width: 100%; }
+  .pt-brand-sub { display: none; }
+}

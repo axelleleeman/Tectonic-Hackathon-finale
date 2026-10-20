@@ -17,7 +17,7 @@ export function Done({ productId, actions }) {
     <View style={styles.done}>
       <Animated.View style={[styles.check, pop]}><T style={styles.checkText}>✓</T></Animated.View>
       <T style={[type.h2, type.center]} role="heading">Borrowed!</T>
-      <T style={styles.text}>{partnerNames(p)} will contact you about delivery. Financing and insurance are ready at KBC. Something breaks? One tap in Loop and the partner comes to repair it.</T>
+      <T style={styles.text}>{partnerNames(p)} will contact you about delivery{contract?.refurbished ? ' of your refurbished unit' : ''}. Financing and insurance are ready at KBC. Something breaks? One tap in Loop and the partner comes to repair it.</T>
       {contract ? (
         <View style={styles.contract}>
           <ContractSummary terms={contract} partnerName={partnerNames(p)} />

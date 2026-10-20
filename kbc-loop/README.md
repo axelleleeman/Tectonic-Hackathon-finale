@@ -35,7 +35,7 @@ Then open http://localhost:5173/#loop. Further reading:
 | Perspective | What you see |
 |---|---|
 | **Customer** (KBC Mobile) | App rebuilt from a recording of the real KBC Mobile: Kate search bar at the top (Kate slides open from the top; close with ×, tapping outside, swiping up or the Android back button), floating menu bar Home · My KBC · Offers and a transfers button. Home with account cards, payments, Kate tips in "For you" based on transactions, Kate Wallet, insight into your finances, KBC Loop under Extra services, news and Sustainable together. My KBC with a KBC Loop block, Offers with a KBC Loop banner and categories. KBC Loop itself (MyLoop, categories and partners, buying vs. borrowing, life cycle, report a defect → repair, return → new life, Kate Coins) is the only interactive part |
-| **Philips** (partner view) | Active contracts, recurring revenue, defects predicted by sensors, live repair requests |
+| **Partner portal** (`#partner`) | Pick a partner (WashCycle, Philips, ReLapt …): KPIs and a live ticket list of open repairs across customers (first name only). Status buttons Schedule → On the way → In progress → Repaired update the customer's web product page and app repair tracker instantly |
 | **KBC** (internal view) | Loop customers, financed volume, recurring margin, CO₂ impact, triple win |
 | **KBC Loop Insights** (internal, separate app) | Anonymised spending groups, recommended rental products, launching a campaign via Kate |
 
@@ -46,6 +46,11 @@ washing machine repair this year).
 Presenter panel: the **"Play demo"** button plays the full flow automatically (± 45 s, ideal for recording
 for the slides). **"Light reports wear"** simulates an IoT alert: Philips replaces the light before it fails.
 The **privacy toggle** shows that without consent there are no suggestions based on transactions.
+
+Borrowing (web and app) ends with a contract summary (fee, term, what's included, insurance via KBC, cancellation,
+start date), "I agree" and a simulated **Confirm with KBC** step; afterwards the web offers "Download contract" (text
+file) and the app shows the contract with Share. Products with a second-life offer show a **Refurbished** badge
+(25% off); borrowing one uses the normal product and names the refurbished unit in the contract.
 
 ## Built on existing KBC services
 
@@ -115,7 +120,8 @@ kbc-loop/
                        upgrades.js: upgrade options and quote for a borrowed product
                        campaigns.js: Kate campaign forecasts and results for KBC Loop Insights
                        rules.js also turns a running Insights campaign into a Kate tip for matching customers
-      src/state/       loopReducer.js (all actions, with input validation, pure and tested), actions.js,
+      src/state/       loopReducer.js (all actions, with input validation, pure and tested; SET_DATA_PREFERENCES
+                       stores the customer's data choices), actions.js,
                        derive.js (derive, notificationsFor: inbox items, unreadCount)
       src/kate/        Kate's conversation engine (greeting, suggestions, intents, replies as action descriptors),
                        shared by the app's Kate screen and the web's Kate panel
@@ -145,13 +151,14 @@ kbc-loop/
     web/             @kbc-loop/web: Vite + React, dev on http://localhost:5173
       index.html       KBC apps page (pixel-exact screenshot + KBC Loop tab and card), presenter panel,
                        Philips and KBC dashboards, the app in an iframe
-      src/demo/        WebApp, presenter/ (presenter panel), dashboards/, site/ (KBC apps page)
+      src/demo/        WebApp, presenter/ (presenter panel), dashboards/ (KBC dashboard; PartnerDashboard.jsx = the partner
+                       portal on #partner, partnerTickets.js = its tickets and KPIs), site/ (KBC apps page)
       src/loop/        the KBC LOOP page: #loop (metrics with a small three.js loop from three/, "Your home" per
                        category, Kate tips, FAQ), #loop/catalog[/<category>] (alias #loop/marketplace: catalogue per
                        category and partner), #loop/product/<itemKey>, #loop/costs and #loop/presentation (URL only);
                        header without tabs, dialogs, light and dark theme; rewards/ (#loop/rewards: redeem Kate
                        Coins), inbox/ (notifications bell and panel in the header), share/ (impact card drawn with
-                       Canvas 2D and downloaded as a PNG)
+                       Canvas 2D and downloaded as a PNG), consent/ (#loop/consent: choose what happens with your data)
       src/hooks/       useAutoplay (plays the demo automatically), useHashRoute (KBC apps page ↔ KBC LOOP)
       src/styles/      styling of the site and the phone frame
       src/assets/      screenshot parts of the KBC apps page
@@ -165,7 +172,8 @@ kbc-loop/
       src/kate/        Kate as a full chat screen (KateScreen, header, messages, chips, input field)
       src/screens/     screens: home/ (Home), mykbc/ (My KBC), aanbod/ (Offers), item/, costs/ and the KBC Loop
                        screens (category, product, buying vs. borrowing, repair …); rewards/ (redeem Kate Coins),
-                       inbox/ (notifications behind the header bell), share/ (impact card + native Share sheet)
+                       inbox/ (notifications behind the header bell), share/ (impact card + native Share sheet),
+                       consent/ (data preferences: Kate tips, Insights, partners, connected devices)
       src/ui/          shared building blocks: Icon, Button, Stat, Photo, KateAvatar, KbcLogo …
       src/             api.js (API address + client), useLoop.js, navigation.js, theme.js
       app.json         Expo config (web under base path /app)

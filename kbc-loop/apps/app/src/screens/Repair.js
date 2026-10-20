@@ -10,6 +10,7 @@ import { ActionButton, Card, SuccessHeader, SummaryRow } from './item/parts.js'
 import { ProductArt } from './item/ProductArt.js'
 import { Glyph } from './item/Glyph.js'
 import { technicianSlot } from './item/format.js'
+import { partnerStatusLine, updatedLabel } from './item/partnerStatus.js'
 import { cardShadow, colors } from '../theme.js'
 
 function Timeline({ steps, current }) {
@@ -71,6 +72,16 @@ export function Repair({ item, actions, run }) {
         </Card>
       ) : null}
 
+      {partnerStatusLine(r.partnerStatus) ? (
+        <View style={styles.partnerStatus} accessibilityLiveRegion="polite" role="status">
+          <View style={styles.partnerDot} />
+          <View style={styles.headText}>
+            <T style={styles.partnerLine}>{partnerStatusLine(r.partnerStatus)}</T>
+            <T style={styles.partnerSub}>{partner.name}{updatedLabel(r.updatedOn) ? ` · updated ${updatedLabel(r.updatedOn)}` : ''}</T>
+          </View>
+        </View>
+      ) : null}
+
       <Card style={styles.card}><Timeline steps={steps} current={r.step} /></Card>
 
       {r.note ? (
@@ -112,5 +123,9 @@ const styles = StyleSheet.create({
   lineOn: { backgroundColor: colors.green },
   stepTitle: { color: colors.kmGrey, fontWeight: '700', fontSize: 15 },
   stepTitleOn: { color: colors.kmNavy },
+  partnerStatus: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 12, paddingVertical: 12, paddingHorizontal: 14, borderRadius: 12, backgroundColor: '#fff', borderWidth: 1, borderColor: colors.kmLine },
+  partnerDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.kmBlue },
+  partnerLine: { fontSize: 15, fontWeight: '700', color: colors.kmNavy },
+  partnerSub: { fontSize: 12.5, color: colors.kmSub, marginTop: 2 },
   stepSub: { color: colors.kmSub, fontSize: 13, marginTop: 3, lineHeight: 18 },
 })

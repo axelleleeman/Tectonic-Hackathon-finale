@@ -1,0 +1,16 @@
+/* Borrow flow: new/refurbished choice, contract summary, simulated KBC Sign step, and the catalogue's
+   "Refurbished" badge. Uses the .lp tokens from loop.css. */
+.lp-variant { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s2); margin: var(--s3) 0 0; }
+.lp-ui .lp-variant button { display: grid; gap: 2px; text-align: left; padding: var(--s3); border: 1px solid var(--lp-line-strong); border-radius: var(--r-sm); background: transparent; transition: border-color .15s, background .15s; }
+.lp-ui .lp-variant button span { font-size: .8125rem; color: var(--lp-muted); font-variant-numeric: tabular-nums; }
+.lp-ui .lp-variant button.on { border-color: var(--lp-accent); background: var(--lp-accent-soft); box-shadow: inset 0 0 0 1px var(--lp-accent); }
+.lp-contract { border: 1px solid var(--lp-line); border-radius: var(--r-md); padding: 0 var(--s4) var(--s4); background: var(--lp-bg); }
+.lp-contract-lab { margin: 0 0 var(--s2); font-size: .75rem; color: var(--lp-muted); }
+.lp-contract-fine { margin: var(--s3) 0 0; font-size: .75rem; color: var(--lp-dim); }
+.lp-agree { display: flex; align-items: center; gap: var(--s2); margin-top: var(--s4); font-size: .9375rem; cursor: pointer; }
+.lp-agree input { width: 18px; height: 18px; accent-color: var(--lp-btn); margin: 0; }
+.lp-signing { display: flex; align-items: center; gap: var(--s2); margin: var(--s3) 0 0; font-size: .875rem; color: var(--lp-accent); }
+.lp-spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--lp-accent-soft); border-top-color: var(--lp-accent); animation: lp-spin .8s linear infinite; flex: none; }
+@keyframes lp-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .lp-spinner { animation-duration: 2.4s; } }
+.lp-refurb { display: flex; width: fit-content; align-items: center; gap: var(--s1); margin-top: var(--s1); padding: 2px var(--s2); border-radius: var(--r-pill); background: var(--lp-eco-soft); color: var(--lp-eco); font-size: .75rem; font-weight: 500; white-space: nowrap; }
