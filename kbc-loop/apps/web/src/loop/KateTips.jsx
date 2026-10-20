@@ -1,7 +1,10 @@
 import { useMemo, useState } from 'react'
 import { productById } from '@kbc-loop/shared/engine/catalog.js'
 import { euro } from '@kbc-loop/shared/engine/format.js'
+import { KATE_LEVELS, kateLevelOf } from '@kbc-loop/shared/data/dataChoices.js'
+import { conditionVisual, tipVisual } from '@kbc-loop/shared/kate/tipVisual.js'
 import { LoopIcon } from './LoopIcon.jsx'
+import { TipFlow } from './kate/TipFlow.jsx'
 import { hasOpenRepair } from './model.js'
 
 const SOURCE = { transacties: 'Based on your transactions', toestel: 'Reported by your device' }
@@ -22,6 +25,8 @@ function productTips(rows) {
       line: `Estimated condition ${worn.condition}%. Maintenance and repairs are included.`,
       reasons: [`In use for ${worn.months} months`, 'Condition is estimated from age and past repairs'],
       cta: { label: 'View product', itemKey: worn.item.key },
+      visual: conditionVisual({ id: `care-${worn.item.key}`, condition: worn.condition, months: worn.months,
+        line: 'Maintenance and repairs are included. Ask for a check-up.', price: `${euro(worn.product.monthly)} / month` }),
     })
   }
   const up = active.find((r) => r.upgrade && r.item.key !== worn?.item.key) ?? active.find((r) => r.upgrade)
@@ -32,38 +37,44 @@ function productTips(rows) {
       line: `${up.upgrade.name} from ${up.partner.short}, ${euro(up.upgrade.monthly)}/mo.`,
       reasons: [`Same partner: ${up.partner.short}`, 'A newer model in the same range'],
       cta: { label: 'View upgrade', productId: up.upgrade.id },
+      visual: {
+        series: null,
+        insight: `Same partner: ${up.partner.short}`,
+        line: `${up.upgrade.name}, a newer model in the same range.`,
+        price: `${euro(up.upgrade.monthly)} / month`,
+        summary: `Insight: a newer model from ${up.partner.short}. Kate suggests: ${up.upgrade.name}.`,
+      },
     })
   }
   return tips.slice(0, MAX_EXTRA)
 }
 
-function TipCard({ headline, line, reasons, children, onDismiss }) {
+/** "Kate level: Proactive ›" — opens the data choices (#loop/consent). */
+function LevelChip({ level, onLevel }) {
+  const label = KATE_LEVELS.find((l) => l.id === level)?.label
+  if (!onLevel) return <span className="lp-kate-level">Kate level: {label}</span>
   return (
-    <article className="lp-card lp-tip">
-      <h3>{headline}</h3>
-      {line && <p className="lp-tip-line">{line}</p>}
-      <details className="lp-why">
-        <summary>Why?</summary>
-        <ul>{reasons.map((r) => <li key={r}>{r}</li>)}</ul>
-      </details>
-      <div className="lp-tip-actions">
-        {children}
-        <button type="button" className="lp-btn lp-sm lp-ghost" onClick={onDismiss} aria-label={`Dismiss tip: ${headline}`}>Dismiss</button>
-      </div>
-    </article>
+    <button type="button" className="lp-kate-level" onClick={onLevel} aria-label={`Kate level: ${label}. Change your data choices`}>
+      Kate level: {label}<LoopIcon name="arrow" size={14} />
+    </button>
   )
 }
 
 /**
  * Tips from Kate = the shared signals (engine/signals.js) for the current customer, plus up to two tips derived from
- * the customer's products when there is little else to say. Offer → add dialog (BORROW); device wear → free
+ * the customer's products when there is little else to say. Each tip is drawn as pattern → insight → Kate
+ * (kate/TipFlow.jsx, data from @kbc-loop/shared/kate/tipVisual.js). Offer → add dialog (BORROW); device wear → free
  * preventive replacement (REPORT_DEFECT, preventive); Dismiss → DISMISS_SIGNAL (derived tips are hidden locally).
+ * On the Basic Kate level there are no tips, only Kate's calm line.
  */
-export function KateTips({ signals, rows = [], onOffer, onPreventive, onDismiss, onOpen }) {
+export function KateTips({ customer, signals, rows = [], kateLevel, onLevel, onOffer, onPreventive, onDismiss, onOpen }) {
   const [hidden, setHidden] = useState(() => new Set())
-  const extra = useMemo(() => (signals.length <= 1 ? productTips(rows) : []), [signals.length, rows])
+  const level = kateLevelOf(kateLevel)
+  const basic = level === 'basic'
+  const list = basic ? [] : signals
+  const extra = useMemo(() => (!basic && list.length <= 1 ? productTips(rows) : []), [basic, list.length, rows])
   const shownExtra = extra.filter((t) => !hidden.has(t.id))
-  const count = signals.length + shownExtra.length
+  const count = list.length + shownExtra.length
 
   return (
     <section className="lp-section lp-tips-sec" aria-labelledby="lp-tips-title">
@@ -71,37 +82,40 @@ export function KateTips({ signals, rows = [], onOffer, onPreventive, onDismiss,
         <span className="lp-kate lp-kate-lg" aria-hidden="true">K</span>
         <h2 className="lp-h2" id="lp-tips-title">Tips from Kate</h2>
         {count > 0 && <span className="lp-count lp-num" aria-label={`${count} tips`}>{count}</span>}
+        <LevelChip level={level} onLevel={onLevel} />
       </div>
-      {count === 0 ? (
+      {basic ? (
+        <div className="lp-card lp-empty"><p>{KATE_LEVELS[0].line}</p></div>
+      ) : count === 0 ? (
         <div className="lp-card lp-empty"><p>No tips right now. Kate lets you know when something can save you money.</p></div>
       ) : (
-        <div className="lp-tips">
-          {signals.map((s) => {
+        <div className="tf-list">
+          {list.map((s) => {
             const product = s.productId ? productById(s.productId) : null
             return (
-              <TipCard key={s.id} headline={s.headline} line={s.reasons?.[0] ?? null}
-                reasons={[SOURCE[s.source] ?? 'Tip from Kate', ...(s.reasons ?? []).slice(1)]} onDismiss={() => onDismiss(s.id)}>
-                {product && (
-                  <button type="button" className="lp-btn lp-primary lp-sm" onClick={() => onOffer(product.id)}>
-                    <span className="lp-num">View · {euro(product.monthly)}/mo</span>
-                  </button>
-                )}
-                {s.itemKey && (
-                  <button type="button" className="lp-btn lp-primary lp-sm" onClick={() => onPreventive(s.itemKey)}>
-                    <LoopIcon name="wrench" size={16} />Free replacement
-                  </button>
-                )}
-              </TipCard>
+              <TipFlow key={s.id} visual={tipVisual(s, customer)} title={s.headline}
+                reasons={[SOURCE[s.source] ?? 'Tip from Kate', ...(s.reasons ?? [])]} onDismiss={() => onDismiss(s.id)}
+                actions={<>
+                  {product && (
+                    <button type="button" className="tf-btn" onClick={() => onOffer(product.id)}>View offer</button>
+                  )}
+                  {s.itemKey && (
+                    <button type="button" className="tf-btn" onClick={() => onPreventive(s.itemKey)}>
+                      <LoopIcon name="wrench" size={16} />Free replacement
+                    </button>
+                  )}
+                </>} />
             )
           })}
           {shownExtra.map((t) => (
-            <TipCard key={t.id} headline={t.headline} line={t.line} reasons={t.reasons}
-              onDismiss={() => setHidden((h) => new Set(h).add(t.id))}>
-              <button type="button" className="lp-btn lp-sm"
-                onClick={() => (t.cta.productId ? onOffer(t.cta.productId) : onOpen?.(t.cta.itemKey))}>
-                {t.cta.label}<LoopIcon name="arrow" size={16} />
-              </button>
-            </TipCard>
+            <TipFlow key={t.id} visual={t.visual} title={t.headline} reasons={t.reasons}
+              onDismiss={() => setHidden((h) => new Set(h).add(t.id))}
+              actions={
+                <button type="button" className="tf-btn"
+                  onClick={() => (t.cta.productId ? onOffer(t.cta.productId) : onOpen?.(t.cta.itemKey))}>
+                  {t.cta.label}
+                </button>
+              } />
           ))}
         </div>
       )}

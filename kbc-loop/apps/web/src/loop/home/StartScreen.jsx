@@ -25,7 +25,7 @@ export function StartScreen({ customer, items, totals, coins, sections, signals,
         impact: <Impact items={items} totals={totals} coins={coins} onCosts={onCosts} onRewards={onRewards} name={customer?.fullName} />,
         rewards: <RewardsPage loop={loop} actions={actions} embedded />,
       }} />
-      <KateTips signals={signals} rows={rows} onOpen={onOpen} {...tips} />
+      <KateTips customer={customer} signals={signals} rows={rows} onOpen={onOpen} {...tips} />
       <AppPreview />
       <Faq />
       <Disclaimer />

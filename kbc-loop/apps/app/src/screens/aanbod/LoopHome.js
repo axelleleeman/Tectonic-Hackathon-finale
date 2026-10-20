@@ -53,7 +53,7 @@ export function LoopHome({ customer, items, signals, actions, kateLevel }) {
           {g.items.map((item) => <LoopItemCard key={item.key} item={item} actions={actions} />)}
         </View>
       ))}
-      <KateTips signals={signals} actions={actions} kateLevel={kateLevel} />
+      <KateTips signals={signals} customer={customer} actions={actions} kateLevel={kateLevel} />
     </View>
   )
 }

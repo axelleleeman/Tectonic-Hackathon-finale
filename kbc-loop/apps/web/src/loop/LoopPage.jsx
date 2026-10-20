@@ -162,6 +162,8 @@ export function LoopPage({ route, param, go, loop }) {
               onOffer: (productId) => openModal({ kind: 'add', productId }),
               onPreventive,
               onDismiss: (id) => actions.dismissSignal(id),
+              kateLevel: loop.dataPreferences?.kateLevel,
+              onLevel: () => go('consent'),
             }} />
         </div>
       )}
