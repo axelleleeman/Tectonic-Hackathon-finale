@@ -4,63 +4,166 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>From data to Kate</title>
-<meta name="description" content="Slide: expenditure pattern plus data insight becomes a Kate recommendation.">
+<meta name="description" content="Slide: an expenditure pattern, the insights drawn from it, and the Kate recommendation they lead to.">
 <style>
-  /* One 16:9 slide on a dark-blue stage, sized to the window (present it full screen or screenshot it). */
-  * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: #071A3A; }
-  body { display: grid; place-items: center; font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
-  .slide {
-    width: min(100vw, 177.78vh); aspect-ratio: 16 / 9; position: relative; overflow: hidden;
-    background: radial-gradient(120% 90% at 50% 0%, #123A78 0%, #0B2A5B 45%, #071A3A 100%);
-    color: #FFFFFF; display: grid; grid-template-rows: auto 1fr auto; padding: 5.5% 6%;
-    container-type: inline-size;
+  /* One 16:9 slide (SVG, scales to any size). Present full screen or screenshot it for a slide deck. */
+  html, body { margin: 0; height: 100%; background: #061633; }
+  body { display: grid; place-items: center; }
+  svg { width: min(100vw, 177.78vh); height: auto; display: block; font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .t-brand { font-size: 22px; font-weight: 700; letter-spacing: 3px; fill: #DCE8F7; }
+  .t-head { font-size: 30px; font-weight: 700; fill: #FFFFFF; }
+  .t-step { font-size: 15px; font-weight: 700; letter-spacing: 2px; fill: #4AABEE; }
+  .t-axis { font-size: 14px; fill: #7F97B8; }
+  .t-chip { font-size: 15px; font-weight: 600; fill: #FFFFFF; }
+  .t-node { font-size: 19px; font-weight: 600; fill: #FFFFFF; }
+  .t-node-sub { font-size: 15px; fill: #A9BCD6; }
+  .t-kate { font-size: 21px; font-weight: 700; fill: #0B2A5B; }
+  .t-kate-body { font-size: 18px; fill: #33445C; }
+  .t-btn { font-size: 16px; font-weight: 700; fill: #FFFFFF; }
+  .t-note { font-size: 16px; fill: #8EA6C8; }
+
+  /* Sequence: chart draws → key transactions light up → lines pull out insights → insights feed Kate */
+  .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.6s cubic-bezier(.4, 0, .2, 1) forwards; }
+  .fade { opacity: 0; animation: fade .7s ease forwards; }
+  .pop { opacity: 0; transform-box: fill-box; transform-origin: center; animation: pop .5s cubic-bezier(.2, .9, .3, 1.4) forwards; }
+  .flow { stroke-dasharray: .012 .05; animation: flow 2.2s linear infinite; opacity: 0; }
+  .flow.on { animation: flow 2.2s linear infinite, fade .6s ease forwards; }
+  .pulse { transform-box: fill-box; transform-origin: center; animation: pulse 2s ease-out infinite; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @keyframes fade { to { opacity: 1; } }
+  @keyframes pop { from { opacity: 0; transform: scale(.4); } to { opacity: 1; transform: scale(1); } }
+  @keyframes flow { to { stroke-dashoffset: -.62; } }
+  @keyframes pulse { 0% { transform: scale(1); opacity: .7; } 100% { transform: scale(3.2); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) {
+    .draw { animation: none; stroke-dashoffset: 0; }
+    .fade, .pop, .flow, .flow.on { animation: none; opacity: 1; transform: none; }
+    .pulse { animation: none; opacity: 0; }
   }
-  .brand { display: flex; align-items: center; gap: 1.2cqw; font-weight: 700; letter-spacing: .12em; font-size: 1.6cqw; color: #DCE8F7; }
-  .ring { width: 1.8cqw; height: 1.8cqw; border-radius: 50%; border: .35cqw solid #4AABEE; }
-  .flow { display: flex; align-items: center; justify-content: center; gap: 2.4cqw; }
-  .box {
-    flex: 1 1 0; max-width: 24cqw; aspect-ratio: 1 / 1; border-radius: 2.4cqw; padding: 2.4cqw;
-    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1.8cqw; text-align: center;
-    background: rgba(255, 255, 255, .06); border: .12cqw solid rgba(255, 255, 255, .18);
-  }
-  .box.kate { background: #FFFFFF; color: #0B2A5B; border-color: #FFFFFF; box-shadow: 0 2cqw 5cqw rgba(0, 0, 0, .35); }
-  .icon { width: 7cqw; height: 7cqw; border-radius: 50%; display: grid; place-items: center; background: rgba(74, 171, 238, .18); }
-  .kate .icon { background: #0A64B8; }
-  .icon svg { width: 3.4cqw; height: 3.4cqw; fill: none; stroke: #4AABEE; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-  .kate .icon svg { stroke: #FFFFFF; }
-  .label { font-size: 2.3cqw; font-weight: 700; line-height: 1.15; min-height: 2.3em; display: flex; align-items: center; }
-  .op { flex: none; width: 5cqw; height: 5cqw; border-radius: 50%; display: grid; place-items: center; background: #4AABEE; color: #071A3A; font-size: 3.2cqw; font-weight: 700; line-height: 1; }
-  .op svg { width: 2.6cqw; height: 2.6cqw; fill: none; stroke: #071A3A; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
-  .note { text-align: center; font-size: 1.15cqw; color: #9FB4D3; margin: 0; }
 </style>
 </head>
 <body>
-  <main class="slide" aria-label="Expenditure pattern plus data insight gives a Kate recommendation">
-    <div class="brand"><span class="ring" aria-hidden="true"></span>KBC LOOP</div>
+<svg viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">From expenditure pattern to Kate recommendation</title>
+  <desc id="desc">A year of spending is drawn as a line. Three transactions stand out: a high energy bill, a washing machine repair and a 179 euro phone repair. Lines pull these out into three insights, which flow into one Kate recommendation: borrow a phone with free repairs for 29 euro a month.</desc>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="0%" r="120%">
+      <stop offset="0" stop-color="#14407F"/><stop offset=".45" stop-color="#0B2A5B"/><stop offset="1" stop-color="#061633"/>
+    </radialGradient>
+    <linearGradient id="area" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4AABEE" stop-opacity=".35"/><stop offset="1" stop-color="#4AABEE" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="link" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4AABEE"/><stop offset="1" stop-color="#9AD4FF"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000000" flood-opacity=".35"/>
+    </filter>
+  </defs>
 
-    <div class="flow">
-      <section class="box">
-        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>
-        <span class="label">Expenditure pattern</span>
-      </section>
+  <rect width="1600" height="900" fill="url(#bg)"/>
 
-      <span class="op" aria-hidden="true">+</span>
+  <!-- Brand -->
+  <circle cx="102" cy="82" r="13" fill="none" stroke="#4AABEE" stroke-width="5"/>
+  <text x="128" y="90" class="t-brand">KBC LOOP</text>
 
-      <section class="box">
-        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20.5 20.5 16 16"/><path d="M8.5 11h5M11 8.5v5"/></svg></span>
-        <span class="label">Data insight</span>
-      </section>
+  <!-- Column headings -->
+  <text x="90" y="190" class="t-step">1 · EXPENDITURE PATTERN</text>
+  <text x="760" y="190" class="t-step">2 · DATA INSIGHT</text>
+  <text x="1190" y="190" class="t-step">3 · KATE RECOMMENDATION</text>
 
-      <span class="op" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+  <!-- Chart grid -->
+  <g stroke="#FFFFFF" stroke-opacity=".08" stroke-width="1">
+    <line x1="110" y1="250" x2="640" y2="250"/><line x1="110" y1="400" x2="640" y2="400"/>
+    <line x1="110" y1="550" x2="640" y2="550"/><line x1="110" y1="700" x2="640" y2="700"/>
+  </g>
+  <g class="t-axis">
+    <text x="130" y="730" text-anchor="middle">Nov</text><text x="261" y="730" text-anchor="middle">Feb</text>
+    <text x="392" y="730" text-anchor="middle">May</text><text x="523" y="730" text-anchor="middle">Aug</text>
+    <text x="610" y="730" text-anchor="middle">Oct</text>
+  </g>
 
-      <section class="box kate">
-        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8.5 10.5h7"/></svg></span>
-        <span class="label">Kate recommendation</span>
-      </section>
-    </div>
+  <!-- Spending line (12 months) -->
+  <path class="fade" style="animation-delay:.9s" fill="url(#area)"
+        d="M130 576 L174 610 L217 531 L261 565 L304 503 L348 543 L392 469 L435 340 L479 514 L523 385 L566 537 L610 408 L610 700 L130 700 Z"/>
+  <path class="draw" pathLength="1" fill="none" stroke="#4AABEE" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" filter="url(#glow)"
+        d="M130 576 L174 610 L217 531 L261 565 L304 503 L348 543 L392 469 L435 340 L479 514 L523 385 L566 537 L610 408"/>
+  <g fill="#9AD4FF" class="fade" style="animation-delay:1.2s">
+    <circle cx="130" cy="576" r="4"/><circle cx="174" cy="610" r="4"/><circle cx="217" cy="531" r="4"/><circle cx="261" cy="565" r="4"/>
+    <circle cx="304" cy="503" r="4"/><circle cx="348" cy="543" r="4"/><circle cx="392" cy="469" r="4"/><circle cx="479" cy="514" r="4"/>
+    <circle cx="566" cy="537" r="4"/>
+  </g>
 
-    <p class="note">With consent · anonymised groups · always explained</p>
-  </main>
+  <!-- Key transactions -->
+  <g class="pop" style="animation-delay:1.6s">
+    <rect x="268" y="323" width="130" height="34" rx="17" fill="#FFFFFF" fill-opacity=".1" stroke="#FFFFFF" stroke-opacity=".25"/>
+    <text x="333" y="346" text-anchor="middle" class="t-chip">€ 248 energy</text>
+    <circle cx="435" cy="340" r="9" fill="#F0A15A" stroke="#061633" stroke-width="3"/>
+  </g>
+  <g class="pop" style="animation-delay:1.75s">
+    <rect x="448" y="336" width="150" height="34" rx="17" fill="#FFFFFF" fill-opacity=".1" stroke="#FFFFFF" stroke-opacity=".25"/>
+    <text x="523" y="359" text-anchor="middle" class="t-chip">€ 135 washer fix</text>
+    <circle cx="523" cy="385" r="9" fill="#F0A15A" stroke="#061633" stroke-width="3"/>
+  </g>
+  <g class="pop" style="animation-delay:1.9s">
+    <rect x="634" y="358" width="150" height="34" rx="17" fill="#4AABEE" fill-opacity=".25" stroke="#4AABEE"/>
+    <text x="709" y="381" text-anchor="middle" class="t-chip">€ 179 phone fix</text>
+    <circle class="pulse" cx="610" cy="408" r="9" fill="#4AABEE" style="animation-delay:2.4s"/>
+    <circle cx="610" cy="408" r="10" fill="#FFFFFF" stroke="#4AABEE" stroke-width="4"/>
+  </g>
+
+  <!-- Lines that pull the insights out of the pattern -->
+  <g fill="none" stroke-linecap="round">
+    <path class="draw" pathLength="1" style="animation-delay:2.2s" stroke="#4AABEE" stroke-opacity=".45" stroke-width="2.5" d="M435 340 C 520 240 660 300 760 300"/>
+    <path class="draw" pathLength="1" style="animation-delay:2.35s" stroke="#4AABEE" stroke-opacity=".45" stroke-width="2.5" d="M523 385 C 650 385 650 450 760 450"/>
+    <path class="draw" pathLength="1" style="animation-delay:2.5s" stroke="url(#link)" stroke-width="4" filter="url(#glow)" d="M610 408 C 700 408 660 600 760 600"/>
+    <path class="flow on" pathLength="1" style="animation-delay:0s, 3.4s" stroke="#FFFFFF" stroke-width="4" d="M610 408 C 700 408 660 600 760 600"/>
+  </g>
+
+  <!-- Insights -->
+  <g class="fade" style="animation-delay:2.7s">
+    <rect x="760" y="262" width="340" height="76" rx="20" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".18"/>
+    <circle cx="792" cy="300" r="7" fill="#F0A15A"/>
+    <text x="812" y="294" class="t-node">Energy bill +18%</text><text x="812" y="320" class="t-node-sub">vs. same month last year</text>
+  </g>
+  <g class="fade" style="animation-delay:2.85s">
+    <rect x="760" y="412" width="340" height="76" rx="20" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".18"/>
+    <circle cx="792" cy="450" r="7" fill="#F0A15A"/>
+    <text x="812" y="444" class="t-node">2 washer repairs this year</text><text x="812" y="470" class="t-node-sub">machine is 6 years old</text>
+  </g>
+  <g class="fade" style="animation-delay:3s">
+    <rect x="760" y="562" width="340" height="76" rx="20" fill="#4AABEE" fill-opacity=".16" stroke="#4AABEE" stroke-width="2"/>
+    <circle cx="792" cy="600" r="7" fill="#4AABEE"/>
+    <text x="812" y="594" class="t-node">Phone repaired at 34 months</text><text x="812" y="620" class="t-node-sub">57% of similar customers replace soon</text>
+  </g>
+
+  <!-- Insights flow into Kate -->
+  <g fill="none" stroke-linecap="round">
+    <path class="draw" pathLength="1" style="animation-delay:3.3s" stroke="#4AABEE" stroke-opacity=".35" stroke-width="2" d="M1100 300 C 1150 300 1140 470 1190 470"/>
+    <path class="draw" pathLength="1" style="animation-delay:3.4s" stroke="#4AABEE" stroke-opacity=".35" stroke-width="2" d="M1100 450 C 1150 450 1140 470 1190 470"/>
+    <path class="draw" pathLength="1" style="animation-delay:3.5s" stroke="url(#link)" stroke-width="4" filter="url(#glow)" d="M1100 600 C 1150 600 1140 470 1190 470"/>
+    <path class="flow on" pathLength="1" style="animation-delay:0s, 4.2s" stroke="#FFFFFF" stroke-width="4" d="M1100 600 C 1150 600 1140 470 1190 470"/>
+  </g>
+
+  <!-- Kate recommendation -->
+  <g class="pop" style="animation-delay:3.8s">
+    <rect x="1190" y="300" width="330" height="340" rx="28" fill="#FFFFFF" filter="url(#shadow)"/>
+    <circle cx="1236" cy="348" r="22" fill="#0A64B8"/>
+    <text x="1236" y="356" text-anchor="middle" class="t-btn" style="font-size:20px">K</text>
+    <text x="1272" y="342" class="t-kate">Kate</text>
+    <text x="1272" y="364" class="t-kate-body" style="font-size:14px;fill:#5A6B82">Based on your transactions</text>
+    <text x="1218" y="418" class="t-kate-body">Your phone was just repaired.</text>
+    <text x="1218" y="446" class="t-kate-body">Borrow one with free repairs</text>
+    <text x="1218" y="474" class="t-kate-body">and insurance via KBC.</text>
+    <rect x="1218" y="498" width="140" height="38" rx="19" fill="#EAF2FB"/>
+    <text x="1288" y="523" text-anchor="middle" class="t-kate" style="font-size:17px;fill:#0A64B8">€ 29 / month</text>
+    <rect x="1218" y="560" width="274" height="48" rx="24" fill="#0A64B8"/>
+    <text x="1355" y="590" text-anchor="middle" class="t-btn">View offer</text>
+  </g>
+
+  <text x="800" y="820" text-anchor="middle" class="t-note fade" style="animation-delay:4.2s">With consent · anonymised groups · always explained</text>
+</svg>
 </body>
 </html>
