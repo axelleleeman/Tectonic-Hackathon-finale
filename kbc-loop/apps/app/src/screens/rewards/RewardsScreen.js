@@ -8,6 +8,7 @@ import { dateText } from '../item/format.js'
 import { Icon } from '../../ui/Icon.js'
 import { Press } from '../../ui/Press.js'
 import { T } from '../../ui/T.js'
+import { EcoSurface } from '../../ui/EcoSurface.js'
 import { cardShadow, colors } from '../../theme.js'
 
 const ICONS = { 'fee-discount': 'piggy', 'plant-tree': 'heart', 'priority-repair': 'gear', 'free-upgrade': 'up' }
@@ -78,8 +79,10 @@ export function RewardsPanel({ state, customer, coins = 0, actions, style }) {
       <View style={styles.card}>
         {rewards.map((r, i) => {
           const short = r.cost > coins
+          const eco = r.id === 'plant-tree'
+          const Row = eco ? EcoSurface : View
           return (
-            <View key={r.id} style={[styles.row, i > 0 && styles.rowLine]}>
+            <Row key={r.id} {...(eco ? { bordered: false } : {})} style={[styles.row, i > 0 && styles.rowLine]}>
               <Badge reward={r} />
               <View style={styles.text}>
                 <T style={styles.title}>{r.title}</T>
@@ -87,7 +90,7 @@ export function RewardsPanel({ state, customer, coins = 0, actions, style }) {
               </View>
               <SmallButton label="Redeem" disabled={short} onPress={() => setStep({ reward: r })}
                 a11y={`Redeem ${r.title} for ${r.cost} Kate Coins`} />
-            </View>
+            </Row>
           )
         })}
       </View>

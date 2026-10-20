@@ -8,18 +8,20 @@ import { CostSnapshot } from './CostSnapshot.js'
 import { ShareImpact } from '../share/ShareImpact.js'
 import { Press } from '../../ui/Press.js'
 import { cardShadow, colors } from '../../theme.js'
+import { EcoSurface } from '../../ui/EcoSurface.js'
 
 const ECO = '#0f6e4a'
 
-function Big({ label, value, unit, note, color }) {
+function Big({ label, value, unit, note, color, eco }) {
+  const Box = eco ? EcoSurface : View
   return (
-    <View style={styles.big} accessible accessibilityLabel={`${label}: ${value}${unit ? ` ${unit}` : ''}. ${note}`}>
+    <Box style={styles.big} accessible accessibilityLabel={`${label}: ${value}${unit ? ` ${unit}` : ''}. ${note}`}>
       <T style={styles.label}>{label}</T>
       <T style={[styles.bigValue, { color }]} numberOfLines={1} adjustsFontSizeToFit>
         {value}{unit ? <T style={[styles.unit, { color }]}> {unit}</T> : null}
       </T>
       <T style={styles.note}>{note}</T>
-    </View>
+    </Box>
   )
 }
 
@@ -37,7 +39,7 @@ export function LoopImpact({ items, coins, actions, onOpenRewards }) {
   const openRewards = onOpenRewards ?? (() => actions.navigate('rewards'))
   return (
     <View style={styles.wrap}>
-      <Big label="CO₂ saved" value={num(t.co2Kg)} unit="kg" color={ECO} note={`≈ ${num(t.carKm)} km less by car`} />
+      <Big label="CO₂ saved" value={num(t.co2Kg)} unit="kg" color={ECO} eco note={`≈ ${num(t.carKm)} km less by car`} />
       <Press onPress={openRewards} label={`Kate Coins: ${num(coins)}. Open rewards`}>
         <Big label="Kate Coins" value={num(coins)} color={colors.kmBlue} note="Earned with every repair and return · Rewards ›" />
       </Press>

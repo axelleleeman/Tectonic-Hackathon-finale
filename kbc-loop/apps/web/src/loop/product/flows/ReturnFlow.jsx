@@ -66,7 +66,7 @@ export function ReturnFlow({ row, actions, onClose, onOpenCatalog }) {
           <div><dt>Monthly fee</dt><dd>Stops after pickup</dd></div>
           <div><dt>Reward</dt><dd className="lp-eco">+{COINS.return} Kate Coins</dd></div>
         </dl>
-        <p className="pp-second"><LoopIcon name="leaf" size={18} />Second life · {num(product.co2Kg)} kg CO₂ saved</p>
+        <p className="pp-second lp-eco-surface"><LoopIcon name="leaf" size={18} />Second life · {num(product.co2Kg)} kg CO₂ saved</p>
       </>
     )
     footer = <>{back('pickup')}<button type="button" className="lp-btn lp-primary" onClick={confirm} disabled={busy} data-autofocus>{busy ? 'Confirming…' : 'Confirm return'}</button></>

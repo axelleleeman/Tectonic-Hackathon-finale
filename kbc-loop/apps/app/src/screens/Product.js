@@ -13,6 +13,7 @@ import { ServiceChips } from '../ui/ServiceChips.js'
 import { LinkButton, PrimaryButton } from '../ui/Button.js'
 import { Press } from '../ui/Press.js'
 import { T } from '../ui/T.js'
+import { EcoSurface } from '../ui/EcoSurface.js'
 import { CostCompare } from './CostCompare.js'
 import { ContractSummary } from './ContractSummary.js'
 import { SIGN_DELAY_MS, contractTerms, rememberContract, secondLifeMonthly } from './borrowContract.js'
@@ -102,10 +103,11 @@ export function Product({ customer, productId, signal, actions }) {
         {[
           ['Term', `${p.termMonths} months`],
           ['Repairs', profile ? `Within ${profile.repairSlaHours} h` : 'Included'],
-          ['CO₂ avoided', `± ${num(p.co2Kg)} kg`],
-        ].map(([label, value]) => (
-          <View key={label} style={styles.fact}><T style={styles.factLabel}>{label}</T><T style={styles.factValue}>{value}</T></View>
-        ))}
+          ['CO₂ avoided', `± ${num(p.co2Kg)} kg`, true],
+        ].map(([label, value, eco]) => {
+          const Box = eco ? EcoSurface : View
+          return <Box key={label} style={[styles.fact, eco && styles.ecoBase]}><T style={styles.factLabel}>{label}</T><T style={styles.factValue}>{value}</T></Box>
+        })}
       </View>
       {refurbMonthly ? (
         <View style={styles.variants} role="radiogroup">
@@ -147,9 +149,9 @@ export function Product({ customer, productId, signal, actions }) {
       ) : null}
 
       <CostCompare product={p} />
-      <View style={boxes.saving}>
+      <EcoSurface style={[boxes.saving, styles.ecoBase]}>
         <T style={boxes.savingText}>♻ ± <T style={[boxes.savingText, type.bold]}>{num(p.co2Kg)} kg CO₂</T> avoided (≈ {num(carKmEquivalent(p.co2Kg))} km by car) because the product is repaired and reused.</T>
-      </View>
+      </EcoSurface>
 
       <View style={boxes.kbcBox}>
         <T style={boxes.kbcBoxTitle}>Arranged behind the scenes by KBC</T>
@@ -186,6 +188,7 @@ const styles = StyleSheet.create({
   partnerName: { fontSize: 15, fontWeight: '700', color: colors.kmNavy },
   partnerLink: { fontSize: 13, fontWeight: '600', color: colors.kmBlue },
   facts: { flexDirection: 'row', gap: 8, marginTop: 12 },
+  ecoBase: { backgroundColor: '#fff' },
   fact: { flex: 1, backgroundColor: colors.kmSky, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 10 },
   factLabel: { fontSize: 11.5, color: colors.kmSub },
   factValue: { fontSize: 13.5, fontWeight: '700', color: colors.kmNavy, marginTop: 2 },

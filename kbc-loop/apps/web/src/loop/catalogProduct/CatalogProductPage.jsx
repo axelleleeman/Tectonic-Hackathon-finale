@@ -62,14 +62,14 @@ export function CatalogProductPage({ productId, customerType, rows, onBack, onAd
           )}
           <p className="cp-price lp-num"><b>{money(product.monthly)}</b> / month <span>· {termLabel(product.termMonths)} term</span></p>
           {refurb && (
-            <p className="cp-refurb"><LoopIcon name="leaf" size={14} />Refurbished unit available for {money(refurb)} / month ({Math.round(SECOND_LIFE_DISCOUNT * 100)}% less). You choose in the next step.</p>
+            <p className="cp-refurb lp-eco-surface"><LoopIcon name="leaf" size={14} />Refurbished unit available for {money(refurb)} / month ({Math.round(SECOND_LIFE_DISCOUNT * 100)}% less). You choose in the next step.</p>
           )}
           <div className="cp-actions">
             <button type="button" className="lp-btn lp-primary" onClick={() => onAdd(product.id)}><LoopIcon name="plus" size={16} />Borrow</button>
             <a href={`#loop/partner/${partner.id}`} className="lp-btn" onClick={goPartner}>About {partner.short}</a>
           </div>
           <ul className="cp-facts">
-            <li><LoopIcon name="leaf" size={16} /><span><b>{co2Label(product.co2Kg)} CO₂</b> avoided over the term</span></li>
+            <li className="cp-fact-eco lp-eco-surface"><LoopIcon name="leaf" size={16} /><span><b>{co2Label(product.co2Kg)} CO₂</b> avoided over the term</span></li>
             <li><LoopIcon name="wrench" size={16} /><span><b>{partner.profile.repairSlaHours} h</b> repair response*</span></li>
             {product.connected && <li><LoopIcon name="bulb" size={16} /><span><b>Connected:</b> reports wear itself</span></li>}
             {product.payPerUse && <li><LoopIcon name="arrow" size={16} /><span><b>Pay per use</b> option</span></li>}

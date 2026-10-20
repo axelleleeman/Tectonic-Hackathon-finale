@@ -22,7 +22,7 @@ function Statement({ id, text, panel = false }) {
 const VALUES = [
   { icon: 'wrench', title: 'Repairs included', sub: 'Free, within two days' },
   { icon: 'up', title: 'Upgrade anytime', sub: 'Switch when you need' },
-  { icon: 'loop', title: 'Every product gets a second life', sub: 'Refurbished and reused' },
+  { icon: 'loop', title: 'Every product gets a second life', sub: 'Refurbished and reused', eco: true },
 ]
 
 function Values() {
@@ -31,7 +31,7 @@ function Values() {
     <section ref={ref} className="lp-values" aria-label="Always included">
       <div className="lp-wrap lp-values-grid">
         {VALUES.map((v, i) => (
-          <div key={v.title} className="lp-rv lp-value" style={{ '--i': i * 2 }}>
+          <div key={v.title} className={`lp-rv lp-value ${v.eco ? 'lp-eco-surface' : ''}`} style={{ '--i': i * 2 }}>
             <span className="lp-value-ic" aria-hidden="true"><LoopIcon name={v.icon} size={22} /></span>
             <h3>{v.title}</h3>
             <p>{v.sub}</p>

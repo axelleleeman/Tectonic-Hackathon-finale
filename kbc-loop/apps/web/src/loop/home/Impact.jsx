@@ -12,14 +12,15 @@ function Count({ n, format, run }) {
 
 /** One of the two hero figures: a very large number, a label and one quiet line. */
 function Hero({ label, n, unit, note, tone, run, i, onOpen, openLabel }) {
+  const eco = tone === 'eco'
   const open = onOpen ? {
     role: 'button', tabIndex: 0, 'aria-label': `${label}: ${num(n)}. ${openLabel}`, onClick: onOpen,
     onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen() } },
   } : {}
   return (
-    <div className={`lp-imp-hero lp-rv ${tone ? `lp-imp-${tone}` : ''} ${onOpen ? 'lp-imp-hero-btn' : ''}`} style={{ '--i': i }} {...open}>
+    <div className={`lp-imp-hero lp-rv ${tone ? `lp-imp-${tone}` : ''} ${eco ? 'lp-eco-surface' : ''} ${onOpen ? 'lp-imp-hero-btn' : ''}`} style={{ '--i': i }} {...open}>
       <span className="lp-imp-label">{label}</span>
-      <b className="lp-imp-num lp-num">
+      <b className={`lp-imp-num lp-num ${eco ? 'lp-eco-text' : ''}`}>
         <Count n={n} format={num} run={run} />{unit && <span className="lp-imp-unit">{unit}</span>}
       </b>
       <p className="lp-imp-note">{note}</p>

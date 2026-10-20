@@ -16,7 +16,7 @@ export function CatalogCard({ product, partnerName, owned, onAdd, onOpen }) {
       <div className="lp-min0 lp-item-text">
         <h4><a href={`#loop/catalog/product/${product.id}`} className="lp-cardlink" onClick={(e) => { e.preventDefault(); onOpen(product.id) }}>{product.name}</a></h4>
         <span className="lp-sub">{partnerName}{owned ? ' · In your home' : ''}</span>
-        {refurb && <span className="lp-refurb" title="A refurbished unit is also available">Refurbished · {euro(refurb, 2)} / mo</span>}
+        {refurb && <span className="lp-refurb lp-eco-surface" title="A refurbished unit is also available">Refurbished · {euro(refurb, 2)} / mo</span>}
       </div>
       <div className="lp-item-end">
         <span className="lp-price lp-num"><b>{euro(product.monthly)}</b><small> / mo</small></span>

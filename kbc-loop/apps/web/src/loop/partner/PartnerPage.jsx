@@ -37,8 +37,8 @@ export function PartnerPage({ partnerId, customerType, state, rows, onBack, onAd
     ['Service area', pr.serviceArea],
     ['Repair response', `${pr.repairSlaHours} h`],
     ['Technicians', pr.technicians],
-    ['Units refurbished', `${pr.refurbishRate}%`],
-    ['CO₂ avoided per unit', co2Label(pr.co2PerUnitKg)],
+    ['Units refurbished', `${pr.refurbishRate}%`, true],
+    ['CO₂ avoided per unit', co2Label(pr.co2PerUnitKg), true],
   ]
 
   return (
@@ -60,7 +60,7 @@ export function PartnerPage({ partnerId, customerType, state, rows, onBack, onAd
         <section className="lp-card cp-panel" aria-labelledby="pa-facts">
           <h2 className="lp-h2" id="pa-facts">Key facts</h2>
           <dl className="pa-facts">
-            {facts.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+            {facts.map(([k, v, eco]) => <div key={k} className={eco ? 'pa-fact-eco lp-eco-surface' : undefined}><dt>{k}</dt><dd>{v}</dd></div>)}
             <div><dt>Products for you</dt><dd>{list.length}</dd></div>
           </dl>
           <p className="pa-live" aria-live="polite">

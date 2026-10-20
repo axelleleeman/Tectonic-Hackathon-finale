@@ -9,6 +9,7 @@ import { ProductImage } from '../ui/ProductImage.js'
 import { ServiceChips } from '../ui/ServiceChips.js'
 import { Press } from '../ui/Press.js'
 import { T } from '../ui/T.js'
+import { EcoSurface } from '../ui/EcoSurface.js'
 import { boxes, cardShadow, colors } from '../theme.js'
 import { secondLifeMonthly } from './borrowContract.js'
 import { HowBorrowingWorks, PartnerRail, RailTitle, partnersFor } from './partner/catalogueParts.js'
@@ -69,7 +70,7 @@ export function Category({ customer, categoryId, items, actions }) {
                 <ProductImage product={p} style={styles.thumb} />
                 <View style={styles.flex}>
                   <T style={styles.prodName} numberOfLines={2}>{p.name}</T>
-                  {secondLifeMonthly(p) ? <T style={styles.refurb}>Refurbished · {euro(secondLifeMonthly(p), 2)}/month</T> : null}
+                  {secondLifeMonthly(p) ? <EcoSurface style={styles.refurb}><T style={styles.refurbText}>Refurbished · {euro(secondLifeMonthly(p), 2)}/month</T></EcoSurface> : null}
                 </View>
                 <T style={inUse(p.id) ? styles.inUse : styles.price}>{inUse(p.id) ? 'In use' : `${euro(p.monthly)}/month`}</T>
               </Press>
@@ -107,7 +108,8 @@ const styles = StyleSheet.create({
   thumb: { width: 56, height: 42, borderRadius: 8 },
   prodName: { fontSize: 14.5, fontWeight: '600', color: colors.ink },
   price: { fontSize: 14, fontWeight: '600', color: colors.kmNavy },
-  refurb: { alignSelf: 'flex-start', marginTop: 4, paddingVertical: 2, paddingHorizontal: 8, borderRadius: 99, backgroundColor: colors.savingBg, color: colors.savingInk, fontSize: 11.5, fontWeight: '700', overflow: 'hidden' },
+  refurb: { alignSelf: 'flex-start', marginTop: 4, paddingVertical: 2, paddingHorizontal: 8, borderRadius: 99 },
+  refurbText: { color: colors.savingInk, fontSize: 11.5, fontWeight: '700' },
   inUse: { fontSize: 13, fontWeight: '700', color: colors.newGreen },
   services: { marginTop: 22 },
 })
