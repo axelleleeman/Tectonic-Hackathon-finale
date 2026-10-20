@@ -1,29 +1,29 @@
-// "Je favorieten" en "Je tickets" bovenaan Aanbod: zoals in KBC Mobile, maar niet klikbaar.
-// Generieke iconen i.p.v. logo's van vervoersmaatschappijen.
+// "Your favourites" and "Your tickets" on the Loop tab: as in KBC Mobile, static (the Loop tab dims them).
+// Generic icons instead of transport company logos.
 import { StyleSheet, View } from 'react-native'
 import { Icon } from '../../ui/Icon.js'
 import { T } from '../../ui/T.js'
 import { SectionHead } from '../common.js'
 import { LineIcon } from '../mykbc/icons.js'
-import { MUTED_OPACITY, MutedHeadLink } from '../mykbc/shared.js'
+import { StaticHeadLink } from '../mykbc/shared.js'
 import { cardShadow, colors } from '../../theme.js'
 
 const FAVOURITES = [
-  { id: 'trein', icon: 'train', label: 'Treinticket' },
-  { id: 'bus', icon: 'ticket2', label: 'Bus- en tramticket' },
+  { id: 'train', icon: 'train', label: 'Train ticket' },
+  { id: 'bus', icon: 'ticket2', label: 'Bus and tram ticket' },
 ]
 
 export function FavouritesSection() {
   return (
     <View>
-      <SectionHead title="Je favorieten" right={<View style={styles.muted}><Icon name="more" size={28} /></View>} />
+      <SectionHead title="Your favourites" right={<Icon name="more" size={28} />} />
       <View style={styles.favRow}>
         {FAVOURITES.map((f) => (
-          <View key={f.id} style={styles.fav} aria-label={f.label}>
-            <View style={styles.muted}><LineIcon name={f.icon} size={34} color={colors.kmNavy} /></View>
+          <View key={f.id} style={styles.fav}>
+            <LineIcon name={f.icon} size={34} color={colors.kmNavy} />
           </View>
         ))}
-        <View style={[styles.addFav, styles.muted]}><Icon name="plus" size={16} color="#fff" /></View>
+        <View style={styles.addFav}><Icon name="plus" size={16} color="#fff" /></View>
       </View>
     </View>
   )
@@ -32,17 +32,16 @@ export function FavouritesSection() {
 export function TicketsSection() {
   return (
     <View>
-      <SectionHead title="Je tickets" right={<MutedHeadLink>Naar Kate Wallet</MutedHeadLink>} />
+      <SectionHead title="Your tickets" right={<StaticHeadLink>To Kate Wallet</StaticHeadLink>} />
       <View style={styles.ticket}>
-        <View style={[styles.ticketIcon, styles.muted]}><LineIcon name="ticket2" size={22} color={colors.kmBlue} /></View>
-        <T style={[styles.ticketText, styles.muted]}>Geen actieve tickets</T>
+        <View style={styles.ticketIcon}><LineIcon name="ticket2" size={22} color={colors.kmBlue} /></View>
+        <T style={styles.ticketText}>No active tickets</T>
       </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  muted: { opacity: MUTED_OPACITY },
   favRow: { flexDirection: 'row', alignItems: 'center', gap: 18 },
   fav: { width: 56, height: 56, borderRadius: 10, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', ...cardShadow },
   addFav: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.kmGreen, alignItems: 'center', justifyContent: 'center', marginLeft: 22 },

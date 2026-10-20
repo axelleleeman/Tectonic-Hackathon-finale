@@ -1,18 +1,17 @@
-// Promokaarten van KBC Mobile: "Kate stelt voor…", Kate Coins-banner, Groepsuitgaven en My Trustbox.
-// Allemaal niet klikbaar (geen KBC Loop); illustraties zijn neutrale verlopen met generieke iconen.
-import { useState } from 'react'
+// KBC Mobile promo cards: "Kate suggests…", Kate Coins banner, Group expenses and My Trustbox.
+// None of them is KBC Loop, so Home shows them dimmed; illustrations are neutral gradients with generic icons.
 import { StyleSheet, View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import Svg, { Circle } from 'react-native-svg'
 import { num } from '@kbc-loop/shared/engine/format.js'
 import { T } from '../../ui/T.js'
 import { Glyph } from './icons.js'
-import { CloseX, Dots, Pill, RADIUS, Section, shared } from './parts.js'
+import { Dots, Pill, RADIUS, Section, shared } from './parts.js'
 import { colors } from '../../theme.js'
 
 const RING = 92
 
-/** Ronde illustratie met een blauwe voortgangsring, zoals bij "Kate stelt voor". */
+/** Round illustration with a blue progress ring, as in "Kate suggests". */
 function DreamRing() {
   const r = RING / 2 - 3
   const c = 2 * Math.PI * r
@@ -34,8 +33,8 @@ export function KateSuggests() {
     <View style={[shared.card, styles.suggest]}>
       <View style={styles.suggestBg} />
       <View style={styles.suggestText}>
-        <T style={styles.suggestTitle}>Kate stelt voor: een nieuwe, leuke manier om te sparen voor je dromen.</T>
-        <Pill label="Waar droom jij van?" style={styles.suggestPill} />
+        <T style={styles.suggestTitle}>Kate suggests: a new, fun way to save for your dreams.</T>
+        <Pill label="What do you dream of?" style={styles.suggestPill} />
       </View>
       <DreamRing />
       <View style={styles.suggestDots}><Dots /></View>
@@ -44,28 +43,24 @@ export function KateSuggests() {
 }
 
 export function KateCoinsBanner({ coins }) {
-  const [open, setOpen] = useState(true)
   return (
-    <Section title="Kate Coins" link="Bekijk meer">
-      {open ? (
-        <LinearGradient colors={['#dff1fb', '#b9e2f6', '#8fd0f0']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.banner}>
-          <View style={styles.bannerArt} aria-hidden>
-            <View style={[styles.bubble, styles.bubbleA]}><T style={styles.bubbleK}>K</T></View>
-            <View style={[styles.bubble, styles.bubbleB]}><T style={styles.bubbleK}>K</T></View>
-            <View style={[styles.bubble, styles.bubbleC]}><T style={styles.bubbleK}>K</T></View>
-          </View>
-          <View style={styles.bannerText}>
-            <T style={styles.bannerTitle}>Spaar Kate Coins bij elke aankoop</T>
-            <T style={styles.bannerSub}>Je hebt nu {num(coins, 2)} Kate Coins</T>
-          </View>
-          <CloseX style={styles.bannerX} onPress={() => setOpen(false)} label="Banner verbergen" />
-        </LinearGradient>
-      ) : null}
+    <Section title="Kate Coins" link="See more">
+      <LinearGradient colors={['#dff1fb', '#b9e2f6', '#8fd0f0']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.banner}>
+        <View style={styles.bannerArt} aria-hidden>
+          <View style={[styles.bubble, styles.bubbleA]}><T style={styles.bubbleK}>K</T></View>
+          <View style={[styles.bubble, styles.bubbleB]}><T style={styles.bubbleK}>K</T></View>
+          <View style={[styles.bubble, styles.bubbleC]}><T style={styles.bubbleK}>K</T></View>
+        </View>
+        <View style={styles.bannerText}>
+          <T style={styles.bannerTitle}>Collect Kate Coins with every purchase</T>
+          <T style={styles.bannerSub}>You now have {num(coins)} Kate Coins</T>
+        </View>
+      </LinearGradient>
     </Section>
   )
 }
 
-/** Kaart met tekst links en een neutraal beeldvlak rechts. */
+/** Card with text on the left and a neutral image area on the right. */
 function SplitCard({ children, art, colorsArt }) {
   return (
     <View style={[shared.card, styles.split]}>
@@ -80,11 +75,11 @@ function SplitCard({ children, art, colorsArt }) {
 
 export function GroupExpenses() {
   return (
-    <Section title="Groepsuitgaven verdelen">
+    <Section title="Split group expenses">
       <SplitCard art="people" colorsArt={['#f3c99b', '#c98a6a']}>
-        <T style={styles.splitTitle} numberOfLines={1}>Groepsuitgaven verdelen</T>
-        <T style={styles.splitBody}>Tripje met vrienden? Samen op reis? Bewaar het overzicht over je groepsuitgaven.</T>
-        <Pill filled label="Ontdek hoe het werkt" style={styles.splitPill} />
+        <T style={styles.splitTitle} numberOfLines={1}>Split group expenses</T>
+        <T style={styles.splitBody}>Weekend with friends? Travelling together? Keep track of your shared expenses.</T>
+        <Pill filled label="See how it works" style={styles.splitPill} />
       </SplitCard>
     </Section>
   )
@@ -98,7 +93,7 @@ export function Trustbox() {
           <Glyph name="docs" size={24} color={colors.kmBlue} strokeWidth={1.8} />
           <T style={styles.trustName}>my trustbox</T>
         </View>
-        <T style={styles.splitBody}>Je documenten en gegevens veilig op 1 plaats.</T>
+        <T style={styles.splitBody}>Your documents and data safely in one place.</T>
       </SplitCard>
     </Section>
   )
@@ -124,7 +119,6 @@ const styles = StyleSheet.create({
   bannerText: { flex: 1, paddingRight: 34 },
   bannerTitle: { fontSize: 16, fontWeight: '800', color: colors.kmNavy, lineHeight: 20 },
   bannerSub: { fontSize: 13, fontWeight: '600', color: colors.kmNavy, marginTop: 4 },
-  bannerX: { position: 'absolute', top: 8, right: 8, backgroundColor: '#fff' },
 
   split: { flexDirection: 'row', overflow: 'hidden', minHeight: 104 },
   splitText: { flex: 1.5, padding: 16, justifyContent: 'center' },

@@ -1,5 +1,5 @@
-// "Voor jou": Kate-tips van KBC Loop (signalen, met Axelle's acties) bovenaan, daarna de gewone KBC Mobile-kaarten.
-import { useState } from 'react'
+// "For you": Kate tips from KBC Loop (signals, with their actions) and the MyLoop discovery card, all vivid.
+// The generic KBC Mobile cards are exported separately (GenericTips) so Home can dim them with the next sections.
 import { StyleSheet, View } from 'react-native'
 import { PREVENTIVE_ISSUE } from '@kbc-loop/shared/data/index.js'
 import { T } from '../../ui/T.js'
@@ -7,12 +7,11 @@ import { Glyph } from './icons.js'
 import { CloseX, KateMark, Section, TextLink, shared } from './parts.js'
 import { colors } from '../../theme.js'
 
-// Algemene KBC Mobile-kaarten: niet klikbaar, wel weg te klikken (enkel op dit toestel, tot herladen).
+// Generic KBC Mobile cards (shown dimmed, not interactive).
 const GENERIC = [
-  { id: 'tips', icon: 'mobile', text: 'Handige tips en tricks voor je bankzaken in KBC Mobile? Lees ze hier.' },
-  { id: 'coins', kate: true, text: 'Met Kate Coins wordt elke aankoop een win: ontdek hier hoe het werkt.' },
+  { id: 'tips', icon: 'mobile', text: 'Handy tips and tricks for your banking in KBC Mobile? Read them here.' },
+  { id: 'coins', kate: true, text: 'With Kate Coins every purchase is a win: find out how it works.' },
 ]
-
 function TipIcon({ name, kate }) {
   if (kate) return <View style={styles.kateIcon}><Glyph name="kate" size={20} color={colors.kmBlue} strokeWidth={2.2} /></View>
   return <Glyph name={name} size={30} color={colors.kmNavy} strokeWidth={1.3} />
@@ -37,34 +36,41 @@ function Tip({ icon, kate, title, text, link, onLink, onClose, closeLabel, isNew
 }
 
 export function ForYou({ signals, consent, actions }) {
-  const [hidden, setHidden] = useState([])
   const openSignal = (s) => (s.itemKey
     ? actions.reportDefect(s.itemKey, PREVENTIVE_ISSUE, true)
     : actions.navigate('product', { productId: s.productId, signalId: s.id, categoryId: null }))
 
   return (
-    <Section compact title="Voor jou" link="Alle communicatie">
+    <Section compact title="For you" link="All communication">
       {signals.map((s) => {
         const device = s.source === 'toestel'
         return (
           <Tip key={s.id} isNew device={device} icon={device ? 'sensor' : 'loop'}
-            title={device ? 'Je lamp laat je weten' : 'Kate tip'} text={s.headline}
-            link={s.itemKey ? 'Plan gratis vervanging' : 'Bekijk voorstel'} onLink={() => openSignal(s)}
-            onClose={device ? null : () => actions.dismissSignal(s.id)} closeLabel="Niet interessant" />
+            title={device ? 'Your lamp is letting you know' : 'Kate tip'} text={s.headline}
+            link={s.itemKey ? 'Schedule a free replacement' : 'View proposal'} onLink={() => openSignal(s)}
+            onClose={device ? null : () => actions.dismissSignal(s.id)} closeLabel="Not interested" />
         )
       })}
-      {GENERIC.filter((g) => !hidden.includes(g.id)).map((g) => (
-        <Tip key={g.id} icon={g.icon} kate={g.kate} text={g.text}
-          onClose={() => setHidden((h) => [...h, g.id])} closeLabel="Kaart verbergen" />
-      ))}
-      <Tip stacked icon="doc" title="Kate laat je weten"
-        text={consent ? 'Nieuw in KBC Mobile: MyLoop. Leen in plaats van te kopen, herstel inbegrepen.' : 'Persoonlijke tips staan uit. Kate gebruikt je verrichtingen niet voor voorstellen.'}
-        link={consent ? 'Ontdek MyLoop' : null} onLink={() => actions.navigate('shop')} />
+      <Tip stacked icon="doc" title="Kate lets you know"
+        text={consent
+          ? 'New in KBC Mobile: MyLoop. Borrow instead of buying, repairs included.'
+          : 'Personal tips are off. Kate does not use your transactions for proposals. You can still discover MyLoop.'}
+        link="Discover MyLoop" onLink={() => actions.navigate('shop')} />
     </Section>
   )
 }
 
+/** The generic KBC Mobile cards that follow the KBC Loop tips (static; Home wraps them in <Dimmed>). */
+export function GenericTips() {
+  return (
+    <View style={styles.generic}>
+      {GENERIC.map((g) => <Tip key={g.id} icon={g.icon} kate={g.kate} text={g.text} />)}
+    </View>
+  )
+}
+
 const styles = StyleSheet.create({
+  generic: { marginTop: 10 },
   tipWrap: { marginBottom: 14 },
   tip: { flexDirection: 'row', gap: 14, paddingVertical: 14, paddingLeft: 14, paddingRight: 16, borderRadius: 8 },
   device: { borderWidth: 1.5, borderColor: '#ffcf4d' },

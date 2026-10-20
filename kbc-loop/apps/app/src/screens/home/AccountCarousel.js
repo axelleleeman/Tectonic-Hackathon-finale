@@ -1,5 +1,6 @@
-// Horizontale rij rekeningkaarten: Kate Coins-tab links, zichtrekening (actief), spaarrekening
-// en de KBC Loop-kaart van Axelle (klikbaar naar Mijn KBC). Alle bedragen komen van de fictieve klant.
+// Horizontal row of account cards: Kate Coins tab on the left, current account, savings account and the
+// KBC Loop card. The bank accounts are dimmed; Kate Coins (earned with KBC Loop) and the KBC Loop card are vivid
+// and open KBC Loop in My KBC. All amounts come from the fictional customer.
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import Svg, { Polygon } from 'react-native-svg'
@@ -8,6 +9,8 @@ import { T } from '../../ui/T.js'
 import { Press } from '../../ui/Press.js'
 import { Amount } from '../../ui/Amount.js'
 import { BadgeNew } from '../common.js'
+import { Dimmed } from '../../ui/Dimmed.js'
+import { num } from '@kbc-loop/shared/engine/format.js'
 import { Glyph } from './icons.js'
 import { GUTTER, shared } from './parts.js'
 import { colors } from '../../theme.js'
@@ -23,7 +26,7 @@ const GRADIENTS = {
   loop: ['#2fd3b8', '#0b8fc4'],
 }
 
-/** Blauw vlak met schuine facetten, zoals de kaartbovenkant in KBC Mobile. */
+/** Blue surface with diagonal facets, like the top of the cards in KBC Mobile. */
 function Facets({ kind }) {
   return (
     <LinearGradient colors={GRADIENTS[kind]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={StyleSheet.absoluteFill}>
@@ -55,15 +58,16 @@ function CardBody({ kind, icon, label, value, unit, selected, isNew, editable })
   )
 }
 
-function CoinsTab({ coins }) {
-  const [int, dec] = Math.abs(coins).toFixed(2).split('.')
+function CoinsTab({ coins, onPress }) {
   return (
-    <LinearGradient colors={['#0e4f8c', '#0b3466']} style={styles.tab} accessibilityLabel={`${int},${dec} Kate Coins`}>
-      <View style={styles.tabTextWrap}>
-        <T style={styles.tabText} numberOfLines={1}>{int},{dec} KTC</T>
-      </View>
-      <View style={styles.tabCoin}><T style={styles.tabCoinK}>K</T></View>
-    </LinearGradient>
+    <Press onPress={onPress} label={`${num(coins)} Kate Coins, earned with KBC Loop. Open KBC Loop in My KBC`}>
+      <LinearGradient colors={['#0e4f8c', '#0b3466']} style={styles.tab}>
+        <View style={styles.tabTextWrap}>
+          <T style={styles.tabText} numberOfLines={1}>{num(coins)} KTC</T>
+        </View>
+        <View style={styles.tabCoin}><T style={styles.tabCoinK}>K</T></View>
+      </LinearGradient>
+    </Press>
   )
 }
 
@@ -73,17 +77,22 @@ export function AccountCarousel({ customer, items, coins, onLoop }) {
   const name = customer.fullName.toUpperCase()
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} style={shared.bleed} contentContainerStyle={styles.row}>
-      <CoinsTab coins={coins} />
-      <View style={[styles.card, styles.cardSelected]} accessibilityLabel={`${customer.accountName} ${name}`}>
-        <CardBody kind="blue" icon="purse" label={name} value={customer.balance} selected editable />
-      </View>
-      {savings ? (
-        <View style={styles.card} accessibilityLabel={`${savings.name} ${name}`}>
-          <CardBody kind="light" icon="piggy" label={name} value={savings.value} editable />
+      <CoinsTab coins={coins} onPress={onLoop} />
+      <Dimmed radius={10}>
+        <View style={[styles.card, styles.cardSelected]}>
+          <CardBody kind="blue" icon="purse" label={name} value={customer.balance} selected editable />
         </View>
+      </Dimmed>
+      {savings ? (
+        <Dimmed radius={10}>
+          <View style={styles.card}>
+            <CardBody kind="light" icon="piggy" label={name} value={savings.value} editable />
+          </View>
+        </Dimmed>
       ) : null}
-      <Press style={styles.card} onPress={onLoop} label="KBC Loop in Mijn KBC">
-        <CardBody kind="loop" icon="loop" label={`KBC LOOP · ${t.active} GELEEND`} value={t.monthly} unit="EUR/m" isNew={t.active === 0} />
+      <Press style={[styles.card, styles.loopCard]} onPress={onLoop}
+        label={`KBC Loop: ${t.active} products borrowed, ${num(t.monthly)} euro per month. Open KBC Loop in My KBC`}>
+        <CardBody kind="loop" icon="loop" label={`KBC LOOP · ${t.active} BORROWED`} value={t.monthly} unit="EUR/m" isNew={t.active === 0} />
       </Press>
     </ScrollView>
   )
@@ -92,6 +101,7 @@ export function AccountCarousel({ customer, items, coins, onLoop }) {
 const styles = StyleSheet.create({
   row: { gap: 12, alignItems: 'flex-start', paddingRight: GUTTER, paddingTop: 6, paddingBottom: 18 },
   card: { width: CARD_W, backgroundColor: '#fff', borderRadius: 10, overflow: 'hidden', boxShadow: '0px 3px 10px rgba(18, 40, 76, 0.10)' },
+  loopCard: { borderWidth: 1.5, borderColor: '#2fd3b8' },
   cardSelected: { boxShadow: '0px 6px 16px rgba(18, 40, 76, 0.16)' },
   top: { height: TOP_H, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   pencil: { position: 'absolute', top: 6, right: 6, width: 22, height: 22, borderRadius: 11, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },

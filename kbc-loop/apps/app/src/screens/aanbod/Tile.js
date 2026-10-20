@@ -1,15 +1,16 @@
-// Tegels en tegelrijen van het tabblad Aanbod (KBC-Producten, Thema's, Mobiliteit …).
-// Een tegel met onPress hoort bij KBC Loop en is klikbaar; zonder onPress is ze gedempt.
+// Tiles and tile rows of the Loop tab (KBC products, Themes, Mobility …).
+// A tile with onPress belongs to KBC Loop and is tappable; without onPress it is wrapped in <Dimmed>.
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Press } from '../../ui/Press.js'
 import { T } from '../../ui/T.js'
 import { BadgeNew, HeadLink, SectionHead } from '../common.js'
 import { LineIcon } from '../mykbc/icons.js'
-import { MUTED_OPACITY, MutedHeadLink } from '../mykbc/shared.js'
+import { StaticHeadLink } from '../mykbc/shared.js'
+import { Dimmed } from '../../ui/Dimmed.js'
 import { cardShadow, colors } from '../../theme.js'
 
-/** Kleurvlakken voor de thema-iconen (neutraal, geen merkbeelden). */
+/** Colour swatches for the theme icons (neutral, no brand imagery). */
 export const SWATCH = {
   loop: ['#2fd3b8', '#0b8fc4'],
   navy: ['#2c6db5', '#123f7a'],
@@ -18,7 +19,7 @@ export const SWATCH = {
   yellow: ['#ffd23f', '#f2b705'],
 }
 
-/** Pictogram van een tegel: lijn-icoon in KBC-blauw, wit icoon op een kleurvlak, of een emoji op een kleurvlak. */
+/** Tile artwork: a line icon in KBC blue, a white icon on a swatch, or an emoji on a swatch. */
 export function TileArt({ icon, emoji, swatch, size = 40 }) {
   if (swatch) {
     return (
@@ -31,21 +32,22 @@ export function TileArt({ icon, emoji, swatch, size = 40 }) {
 }
 
 export function Tile({ label, icon, emoji, swatch, isNew = false, onPress, a11y }) {
-  const muted = !onPress
   const body = (
     <>
-      {isNew ? <BadgeNew style={[styles.badge, muted && styles.muted]} /> : null}
-      <View style={muted && styles.muted}><TileArt icon={icon} emoji={emoji} swatch={swatch} /></View>
-      <T style={[styles.label, muted && styles.muted]} numberOfLines={2}>{label}</T>
+      {isNew ? <BadgeNew style={styles.badge} /> : null}
+      <TileArt icon={icon} emoji={emoji} swatch={swatch} />
+      <T style={styles.label} numberOfLines={2}>{label}</T>
     </>
   )
-  if (muted) return <View style={styles.tile}>{body}</View>
-  return <Press style={styles.tile} onPress={onPress} label={a11y ?? label}>{body}</Press>
+  if (!onPress) return <Dimmed radius={10}><View style={styles.tile}>{body}</View></Dimmed>
+  return <Press style={[styles.tile, styles.loopTile]} onPress={onPress} label={a11y ?? label}>{body}</Press>
 }
 
-/** Sectie met kop en horizontaal scrollende tegels. `onAll` maakt "Alles tonen" klikbaar (alleen KBC Loop). */
+/** Section with a heading and horizontally scrolling tiles. `onAll` makes "Show all" tappable (KBC Loop only). */
 export function TileRow({ title, onAll, showAll = true, children }) {
-  const right = !showAll ? null : onAll ? <HeadLink onPress={onAll}>Alles tonen</HeadLink> : <MutedHeadLink>Alles tonen</MutedHeadLink>
+  const right = !showAll ? null
+    : onAll ? <HeadLink onPress={onAll} label={`${title}: show all KBC Loop products`}>Show all</HeadLink>
+      : <Dimmed><StaticHeadLink>Show all</StaticHeadLink></Dimmed>
   return (
     <View>
       <SectionHead title={title} right={right} />
@@ -57,10 +59,10 @@ export function TileRow({ title, onAll, showAll = true, children }) {
 }
 
 const styles = StyleSheet.create({
-  muted: { opacity: MUTED_OPACITY },
   bleed: { marginHorizontal: -16, flexGrow: 0 },
   row: { gap: 12, paddingHorizontal: 16, paddingTop: 10, paddingBottom: 10 },
   tile: { width: 104, height: 116, backgroundColor: '#fff', borderRadius: 10, alignItems: 'center', justifyContent: 'center', gap: 8, paddingHorizontal: 6, ...cardShadow },
+  loopTile: { borderWidth: 1.5, borderColor: '#9fdcf3' },
   badge: { position: 'absolute', top: -9, alignSelf: 'center', paddingVertical: 3, paddingHorizontal: 9 },
   swatch: { width: 50, height: 50, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
   emoji: { fontSize: 26, lineHeight: 32 },

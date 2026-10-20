@@ -1,45 +1,38 @@
-// Bouwstenen en maten die de secties van de startpagina delen.
-// Regel: enkel KBC Loop is klikbaar. Andere KBC Mobile-knoppen zijn zichtbaar maar gedempt en niet aanraakbaar.
+// Building blocks and sizes shared by the Home sections.
+// Rule: only KBC Loop is interactive. Other KBC Mobile parts are wrapped in <Dimmed> (ui/Dimmed.js),
+// which makes them light grey and non-interactive; the parts below never mute themselves.
 import { StyleSheet, View } from 'react-native'
 import { T } from '../../ui/T.js'
 import { Press } from '../../ui/Press.js'
+import { Dimmed } from '../../ui/Dimmed.js'
 import { Glyph } from './icons.js'
 import { cardShadow, colors } from '../../theme.js'
 
 export const GUTTER = 16
 export const RADIUS = 12
 
-export const tone = {
-  muted: '#86bedd', // gedempte link of knop van een niet-klikbare KBC Mobile-functie
-  mutedLine: '#bcdcee',
-  sub: colors.kmSub,
-  grey: colors.kmGrey,
-  green: '#1f9d55',
-  greenSoft: '#e7f8ea',
-  loop: colors.kmBlue,
-}
-
 export const shared = StyleSheet.create({
   card: { backgroundColor: '#fff', borderRadius: RADIUS, ...cardShadow },
   bleed: { marginHorizontal: -GUTTER, flexGrow: 0 },
 })
 
-/** Sectiekop zoals in KBC Mobile, met optionele link rechts. */
+/** Section heading as in KBC Mobile, with an optional link on the right (dimmed unless it has onLink). */
 export function Section({ title, link, onLink, compact, children }) {
+  const linkEl = link ? <TextLink label={link} onPress={onLink} /> : null
   return (
     <View style={compact ? styles.sectionCompact : styles.section}>
       <View style={styles.head}>
         <T style={styles.title} role="heading">{title}</T>
-        {link ? <TextLink label={link} onPress={onLink} /> : null}
+        {link && !onLink ? <Dimmed>{linkEl}</Dimmed> : linkEl}
       </View>
       {children}
     </View>
   )
 }
 
-/** Tekstlink: blauw en klikbaar voor KBC Loop, anders gedempt en statisch. */
+/** Blue text link. Without onPress it is static text (wrap it in <Dimmed> when it is not KBC Loop). */
 export function TextLink({ label, onPress, style }) {
-  if (!onPress) return <T style={[styles.link, styles.linkMuted, style]}>{label}</T>
+  if (!onPress) return <T style={[styles.link, style]}>{label}</T>
   return (
     <Press onPress={onPress} label={label} hitSlop={8}>
       <T style={[styles.link, style]}>{label}</T>
@@ -47,16 +40,15 @@ export function TextLink({ label, onPress, style }) {
   )
 }
 
-/** Pilknop met rand (of gevuld). Zonder onPress: gedempt en niet aanraakbaar. */
-export function Pill({ label, onPress, filled, color = colors.kmBlue, mutedColor = tone.muted, style }) {
-  const c = onPress ? color : mutedColor
-  const box = [styles.pill, filled ? { backgroundColor: c, borderColor: c } : { borderColor: c }, style]
-  const text = <T style={[styles.pillText, { color: filled ? '#fff' : c }]}>{label}</T>
+/** Outlined (or filled) pill button. Without onPress it is static (wrap it in <Dimmed> when it is not KBC Loop). */
+export function Pill({ label, onPress, filled, color = colors.kmBlue, style }) {
+  const box = [styles.pill, filled ? { backgroundColor: color, borderColor: color } : { borderColor: color }, style]
+  const text = <T style={[styles.pillText, { color: filled ? '#fff' : color }]}>{label}</T>
   if (!onPress) return <View style={box}>{text}</View>
   return <Press style={box} onPress={onPress} label={label}>{text}</Press>
 }
 
-/** "…"-menu rechtsboven op kaarten (niet klikbaar). */
+/** "…" menu in the top-right corner of cards (static). */
 export function Dots({ style, color = colors.kmNavy }) {
   return (
     <View style={[styles.dots, style]} aria-hidden>
@@ -65,7 +57,7 @@ export function Dots({ style, color = colors.kmNavy }) {
   )
 }
 
-/** Klein Kate-teken in een lichtblauw rondje. */
+/** Small Kate mark in a light-blue circle. */
 export function KateMark({ size = 16 }) {
   return (
     <View style={[styles.kate, { width: size, height: size, borderRadius: size / 2 }]} aria-hidden>
@@ -74,8 +66,8 @@ export function KateMark({ size = 16 }) {
   )
 }
 
-/** Klein kruisje om een kaart te sluiten (enkel UI-state). */
-export function CloseX({ onPress, style, label = 'Sluiten' }) {
+/** Small cross to close a card (UI state only). */
+export function CloseX({ onPress, style, label = 'Close' }) {
   return (
     <Press style={[styles.x, style]} onPress={onPress} label={label} hitSlop={10}>
       <Glyph name="close" size={10} color={colors.kmNavy} strokeWidth={2.4} />
@@ -89,7 +81,6 @@ const styles = StyleSheet.create({
   head: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 14 },
   title: { fontSize: 19, fontWeight: '500', color: colors.kmNavy, flexShrink: 1 },
   link: { color: colors.kmBlue, fontWeight: '700', fontSize: 15 },
-  linkMuted: { color: tone.muted },
   pill: { alignSelf: 'flex-start', borderWidth: 1.5, borderRadius: 99, paddingHorizontal: 16, paddingVertical: 4 },
   pillText: { fontSize: 16, fontWeight: '500' },
   dots: { flexDirection: 'row', gap: 3, padding: 4 },

@@ -1,5 +1,6 @@
-// "Zicht op je geldzaken": In & uit van de lopende maand (uit de verrichtingen van de fictieve klant)
-// met een staafgrafiek over zes maanden. Oudere maanden zijn fictieve, plausibele waarden afgeleid van het inkomen.
+// "Your money at a glance": in & out for the current month (from the fictional customer's transactions)
+// with a six-month bar chart. Earlier months are fictional, plausible values derived from the income.
+// Not part of KBC Loop: Home shows it dimmed.
 import { StyleSheet, View } from 'react-native'
 import { T } from '../../ui/T.js'
 import { Amount } from '../../ui/Amount.js'
@@ -7,9 +8,9 @@ import { Glyph } from './icons.js'
 import { Dots, Section, shared } from './parts.js'
 import { colors } from '../../theme.js'
 
-const MONTHS = ['Jan', 'Feb', 'Mrt', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec']
-const MONTHS_LONG = ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December']
-// Verhouding t.o.v. het maandinkomen voor de vijf vorige maanden (fictief, enkel voor de grafiek).
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+// Ratio to the monthly income for the five previous months (fictional, only for the chart).
 const PAST_IN = [1, 1, 1.02, 1.48, 1]
 const PAST_OUT = [0.78, 0.86, 1.1, 1.24, 0.81]
 const CHART_H = 120
@@ -19,7 +20,7 @@ const COLORS = {
   outSoft: '#fbe9ad', outStrong: '#e2b600',
 }
 
-/** Inkomsten en uitgaven per maand; de laatste maand komt rechtstreeks uit de verrichtingen. */
+/** Income and expenses per month; the latest month comes straight from the transactions. */
 export function monthlyInOut(transactions) {
   if (!transactions.length) return []
   const latest = transactions.reduce((m, t) => (t.date > m ? t.date : m), transactions[0].date)
@@ -58,7 +59,7 @@ function Bars({ data }) {
   const h = (v) => Math.max(3, (v / max) * CHART_H)
   return (
     <View>
-      <View style={styles.chart} accessibilityLabel="Inkomsten en uitgaven per maand">
+      <View style={styles.chart} accessibilityLabel="Income and expenses per month">
         {data.map((d) => (
           <View key={d.month} style={styles.pair}>
             <View style={[styles.bar, { height: h(d.income), backgroundColor: d.current ? COLORS.inStrong : COLORS.inSoft }]} />
@@ -79,16 +80,16 @@ export function MoneyOverview({ transactions }) {
   const now = data[data.length - 1]
   if (!now) return null
   return (
-    <Section title="Zicht op je geldzaken" link="Toon alles">
+    <Section title="Your money at a glance" link="Show all">
       <View style={[shared.card, styles.card]}>
         <Dots style={styles.dots} />
         <View style={styles.headRow}>
-          <T style={styles.head}>In & uit</T>
+          <T style={styles.head}>In & out</T>
           <T style={styles.headMonth}>{MONTHS_LONG[now.month]}</T>
         </View>
         <View style={styles.totals}>
-          <Total kind="in" label="Inkomsten" value={now.income} />
-          <Total kind="out" label="Uitgaven" value={now.expense} />
+          <Total kind="in" label="Income" value={now.income} />
+          <Total kind="out" label="Expenses" value={now.expense} />
         </View>
         <Bars data={data} />
       </View>

@@ -1,4 +1,4 @@
-// Een geleend product met zijn levenscyclus (geleverd → nieuw leven) en acties.
+// A borrowed product with its lifecycle (delivered → new life) and its KBC Loop actions.
 import { StyleSheet, View } from 'react-native'
 import { productById, partnerOf } from '@kbc-loop/shared/engine/catalog.js'
 import { euro, formatDate } from '@kbc-loop/shared/engine/format.js'
@@ -8,7 +8,7 @@ import { LinkButton } from '../ui/Button.js'
 import { T } from '../ui/T.js'
 import { cardShadow, colors } from '../theme.js'
 
-const STAGES = ['Geleverd', 'In gebruik', 'Herstel', 'Terugname', 'Nieuw leven']
+const STAGES = ['Delivered', 'In use', 'Repair', 'Return', 'New life']
 
 function stageState(item, n) {
   if (item.returned) return 'on'
@@ -25,10 +25,10 @@ export function LoopItemCard({ item, actions }) {
         <T style={styles.icon}>{p.icon}</T>
         <View style={styles.headText}>
           <T style={styles.name}>{p.name}</T>
-          <T style={styles.small}>{partnerOf(p).name} · sinds {formatDate(item.since, { withYear: !item.since.startsWith('2026') })} · {euro(p.monthly)}/maand</T>
+          <T style={styles.small}>{partnerOf(p).name} · since {formatDate(item.since, { withYear: !item.since.startsWith('2026') })} · {euro(p.monthly)}/month</T>
         </View>
       </View>
-      <View style={styles.lifecycle} aria-label={`Levenscyclus: ${STAGES.filter((_, n) => stageState(item, n)).join(', ')}`}>
+      <View style={styles.lifecycle} aria-label={`Lifecycle: ${STAGES.filter((_, n) => stageState(item, n)).join(', ')}`}>
         {STAGES.map((st, n) => {
           const s = stageState(item, n)
           return (
@@ -41,13 +41,13 @@ export function LoopItemCard({ item, actions }) {
         })}
       </View>
       {item.returned ? (
-        <T style={styles.secondLife}>♻ Gerefurbished door {partnerOf(p).short}: dit product leeft verder bij een nieuwe klant. +{COINS.return} Kate Coins</T>
+        <T style={styles.secondLife}>♻ Refurbished by {partnerOf(p).short}: this product lives on with a new customer. +{COINS.return} Kate Coins</T>
       ) : (
         <View style={styles.actions}>
-          <Press style={styles.report} label={`Meld een defect aan ${p.name}`} onPress={() => actions.navigate('repair', { itemKey: item.key })}>
-            <T style={styles.reportText}>⚠ Meld een defect</T>
+          <Press style={styles.report} label={`Report a defect with ${p.name} and schedule a free repair`} onPress={() => actions.navigate('repair', { itemKey: item.key })}>
+            <T style={styles.reportText}>⚠ Report a defect</T>
           </Press>
-          <LinkButton small onPress={() => actions.returnItem(item.key)}>Inleveren</LinkButton>
+          <LinkButton small onPress={() => actions.returnItem(item.key)} label={`Return ${p.name} and earn ${COINS.return} Kate Coins`}>Return</LinkButton>
         </View>
       )}
     </View>

@@ -1,38 +1,34 @@
-// Bouwstenen voor Mijn KBC (en Aanbod): de "Nieuw"-link en de gedempte stijl
-// voor delen van KBC Mobile die in de demo niet klikbaar zijn. Alleen KBC Loop is interactief.
+// Building blocks for My KBC (and the Loop tab): the "+ New" link, a static head link and a static pill.
+// Parts of KBC Mobile that are not KBC Loop are wrapped in <Dimmed> (ui/Dimmed.js); these blocks never mute themselves.
 import { StyleSheet, View } from 'react-native'
 import { Icon } from '../../ui/Icon.js'
 import { Press } from '../../ui/Press.js'
 import { T } from '../../ui/T.js'
 import { colors } from '../../theme.js'
 
-/** Doorschijnendheid van niet-klikbare KBC Mobile-onderdelen (zichtbaar, maar duidelijk "uit"). */
-export const MUTED_OPACITY = 0.5
-
-/** "+ Nieuw" rechts van een sectiekop. Zonder onPress: gedempt en niet klikbaar. */
+/** "+ New" next to a section heading. Tappable with onPress (KBC Loop), otherwise static. */
 export function NewLink({ onPress, label }) {
   const body = (
     <>
       <View style={styles.plus}><Icon name="plus" size={14} color="#fff" /></View>
-      <T style={styles.newText}>Nieuw</T>
+      <T style={styles.newText}>New</T>
     </>
   )
-  if (!onPress) return <View style={[styles.newLink, styles.muted]} aria-hidden>{body}</View>
-  return <Press style={styles.newLink} onPress={onPress} label={label}>{body}</Press>
+  if (!onPress) return <View style={styles.newLink}>{body}</View>
+  return <Press style={styles.newLink} onPress={onPress} label={label} hitSlop={8}>{body}</Press>
 }
 
-/** Niet-klikbare kop-link ("Alles tonen", "Naar Kate Wallet" …) in KBC Mobile-blauw, gedempt. */
-export function MutedHeadLink({ children }) {
-  return <T style={[styles.headLink, styles.muted]} aria-hidden>{children}</T>
+/** Static head link in KBC Mobile blue ("Show all", "To Kate Wallet" …). */
+export function StaticHeadLink({ children }) {
+  return <T style={styles.headLink}>{children}</T>
 }
 
-/** Niet-klikbare pilknop ("Neem een kijkje", "Aan de slag"). */
-export function MutedPill({ children }) {
-  return <View style={[styles.pill, styles.muted]} aria-hidden><T style={styles.pillText}>{children}</T></View>
+/** Static pill button ("Take a look", "Get started"). */
+export function StaticPill({ children }) {
+  return <View style={styles.pill}><T style={styles.pillText}>{children}</T></View>
 }
 
 const styles = StyleSheet.create({
-  muted: { opacity: MUTED_OPACITY },
   newLink: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   plus: { width: 20, height: 20, borderRadius: 10, backgroundColor: colors.kmGreen, alignItems: 'center', justifyContent: 'center' },
   newText: { fontSize: 15 },

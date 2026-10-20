@@ -1,4 +1,4 @@
-// Knoppen uit de web-versie: primary (volle pil), link (onderlijnd) en pill-btn.
+// Buttons from the web version: primary (filled pill), link (underlined) and pill button.
 import { StyleSheet } from 'react-native'
 import { Press } from './Press.js'
 import { T } from './T.js'
@@ -10,15 +10,15 @@ export function PrimaryButton({ children, onPress }) {
   )
 }
 
-export function LinkButton({ children, onPress, small = false }) {
+export function LinkButton({ children, onPress, small = false, label }) {
   return (
-    <Press onPress={onPress} style={small ? styles.linkSmall : styles.link}><T style={styles.linkText}>{children}</T></Press>
+    <Press onPress={onPress} label={label} style={small ? styles.linkSmall : styles.link}><T style={styles.linkText}>{children}</T></Press>
   )
 }
 
-export function PillButton({ children, onPress }) {
+export function PillButton({ children, onPress, label }) {
   return (
-    <Press onPress={onPress} style={styles.pill}><T style={styles.pillText}>{children}</T></Press>
+    <Press onPress={onPress} label={label} style={styles.pill}><T style={styles.pillText}>{children}</T></Press>
   )
 }
 

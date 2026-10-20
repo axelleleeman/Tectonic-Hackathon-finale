@@ -1,5 +1,5 @@
-// Witte rijkaart zoals in Mijn KBC: icoon links, naam + subtekst, bedrag of pijltje rechts.
-// Met onPress is de kaart klikbaar (KBC Loop); met muted is ze zichtbaar maar uitgeschakeld.
+// White row card as in My KBC: icon on the left, name + subtext, amount or chevron on the right.
+// With onPress the card is tappable (KBC Loop); non-Loop cards are wrapped in <Dimmed> by their section.
 import { StyleSheet, View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { Amount } from '../../ui/Amount.js'
@@ -7,7 +7,6 @@ import { Icon } from '../../ui/Icon.js'
 import { Press } from '../../ui/Press.js'
 import { T } from '../../ui/T.js'
 import { LineIcon } from './icons.js'
-import { MUTED_OPACITY } from './shared.js'
 import { cardShadow, colors } from '../../theme.js'
 
 const OUTLINE_ICONS = ['house', 'home', 'doc', 'chart', 'shield', 'trustbox']
@@ -27,18 +26,19 @@ export function RowIcon({ icon }) {
   )
 }
 
-export function RowCard({ icon, name, sub, sub2, value, unit, onPress, label, muted = false }) {
+export function RowCard({ icon, name, sub, sub2, value, unit, onPress, label }) {
   const body = (
     <>
-      <View style={muted && styles.muted}><RowIcon icon={icon} /></View>
-      <View style={[styles.text, muted && styles.muted]}>
+      <RowIcon icon={icon} />
+      <View style={styles.text}>
         <T style={styles.name} numberOfLines={1}>{name}</T>
         {sub ? <T style={styles.sub} numberOfLines={2}>{sub}</T> : null}
         {sub2 ? <T style={styles.sub2}>{sub2}</T> : null}
       </View>
       {value !== undefined
-        ? <View style={muted && styles.muted}><Amount value={value} unit={unit} style={styles.amount} /></View>
+        ? <Amount value={value} unit={unit} style={styles.amount} />
         : onPress ? <Icon name="chevron" size={18} /> : null}
+      {value !== undefined && onPress ? <Icon name="chevron" size={18} /> : null}
     </>
   )
   if (onPress) return <Press style={styles.card} onPress={onPress} label={label ?? name}>{body}</Press>
@@ -47,7 +47,6 @@ export function RowCard({ icon, name, sub, sub2, value, unit, onPress, label, mu
 
 const styles = StyleSheet.create({
   card: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: '#fff', borderRadius: 10, paddingVertical: 14, paddingHorizontal: 14, marginBottom: 12, ...cardShadow },
-  muted: { opacity: MUTED_OPACITY },
   icon: { width: 46, height: 46, borderRadius: 8, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   iconOutline: { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#cfe2f3' },
   facet: { position: 'absolute', left: -14, top: -20, width: 40, height: 60, backgroundColor: 'rgba(255,255,255,0.16)', transform: [{ rotate: '35deg' }] },
