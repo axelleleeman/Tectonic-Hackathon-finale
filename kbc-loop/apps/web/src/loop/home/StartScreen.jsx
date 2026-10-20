@@ -7,9 +7,11 @@ import { HomeTabs } from './HomeTabs.jsx'
 import { Impact } from './Impact.jsx'
 import { Statements } from './Statements.jsx'
 import { YourHome } from './YourHome.jsx'
+import { AppPreview } from './AppPreview.jsx'
 
-/** Start screen (#loop): navy hero with the 3D loop → scroll statements → two modules ("Your home" / "Your impact") → Kate tips → FAQ. */
-export function StartScreen({ customer, items, totals, coins, sections, signals, flashKey, onOpen, onBrowse, onAdd, onCosts, tips, onHeroOver }) {
+/** Start screen (#loop): navy hero with the 3D loop → scroll statements → two modules ("Your home" / "Your impact") → Kate tips → the mobile app in a phone frame → FAQ. */
+export function StartScreen({ customer, items, totals, coins, sections, signals, flashKey, onOpen, onBrowse, onAdd, onCosts, onRewards, tips, onHeroOver }) {
+  const rows = sections.flatMap((s) => s.rows)
   return (
     <>
     <Hero targetId="lp-statements" onOver={onHeroOver} />
@@ -18,9 +20,10 @@ export function StartScreen({ customer, items, totals, coins, sections, signals,
       <div className="lp-eyebrow lp-hello">{greeting()}, {customer.name}</div>
       <HomeTabs panels={{
         home: <YourHome sections={sections} flashKey={flashKey} onOpen={onOpen} onBrowse={onBrowse} onAdd={onAdd} />,
-        impact: <Impact items={items} totals={totals} coins={coins} onCosts={onCosts} />,
+        impact: <Impact items={items} totals={totals} coins={coins} onCosts={onCosts} onRewards={onRewards} name={customer?.fullName} />,
       }} />
-      <KateTips signals={signals} {...tips} />
+      <KateTips signals={signals} rows={rows} onOpen={onOpen} {...tips} />
+      <AppPreview />
       <Faq />
       <Disclaimer />
     </main>

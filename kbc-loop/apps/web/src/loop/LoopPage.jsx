@@ -10,6 +10,7 @@ import { StartScreen } from './home/StartScreen.jsx'
 import { Catalog } from './catalog/Catalog.jsx'
 import { ProductPage } from './product/ProductPage.jsx'
 import { CostsPage } from './costs/CostsPage.jsx'
+import { RewardsPage } from './rewards/RewardsPage.jsx'
 import { AddModal } from './modals/AddModal.jsx'
 import { DefectModal } from './modals/DefectModal.jsx'
 import { Toast } from './Toast.jsx'
@@ -26,6 +27,7 @@ const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)'
  *   catalog      = the product catalogue behind "Add a product" (optionally opened on one category)
  *   product      = detail page of one product the customer has (product/ProductPage.jsx)
  *   costs        = cost overview (costs/CostsPage.jsx)
+ *   rewards      = Kate Coins rewards (rewards/RewardsPage.jsx)
  *   presentation = presenter panel, dashboards and app iframe (URL only)
  * Every action goes through the api, so it shows up live in the iOS/Android app and the dashboards.
  */
@@ -71,7 +73,19 @@ export function LoopPage({ route, param, go, loop }) {
   }, [flashKey, route])
 
   if (!state || !customer) {
-    return <div className="lp lp-loading" data-theme={theme}><Connecting error={error} /></div>
+    if (error) return <div className="lp lp-loading" data-theme={theme}><Connecting error={error} /></div>
+    return (
+      <div className="lp" data-theme={theme} aria-busy="true">
+        <div className="lp-skel-bar" />
+        <div className="lp-skel" role="status">
+          <span className="lp-sr">Loading KBC LOOP…</span>
+          <i style={{ height: 20, width: 180 }} />
+          <i style={{ height: 56, borderRadius: 999 }} />
+          <i style={{ height: 160 }} />
+          <i style={{ height: 160 }} />
+        </div>
+      </div>
+    )
   }
 
   const goHome = () => go('home')
@@ -100,6 +114,8 @@ export function LoopPage({ route, param, go, loop }) {
     <div className={`lp ${overHero && route === 'home' ? 'lp-at-hero' : ''}`} data-theme={theme}>
       <LoopHeader onBack={() => go(null)} onHome={goHome} coins={coins} avatar={customer.avatar}
         theme={theme} overHero={overHero && route === 'home'} onToggleTheme={toggleTheme}
+        onCoins={() => go('rewards')} inbox={{ loop, actions, go }}
+        persona={{ customer, onSwitch: (id) => { actions.switchCustomer(id); setModal(null); go('home'); notify('Customer switched') } }}
         kate={{
           loop,
           onRepair: (itemKey) => openModal({ kind: 'defect', itemKey }),
@@ -110,7 +126,7 @@ export function LoopPage({ route, param, go, loop }) {
       {route === 'home' && (
         <div className="lp-ui">
           <StartScreen customer={customer} items={items} totals={totals} coins={coins} sections={sections} signals={signals} onHeroOver={setOverHero}
-            flashKey={flashKey} onOpen={openProduct} onBrowse={openCatalog} onAdd={() => openCatalog()} onCosts={openCosts}
+            flashKey={flashKey} onOpen={openProduct} onBrowse={openCatalog} onAdd={() => openCatalog()} onCosts={openCosts} onRewards={() => go('rewards')}
             tips={{
               onOffer: (productId) => openModal({ kind: 'add', productId }),
               onPreventive,
@@ -130,6 +146,12 @@ export function LoopPage({ route, param, go, loop }) {
         <div className="lp-ui">
           <ProductPage key={param} itemKey={param} loop={loop} actions={actions} onBack={goHome}
             onOpenCatalog={() => openCatalog()} onOpenCosts={openCosts} />
+        </div>
+      )}
+
+      {route === 'rewards' && (
+        <div className="lp-ui">
+          <RewardsPage loop={loop} actions={actions} onBack={goHome} />
         </div>
       )}
 

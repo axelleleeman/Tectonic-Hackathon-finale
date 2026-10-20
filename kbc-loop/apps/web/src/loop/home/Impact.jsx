@@ -2,6 +2,7 @@ import { num } from '@kbc-loop/shared/engine/format.js'
 import { LoopIcon } from '../LoopIcon.jsx'
 import { useCountUp, useReveal } from '../useReveal.js'
 import { CostSnapshot } from './CostSnapshot.jsx'
+import { ShareImpact } from '../share/ShareImpact.jsx'
 
 /** A big counted-up figure; the final value is always available to screen readers. */
 function Count({ n, format, run }) {
@@ -10,9 +11,13 @@ function Count({ n, format, run }) {
 }
 
 /** One of the two hero figures: a very large number, a label and one quiet line. */
-function Hero({ label, n, unit, note, tone, run, i }) {
+function Hero({ label, n, unit, note, tone, run, i, onOpen, openLabel }) {
+  const open = onOpen ? {
+    role: 'button', tabIndex: 0, 'aria-label': `${label}: ${num(n)}. ${openLabel}`, onClick: onOpen,
+    onKeyDown: (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen() } },
+  } : {}
   return (
-    <div className={`lp-imp-hero lp-rv ${tone ? `lp-imp-${tone}` : ''}`} style={{ '--i': i }}>
+    <div className={`lp-imp-hero lp-rv ${tone ? `lp-imp-${tone}` : ''} ${onOpen ? 'lp-imp-hero-btn' : ''}`} style={{ '--i': i }} {...open}>
       <span className="lp-imp-label">{label}</span>
       <b className="lp-imp-num lp-num">
         <Count n={n} format={num} run={run} />{unit && <span className="lp-imp-unit">{unit}</span>}
@@ -46,7 +51,7 @@ function Small({ label, n, format, link, run, i }) {
  * Figures come only from the shared calculations (loopTotals) and `coins` from the state,
  * so web and app always show the same numbers.
  */
-export function Impact({ items, totals, coins, onCosts }) {
+export function Impact({ items, totals, coins, onCosts, onRewards, name }) {
   const [ref, run] = useReveal({ threshold: 0.15 })
   return (
     <section ref={ref} className="lp-impact" aria-label="Your impact">
@@ -54,13 +59,14 @@ export function Impact({ items, totals, coins, onCosts }) {
         <Hero i={0} run={run} label="CO₂ saved" n={totals.co2Kg} unit="kg" tone="eco"
           note={`About ${num(totals.carKm)} km less driving by car`} />
         <Hero i={1} run={run} label="Kate Coins" n={coins}
-          note="Earned every time you repair or return a product" />
+          note="Earned every time you repair or return a product" onOpen={onRewards} openLabel="Open rewards" />
       </div>
       <CostSnapshot i={2} items={items} onCosts={onCosts} />
       <div className="lp-imp-row">
         <Small i={3} run={run} label="Products in use" n={totals.active} format={num} />
         <Small i={4} run={run} label="Repairs" n={totals.repairs} format={num} />
       </div>
+      <div className="lp-share-row"><ShareImpact name={name} totals={totals} coins={coins} /></div>
     </section>
   )
 }

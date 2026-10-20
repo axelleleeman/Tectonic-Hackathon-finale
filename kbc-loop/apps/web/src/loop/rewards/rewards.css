@@ -1,0 +1,30 @@
+/* Kate Coins rewards page (#loop/rewards) */
+.rw { display: grid; gap: var(--s5); max-width: 720px; }
+.rw-balance { padding: var(--s5); display: grid; gap: var(--s1); }
+.rw-balance > b { font-size: 3rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.1; color: var(--lp-ink); }
+.rw-balance small { color: var(--lp-muted); font-size: .875rem; }
+.lp-ui .rw-h { font-size: 1rem; font-weight: 600; margin: 0 0 var(--s3); }
+.rw-list { list-style: none; margin: 0; padding: 0; }
+.rw-row { display: flex; align-items: center; gap: var(--s3); padding: var(--s3) var(--s4); }
+.rw-row + .rw-row { border-top: 1px solid var(--lp-line); }
+.rw-icon, .rw-ok { width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--lp-accent-soft); color: var(--lp-accent); }
+.rw-ok { background: var(--lp-eco-soft); color: var(--lp-eco); }
+.rw-text { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.rw-text b { font-weight: 500; }
+.rw-text small, .rw-cost { color: var(--lp-muted); font-size: .8125rem; }
+.rw-past .rw-icon { background: var(--lp-surface2); color: var(--lp-muted); }
+.rw-confirm { display: flex; align-items: center; gap: var(--s3); padding: var(--s4); border-color: var(--lp-accent); flex-wrap: wrap; animation: lp-fade .2s; }
+.rw-confirm-text { flex: 1; min-width: 180px; display: grid; gap: 2px; }
+.rw-confirm-text b { font-weight: 500; }
+.rw-confirm-text small { color: var(--lp-muted); font-size: .8125rem; }
+.rw-confirm-actions { display: flex; gap: var(--s2); }
+.rw-empty { color: var(--lp-muted); font-size: .875rem; margin: 0; }
+/* Header coins pill as a button (opens rewards) */
+.lp .lp-coins-btn { background: transparent; border: 0; padding: 6px var(--s2); border-radius: var(--r-pill); font: inherit; font-size: .875rem; cursor: pointer; }
+.lp .lp-coins-btn:hover { background: var(--lp-surface2); }
+/* Impact: Kate Coins figure opens rewards; share button */
+.lp .lp-imp-hero-btn { cursor: pointer; border-radius: var(--r-md); }
+.lp .lp-imp-hero-btn:focus { outline: none; }
+.lp .lp-imp-hero-btn:focus-visible { outline: 2px solid var(--lp-accent); outline-offset: 4px; }
+.lp-imp-hero-btn .lp-imp-note::after { content: ' →'; color: var(--lp-accent); }
+.lp-share-row { display: flex; justify-content: flex-start; }
