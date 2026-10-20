@@ -87,12 +87,17 @@ kbc-loop/
                        pilotStats, spendSegments, kbcServices
       src/engine/      logica: rules, signals, catalog, pricing, impact, dashboards, insights, kateIntents …
       src/state/       loopReducer.js (alle acties, met invoercontrole, puur en getest), actions.js, derive.js
+      src/kate/        Kate's conversation engine (greeting, suggestions, intents, replies as action descriptors),
+                       shared by the app's Kate screen and the web's Kate panel
+      src/navigation/  tabs.js: the five KBC Mobile tabs (Home, My KBC, Invest, Business, Loop), shared by app and web
+      src/ui/          iconPaths.js: SVG path data for line icons, shared by app and web
       src/client.js    api-client (fetch + WebSocket) voor web, insights en app; enkel https buiten localhost
       tests/
     web-ui/          @kbc-loop/web-ui: gedeelde web-bouwstenen voor apps/web en apps/insights
       src/api.js       API_URL, APP_URL, INSIGHTS_URL en de client
       src/useLoop.js   React-hook: live state + acties
       src/components/  Connecting, Icon, icons, KbcLogo, ServiceChips, Stat
+      src/kate/        Kate for the web: KateLauncher (header button), KatePanel (chat drawer), Kate, useKateConversation
       src/styles/      tokens, components, layout, dashboard
       src/assets/      KBC-logo
   apps/
@@ -103,7 +108,10 @@ kbc-loop/
       index.html       KBC-appspagina (pixel-exacte screenshot + KBC Loop-tab en -kaart), presentatiepaneel,
                        Philips- en KBC-dashboards, de app in een iframe
       src/demo/        WebApp, presenter/ (presentatiepaneel), dashboards/, site/ (KBC-appspagina)
-      src/hooks/       useAutoplay (demo automatisch afspelen)
+      src/loop/        the KBC LOOP page (#loop, #loop/mykbc, #loop/marketplace, #loop/presentation): header with the
+                       shared tabs, hero with a three.js loop (three/), KPIs, Kate tips, products, Kate Coins,
+                       marketplace, drawer, dialogs; light and dark theme
+      src/hooks/       useAutoplay (demo automatisch afspelen), useHashRoute (KBC apps page ↔ KBC LOOP)
       src/styles/      opmaak van de site en het telefoonkader
       src/assets/      screenshot-onderdelen van de KBC-appspagina
     insights/        @kbc-loop/insights: KBC Loop Insights, intern dashboard voor KBC-medewerkers

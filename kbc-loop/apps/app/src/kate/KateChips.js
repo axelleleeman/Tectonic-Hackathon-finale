@@ -9,11 +9,11 @@ export function KateChips({ chips, onChoose, busy }) {
   return (
     <View style={styles.row}>
       {chips.map((chip) => (chip.disabled ? (
-        <View key={chip.label} style={[styles.chip, styles.off]} aria-disabled>
+        <View key={chip.id ?? chip.label} style={[styles.chip, styles.off]} aria-disabled>
           <T style={[styles.text, styles.offText]}>{chip.label}</T>
         </View>
       ) : (
-        <Press key={chip.label} style={styles.chip} label={chip.label} disabled={busy} onPress={() => onChoose(chip)}>
+        <Press key={chip.id ?? chip.label} style={styles.chip} label={chip.label} disabled={busy} onPress={() => onChoose(chip)}>
           <T style={styles.text}>{chip.label}</T>
         </Press>
       )))}

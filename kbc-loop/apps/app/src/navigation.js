@@ -1,20 +1,19 @@
-// Per scherm: soort kopbalk, titel, terug-bestemming en actief tabblad (zoals in KBC Mobile).
+// Per screen: header type, title, back destination and active tab (as in KBC Mobile).
+// The tabs themselves come from the shared single source of truth, so app and web always match.
+import { TABS } from '@kbc-loop/shared/navigation/tabs.js'
+
+export { TABS }
+
 export const SCREENS = {
-  home: { bar: 'search', placeholder: 'Hoe kan ik je helpen?', tab: 'home' },
-  mykbc: { bar: 'title', title: 'Mijn KBC', tab: 'mykbc' },
-  shop: { bar: 'title', title: 'Aanbod', tab: 'shop' },
-  category: { bar: 'back', title: 'KBC Loop', tab: 'shop', back: () => 'shop' },
-  product: { bar: 'back', title: 'KBC Loop', tab: 'shop', back: (a) => (a.categoryId ? 'category' : a.signalId ? 'home' : 'shop') },
+  home: { bar: 'search', placeholder: 'How can I help you?', tab: 'home' },
+  mykbc: { bar: 'title', title: 'My KBC', tab: 'mykbc' },
+  shop: { bar: 'title', title: 'Loop', tab: 'loop' },
+  category: { bar: 'back', title: 'KBC Loop', tab: 'loop', back: () => 'shop' },
+  product: { bar: 'back', title: 'KBC Loop', tab: 'loop', back: (a) => (a.categoryId ? 'category' : a.signalId ? 'home' : 'shop') },
   done: { bar: 'back', title: 'KBC Loop', tab: 'mykbc', back: () => 'mykbc' },
-  repair: { bar: 'back', title: 'Herstelling', tab: 'mykbc', back: () => 'mykbc' },
+  repair: { bar: 'back', title: 'Repair', tab: 'mykbc', back: () => 'mykbc' },
 }
 
-// De vijf tabbladen van KBC Mobile. KBC Loop zit onder "Aanbod"; Beleggen en Zakelijk doen niets in de demo.
-export const TABS = [
-  { id: 'home', label: 'Start', icon: 'wallet' },
-  { id: 'mykbc', label: 'Mijn KBC', icon: 'list' },
-  { id: 'invest', label: 'Beleggen', icon: 'piggy', disabled: true },
-  { id: 'business', label: 'Zakelijk', icon: 'briefcase', disabled: true },
-  // The offers tab carries the KBC Loop symbol: that is where KBC Loop lives in the app.
-  { id: 'shop', label: 'Aanbod', icon: 'loop', outline: true },
-]
+// Tab id → app screen. The Loop tab opens the KBC Loop offers screen ('shop' in the shared reducer).
+const TAB_SCREENS = { loop: 'shop' }
+export const screenForTab = (tabId) => TAB_SCREENS[tabId] ?? tabId
