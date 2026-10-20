@@ -23,7 +23,7 @@ export function ResultsHero({ results: r, segment }) {
       <dl className="ins-res-side">
         <div><dt>Rent per month</dt><dd className="ins-num">{eur(r.monthlyRevenue)}</dd></div>
         <div><dt>KBC margin / month</dt><dd className="ins-num">{eur(r.kbcMarginMonthly)}</dd></div>
-        <div><dt>CO₂ avoided</dt><dd className="ins-num">{num(r.co2Tons, 1)} t</dd></div>
+        <div className="ins-eco-surface"><dt>CO₂ avoided</dt><dd className="ins-num">{num(r.co2Tons, 1)} t</dd></div>
       </dl>
     </section>
   )

@@ -5,15 +5,24 @@ import { KpiGrid, KpiTile } from '../components/KpiTile.jsx'
 import { BarChart } from '../components/BarChart.jsx'
 import { Icon } from '../components/Icon.jsx'
 import { TopOpportunities } from './TopOpportunities.jsx'
+import { PortfolioRow } from './PortfolioRow.jsx'
+import { TrendCharts } from './TrendCharts.jsx'
+import { CategoryBreakdown } from './CategoryBreakdown.jsx'
+import { PartnersTable } from './PartnersTable.jsx'
+import { byCategory, partnerRows, portfolio } from '../portfolio.js'
 import { href } from '../useRoute.js'
 
 const CHART_ROWS = 6
 const compactEuro = (v) => (v >= 1000 ? `€ ${num(v / 1000, 1)}k` : `€ ${num(v)}`)
 
-/** First screen: navy band with four headline numbers, one chart and the three best opportunities. */
+/**
+ * Management cockpit: navy band with four headline numbers, the live portfolio, an illustrative trend,
+ * potential per group and per category, the three best opportunities and partner performance.
+ */
 export function Overview({ state, segments, data }) {
   const { totals } = data
   const running = state.campaigns ?? []
+  const p = portfolio(state)
   const rest = segments.length - CHART_ROWS
   // Trend per KPI: change in payments vs. last year, weighted by what the KPI measures.
   const trend = (weight) => weightedPct(segments, (s) => s.trendPct, weight)
@@ -21,15 +30,15 @@ export function Overview({ state, segments, data }) {
     ['reach', 'Reachable customers', totals.reachable, num(totals.reachable), trend((s) => s.reachable)],
     ['contracts', 'Expected contracts', totals.expectedContracts, num(totals.expectedContracts), trend((s) => s.expectedContracts)],
     ['rent', 'Rent per month', totals.monthlyRevenue, eur(totals.monthlyRevenue), trend((s) => s.monthlyRevenue)],
-    ['co2', 'CO₂ avoided', totals.co2Tons, `${num(totals.co2Tons)} t`, trend((s) => s.co2Tons)],
+    ['co2', 'CO₂ avoided', totals.co2Tons, `${num(totals.co2Tons)} t`, trend((s) => s.co2Tons), 'eco'],
   ]
   return (
     <>
       <PageHead eyebrow="Overview" title="Opportunities"
         below={(
           <KpiGrid label="Potential across all groups">
-            {kpis.map(([id, label, value, display, pct]) => (
-              <KpiTile key={id} label={label} value={display} trend={trendSeries(id, value, pct)}
+            {kpis.map(([id, label, value, display, pct, tone]) => (
+              <KpiTile key={id} tone={tone} label={label} value={display} trend={trendSeries(id, value, pct)}
                 sub={<><b className={pct >= 0 ? 'ins-up' : ''}>{signedPct(pct)}</b> spending pattern vs. last year</>} />
             ))}
           </KpiGrid>
@@ -44,6 +53,13 @@ export function Overview({ state, segments, data }) {
           <Icon name="arrow" />
         </a>
       )}
+
+      <PortfolioRow p={p} />
+
+      <div className="ins-split ins-split-stretch">
+        <TrendCharts p={p} />
+        <CategoryBreakdown rows={byCategory(segments, state)} />
+      </div>
 
       <div className="ins-split">
         <section className="ins-card ins-pad">
@@ -61,6 +77,8 @@ export function Overview({ state, segments, data }) {
         </section>
         <TopOpportunities segments={segments} running={running} />
       </div>
+
+      <PartnersTable rows={partnerRows(segments, state)} />
 
       <p className="ins-center"><a className="ins-btn" href={href.groups}>View all groups<Icon name="arrow" /></a></p>
     </>
