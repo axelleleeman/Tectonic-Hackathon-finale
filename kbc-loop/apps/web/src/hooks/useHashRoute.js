@@ -20,6 +20,19 @@ const PARAM = /^[A-Za-z0-9_-]{1,64}$/ // category ids and item keys only; anythi
 const WITH_PARAM = { catalog: true, product: true, catalogProduct: true, partnerPage: true } // routes that take a parameter
 const NEEDS_PARAM = { product: true, catalogProduct: true, partnerPage: true } // ...and those that require one
 
+// Scroll memory: the position of each list-like page is remembered when you leave it, so coming back
+// (browser back or an in-page back link) lands where you were instead of at the top.
+const RESTORE = { home: true, catalog: true } // detail pages always open at the top
+const positions = new Map()
+const keyOf = () => window.location.hash || '#'
+if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual'
+
+function scrollFor(route, key) {
+  const y = RESTORE[route] ? positions.get(key) ?? 0 : 0
+  // Wait two frames so the new view has rendered its content before scrolling.
+  requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, y)))
+}
+
 function parse(hash) {
   const clean = hash.replace(/\/$/, '')
   if (ROUTES[clean] && !NEEDS_PARAM[ROUTES[clean]]) return { route: ROUTES[clean], param: null }
@@ -46,12 +59,25 @@ export function useHashRoute() {
   const [loc, setLoc] = useState(() => parse(window.location.hash))
 
   useEffect(() => {
-    const onChange = () => setLoc(parse(window.location.hash))
+    let current = keyOf()
+    const onScroll = () => positions.set(current, window.scrollY)
+    const onChange = () => {
+      current = keyOf()
+      const next = parse(window.location.hash)
+      setLoc(next)
+      scrollFor(next.route, current)
+    }
+    // Keep the position of the page we are on up to date (also catches in-page navigation via go()).
+    const track = () => { current = keyOf() }
+    window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('hashchange', onChange)
     window.addEventListener('popstate', onChange)
+    window.addEventListener('kbcloop:navigate', track)
     return () => {
+      window.removeEventListener('scroll', onScroll)
       window.removeEventListener('hashchange', onChange)
       window.removeEventListener('popstate', onChange)
+      window.removeEventListener('kbcloop:navigate', track)
     }
   }, [])
 
@@ -59,9 +85,11 @@ export function useHashRoute() {
     const p = WITH_PARAM[next] && param && PARAM.test(param) ? param : null
     const route = HASHES[next] && (!NEEDS_PARAM[next] || p) ? next : null
     const hash = route ? `${HASHES[route]}${p ? `/${p}` : ''}` : null
+    positions.set(keyOf(), window.scrollY)
     window.history.pushState(null, '', hash ?? window.location.pathname + window.location.search)
+    window.dispatchEvent(new Event('kbcloop:navigate'))
     setLoc({ route, param: p })
-    window.scrollTo(0, 0)
+    scrollFor(route, keyOf())
   }, [])
 
   return { ...loc, go }
