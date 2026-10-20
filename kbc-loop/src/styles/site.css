@@ -31,7 +31,7 @@
 
 /* Hero met foto */
 .site-hero { position: relative; height: 271px; display: flex; align-items: center; padding: 0 23px;
-  background: #f4f6f8 url('/img/site/hero-apps.jpg') center / cover no-repeat; }
+  background: #f4f6f8 url('../assets/site/hero-apps.jpg') center / cover no-repeat; }
 .site-hero h1 { margin: 20px 0 0; font-size: 30px; font-weight: 600; letter-spacing: -.005em; color: var(--site-navy); max-width: 50%; line-height: 1.2; }
 
 .kbc-live { position: absolute; right: 52px; bottom: -30px; width: 276px; text-align: center; }
