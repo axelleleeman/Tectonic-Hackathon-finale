@@ -9,6 +9,8 @@ import { LoopHeader } from './LoopHeader.jsx'
 import { StartScreen } from './home/StartScreen.jsx'
 import { Catalog } from './catalog/Catalog.jsx'
 import { ProductPage } from './product/ProductPage.jsx'
+import { CatalogProductPage } from './catalogProduct/CatalogProductPage.jsx'
+import { PartnerPage } from './partner/PartnerPage.jsx'
 import { CostsPage } from './costs/CostsPage.jsx'
 import { AddModal } from './modals/AddModal.jsx'
 import { DefectModal } from './modals/DefectModal.jsx'
@@ -27,6 +29,8 @@ const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)'
  *   home         = full-viewport hero with the 3D loop, metrics, "Your home" (every category with the customer's products), Kate tips and FAQ
  *   catalog      = the product catalogue behind "Add a product" (optionally opened on one category)
  *   product      = detail page of one product the customer has (product/ProductPage.jsx)
+ *   catalogProduct = catalogue detail page of any product (catalogProduct/CatalogProductPage.jsx)
+ *   partnerPage  = partner profile, key facts and products (partner/PartnerPage.jsx)
  *   costs        = cost overview (costs/CostsPage.jsx)
  *   rewards      = redirects to home with the Rewards tab of the framed module selected (rewards/RewardsPage.jsx, embedded)
  *   presentation = presenter panel, dashboards and app iframe (URL only)
@@ -117,6 +121,9 @@ export function LoopPage({ route, param, go, loop }) {
     go('catalog', categoryId)
     requestAnimationFrame(() => searchRef.current?.focus({ preventScroll: true }))
   }
+  const borrowModal = (productId) => openModal({ kind: 'add', productId })
+  const openCatalogProduct = (productId) => go('catalogProduct', productId)
+  const openPartner = (partnerId) => go('partnerPage', partnerId)
   const onBorrowed = (productId) => {
     const added = [...rows].reverse().find((r) => r.product.id === productId && !r.item.returned)
     go('home')
@@ -162,7 +169,21 @@ export function LoopPage({ route, param, go, loop }) {
       {route === 'catalog' && (
         <div className="lp-ui">
           <Catalog key={param ?? 'all'} customerType={customer.type} initialCategory={param} ownedIds={ownedIds} searchRef={searchRef}
-            onAdd={(productId) => openModal({ kind: 'add', productId })} onBack={goHome} />
+            onAdd={borrowModal} onOpen={openCatalogProduct} onPartner={openPartner} onBack={goHome} />
+        </div>
+      )}
+
+      {route === 'catalogProduct' && (
+        <div className="lp-ui">
+          <CatalogProductPage key={param} productId={param} customerType={customer.type} rows={rows} onBack={() => go('catalog')}
+            onAdd={borrowModal} onOpen={openCatalogProduct} onPartner={openPartner} onOwned={openProduct} />
+        </div>
+      )}
+
+      {route === 'partnerPage' && (
+        <div className="lp-ui">
+          <PartnerPage key={param} partnerId={param} customerType={customer.type} state={state} rows={rows} onBack={() => go('catalog')}
+            onAdd={borrowModal} onOpen={openCatalogProduct} />
         </div>
       )}
 

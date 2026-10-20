@@ -157,7 +157,8 @@ kbc-loop/
                        portal on #partner, partnerTickets.js = its tickets and KPIs), site/ (KBC apps page)
       src/loop/        the KBC LOOP page: #loop (metrics with a small three.js loop from three/, "Your home" per
                        category, Kate tips, FAQ), #loop/catalog[/<category>] (alias #loop/marketplace: catalogue per
-                       category and partner), #loop/product/<itemKey>, #loop/costs and #loop/presentation (URL only);
+                       category and partner, with "How borrowing works" and "Our partners"), #loop/catalog/product/<productId>
+                       (catalogue product page), #loop/partner/<partnerId> (partner page), #loop/product/<itemKey>, #loop/costs and #loop/presentation (URL only);
                        header without tabs, dialogs, light and dark theme; rewards/ (#loop/rewards: redeem Kate
                        Coins), inbox/ (notifications bell and panel in the header), share/ (impact card drawn with
                        Canvas 2D and downloaded as a PNG), consent/ (#loop/consent: choose what happens with your data)

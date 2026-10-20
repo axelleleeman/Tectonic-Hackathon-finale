@@ -1,0 +1,29 @@
+/* Catalogue intro: "How borrowing works" and "Our partners" (also used on product and partner pages). */
+.lp .lp-cardlink { color: inherit; text-decoration: none; }
+.lp .lp-cardlink:hover { text-decoration: underline; }
+.lp-palogo-lg { width: 64px; height: 64px; font-size: 1.25rem; border-radius: var(--r-md); }
+
+.lp-how { margin-bottom: var(--s6); }
+.lp-how-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s3); counter-reset: none; }
+.lp-how-steps li { display: flex; gap: var(--s3); padding: var(--s4); }
+.lp-how-ic { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; flex: none; color: var(--lp-accent); background: var(--lp-accent-soft); }
+.lp-how-n { font-size: .75rem; color: var(--lp-muted); }
+.lp-ui .lp-how h3 { font-size: .9375rem; font-weight: 600; margin: 2px 0 var(--s1); }
+.lp-how p { margin: 0; font-size: .8125rem; color: var(--lp-muted); line-height: 1.5; }
+.lp-how .lp-how-inc { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2); margin-top: var(--s3); color: var(--lp-muted); }
+.lp-how-chip { display: inline-flex; align-items: center; gap: var(--s1); padding: 4px var(--s3); border-radius: var(--r-pill); background: var(--lp-eco-soft); color: var(--lp-eco); font-size: .8125rem; font-weight: 500; }
+
+.lp-ptiles { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: var(--s2); }
+.lp .lp-ptile { display: flex; flex-direction: column; gap: var(--s2); height: 100%; padding: var(--s3) var(--s4); color: var(--lp-ink); text-decoration: none; transition: border-color .15s; }
+.lp .lp-ptile:hover { border-color: var(--lp-accent); }
+.lp-ptile-top { display: flex; align-items: center; gap: var(--s3); }
+.lp-ptile-top b { display: block; font-size: .9375rem; font-weight: 600; }
+.lp-ptile-hl { font-size: .8125rem; color: var(--lp-muted); line-height: 1.45; }
+.lp-ptile-n { margin-top: auto; font-size: .75rem; font-weight: 500; color: var(--lp-accent); }
+.lp-ptile-off .lp-ptile-n { color: var(--lp-dim); }
+
+@media (max-width: 760px) {
+  .lp-how-steps { grid-template-columns: minmax(0, 1fr); }
+  .lp-ptiles { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: min(78%, 260px); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--s2); }
+  .lp-ptiles li { scroll-snap-align: start; }
+}

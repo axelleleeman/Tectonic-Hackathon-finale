@@ -4,12 +4,15 @@ import { Disclaimer } from '../Disclaimer.jsx'
 import { catalogue, filterCatalogue } from '../model.js'
 import { CategoryNav } from './CategoryNav.jsx'
 import { PartnerGroup } from './PartnerGroup.jsx'
+import { HowItWorks } from './HowItWorks.jsx'
+import { PartnerStrip } from './PartnerStrip.jsx'
 
 /**
  * Product catalogue (#loop/catalog): the shared catalogue for the customer's type, grouped by category
- * and then by partner. Search, category filter with counts, and "Add" → borrow dialog.
+ * and then by partner. "How borrowing works" and "Our partners" on top; search, category filter with counts.
+ * A card opens the product page (onOpen), "Add" the borrow dialog (onAdd), a partner its page (onPartner).
  */
-export function Catalog({ customerType, initialCategory, ownedIds, searchRef, onAdd, onBack }) {
+export function Catalog({ customerType, initialCategory, ownedIds, searchRef, onAdd, onOpen, onPartner, onBack }) {
   const cats = useMemo(() => catalogue(customerType), [customerType])
   const [query, setQuery] = useState('')
   const [cat, setCat] = useState(() => (cats.some((c) => c.id === initialCategory) ? initialCategory : 'all'))
@@ -33,7 +36,13 @@ export function Catalog({ customerType, initialCategory, ownedIds, searchRef, on
           <input ref={searchRef} type="search" placeholder="Search products or partners" autoComplete="off" value={query} onChange={(e) => setQuery(e.target.value)} />
         </label>
       </section>
-      <div className="lp-mk">
+      {!q && cat === 'all' && (
+        <>
+          <HowItWorks />
+          <PartnerStrip customerType={customerType} onPartner={onPartner} />
+        </>
+      )}
+      <div className="lp-mk" id="lp-products">
         <CategoryNav cats={filtered} total={total} active={cat} onSelect={setCat} />
         <div className="lp-min0">
           {cats.length === 0 && <div className="lp-card lp-empty">There are no products available for you yet.</div>}
@@ -51,7 +60,7 @@ export function Catalog({ customerType, initialCategory, ownedIds, searchRef, on
                 {c.name}
                 <span className="lp-n lp-num">{c.count}</span>
               </h2>
-              {c.partners.map((pa) => <PartnerGroup key={pa.id} partner={pa} categoryId={c.id} ownedIds={ownedIds} onAdd={onAdd} />)}
+              {c.partners.map((pa) => <PartnerGroup key={pa.id} partner={pa} categoryId={c.id} ownedIds={ownedIds} onAdd={onAdd} onOpen={onOpen} onPartner={onPartner} />)}
             </section>
           ))}
         </div>
