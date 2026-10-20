@@ -140,11 +140,23 @@ Real-world precedent: Philips provides **Light-as-a-Service at Schiphol Airport*
 
 ## 5. Project structure
 
-`kbc-loop/` is an npm-workspaces monorepo: shared code lives in `packages/`, everything that runs lives in `apps/`. See [`kbc-loop/README.md`](kbc-loop/README.md) for setup, API and security details.
+`kbc-loop/` is an npm-workspaces monorepo: shared code lives in `packages/`, everything that runs lives in `apps/`. See [`kbc-loop/README.md`](kbc-loop/README.md) for setup, API and security details, [`kbc-loop/docs/ARCHITECTURE.md`](kbc-loop/docs/ARCHITECTURE.md) for the architecture and security model, [`kbc-loop/docs/DEMO.md`](kbc-loop/docs/DEMO.md) for the 4-minute demo script and [`kbc-loop/docs/openapi.yaml`](kbc-loop/docs/openapi.yaml) for the REST API.
+
+**Quick start** (Node 22.13 or newer; CI uses Node 24):
+
+```bash
+cd kbc-loop
+npm install
+npm run dev     # api :4000, web http://localhost:5173, insights http://localhost:5174, app http://localhost:8081
+npm test        # shared + api tests + README check
+```
+
+CI (`.github/workflows/ci.yml`) runs install, test, lint and build on every push and pull request to `main`.
 
 ```
 kbc-loop/
-├── README.md                # Dutch developer docs (checked by scripts/check-readme.mjs)
+├── README.md                # Developer docs (checked by scripts/check-readme.mjs)
+├── docs/                    # ARCHITECTURE.md, DEMO.md (pitch script), openapi.yaml (REST API)
 ├── package.json             # Workspaces packages/* + apps/*; scripts: dev, dev:api, dev:web, dev:app,
 │                            #   dev:insights, test, check:readme, lint, build
 ├── Dockerfile               # Builds web + insights + app web export, runs the API (Cloud Run)
@@ -240,10 +252,6 @@ Coins that are redeemed are funded jointly by KBC and partners, as a loyalty bud
 - [ ] Billing split (partner / insurance / KBC)
 - [ ] Sustainability Coins: redeem for a discount or lower premium
 - [ ] Real data: PSD2 transactions, KBC Partner Hub, B2B Asset Financing
-
-## 9. Team
-
-_Add names and roles here._
 
 ---
 

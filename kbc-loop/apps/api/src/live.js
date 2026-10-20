@@ -24,9 +24,15 @@ export function liveUpdates(server, { checkOrigin, checkKey, current }) {
       const msg = JSON.stringify({ type: 'state', ...snapshot })
       for (const client of wss.clients) if (client.readyState === 1) client.send(msg)
     },
-    close() {
-      wss.clients.forEach((c) => c.terminate())
-      wss.close()
+    // Graceful: tell clients the server is going away (1001) so they reconnect elsewhere/later,
+    // and terminate any socket that has not finished the closing handshake within graceMs.
+    close(graceMs = 1000) {
+      for (const c of wss.clients) c.close(1001, 'Server shutting down')
+      return new Promise((ok) => {
+        const timer = setTimeout(() => { wss.clients.forEach((c) => c.terminate()); ok() }, graceMs)
+        timer.unref()
+        wss.close(() => { clearTimeout(timer); ok() })
+      })
     },
   }
 }

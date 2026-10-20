@@ -1,4 +1,4 @@
-// Zonder `digits`: hele bedragen zonder decimalen, andere met 2 (€ 15 maar € 19,90).
+// Without `digits`: whole amounts without decimals, others with 2 (€ 15 but € 19,90).
 export function euro(n, digits = Number.isInteger(n) ? 0 : 2) {
   return n.toLocaleString('nl-BE', { style: 'currency', currency: 'EUR', minimumFractionDigits: digits, maximumFractionDigits: digits })
 }

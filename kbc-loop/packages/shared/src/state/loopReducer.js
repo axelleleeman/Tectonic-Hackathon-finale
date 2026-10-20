@@ -5,24 +5,38 @@ import { customers, spendSegments } from '../data/index.js'
 import { COINS, MIN_GROUP_SIZE, TODAY } from '../config/index.js'
 import { expandProduct, productById } from '../engine/catalog.js'
 import { isValidUpgrade } from '../engine/upgrades.js'
+import { rewardById } from '../data/rewards.js'
 
 // Allowed values; anything else is ignored so the shared state never breaks.
 export const VIEWS = ['klant', 'partner', 'kbc']
-export const SCREENS = ['home', 'mykbc', 'shop', 'category', 'product', 'done', 'repair', 'item', 'costs']
+export const SCREENS = ['home', 'mykbc', 'shop', 'category', 'product', 'done', 'repair', 'item', 'costs', 'rewards', 'inbox', 'consent']
 export const ACTION_TYPES = [
   'RESET', 'SET_VIEW', 'SWITCH_CUSTOMER', 'SET_CONSENT', 'NAVIGATE', 'OPEN_KATE', 'CLOSE_KATE', 'DISMISS_SIGNAL',
   'BORROW', 'REPORT_DEFECT', 'ADVANCE_REPAIR', 'CLOSE_REPAIR', 'RETURN_ITEM', 'UPGRADE_ITEM', 'TRIGGER_TELEMETRY',
-  'TOGGLE_CAMPAIGN', 'START_CAMPAIGN', 'STOP_CAMPAIGN',
+  'TOGGLE_CAMPAIGN', 'START_CAMPAIGN', 'STOP_CAMPAIGN', 'REDEEM_REWARD', 'MARK_NOTIFICATIONS_READ', 'PARTNER_UPDATE_REPAIR',
+  'SET_DATA_PREFERENCES',
 ]
 
 export const MAX_ISSUE_LENGTH = 120
 export const MAX_NOTE_LENGTH = 200
 const MAX_ID_LENGTH = 64
+export const MAX_NOTIFICATION_IDS = 100
+
+// Repair status reported by a partner, and the repair step (1–3) it corresponds to
+export const PARTNER_REPAIR_STATUSES = ['scheduled', 'on-the-way', 'in-progress', 'repaired']
+// Step 2 ("technician visit") is reached once the technician is at work, not while on the way.
+const PARTNER_STATUS_STEP = { scheduled: 1, 'on-the-way': 1, 'in-progress': 2, repaired: 3 }
 
 // Kate campaigns started from KBC Loop Insights
 export const CAMPAIGN_AUDIENCES = ['consented', 'consented-active']
 export const MAX_CAMPAIGN_BUDGET = 100_000
 export const MAX_CAMPAIGN_MESSAGE_LENGTH = 280
+
+// Data preferences a customer chooses on the consent screen. kateTips mirrors state.consent.
+export const DATA_PREFERENCE_KEYS = ['kateTips', 'insights', 'partners', 'telemetry']
+/** Privacy by default: only Kate tips follow the existing consent; everything else is off. */
+export const defaultDataPreferences = (consent = false) =>
+  ({ kateTips: Boolean(consent), insights: false, partners: false, telemetry: false, completedOn: null })
 
 const ACTIVE_KEYS = ['productId', 'signalId', 'itemKey', 'categoryId']
 const isId = (v) => typeof v === 'string' && v.length > 0 && v.length <= MAX_ID_LENGTH
@@ -50,19 +64,24 @@ export function createInitialState() {
     seq: 0,
     items: perCustomer((c) => c.borrowed.map((b, n) => ({ ...b, key: `${c.id}-${n}`, repair: null, returned: false }))),
     dismissed: perCustomer(() => []),
-    coins: perCustomer(() => 0),
+    coins: perCustomer((c) => c.coins ?? 0),
     telemetry: perCustomer(() => false),
     campaigns: [], // ids of KBC Loop Insights groups with a running Kate campaign
     campaignDetails: {}, // { [segmentId]: { segmentId, audience, budget, message, channel, startedOn, status } }
+    redemptions: perCustomer(() => []), // [{ id, rewardId, on }]
+    readNotifications: perCustomer(() => []), // ids of notifications the customer has seen
+    dataPreferences: perCustomer(() => defaultDataPreferences(true)), // { kateTips, insights, partners, telemetry, completedOn }
   }
 }
 
 // Helpers that only touch the current customer (tolerant of older persisted state without that customer)
-const forCustomer = (state, key, fn, empty) => ({ ...state, [key]: { ...state[key], [state.customerId]: fn(state[key]?.[state.customerId] ?? empty) } })
-const itemsOf = (state) => state.items?.[state.customerId] ?? []
-const findItem = (state, itemKey) => (isId(itemKey) ? itemsOf(state).find((i) => i.key === itemKey) : undefined)
-const updateItem = (state, itemKey, fn) => forCustomer(state, 'items', (items) => items.map((i) => (i.key === itemKey ? fn(i) : i)), [])
-const addCoins = (state, n) => forCustomer(state, 'coins', (c) => c + n, 0)
+const forCustomerId = (state, cid, key, fn, empty) => ({ ...state, [key]: { ...state[key], [cid]: fn(state[key]?.[cid] ?? empty) } })
+const forCustomer = (state, key, fn, empty) => forCustomerId(state, state.customerId, key, fn, empty)
+const itemsOf = (state, cid = state.customerId) => state.items?.[cid] ?? []
+const findItem = (state, itemKey, cid = state.customerId) => (isId(itemKey) ? itemsOf(state, cid).find((i) => i.key === itemKey) : undefined)
+const updateItem = (state, itemKey, fn, cid = state.customerId) =>
+  forCustomerId(state, cid, 'items', (items) => items.map((i) => (i.key === itemKey ? fn(i) : i)), [])
+const addCoins = (state, n, cid = state.customerId) => forCustomerId(state, cid, 'coins', (c) => c + n, 0)
 const customerType = (state) => customers.find((c) => c.id === state.customerId)?.type
 const home = { screen: 'home', active: { productId: null, signalId: null, itemKey: null, categoryId: null }, kateOpen: false }
 
@@ -110,7 +129,53 @@ function stopCampaign(state, segmentId) {
   }
 }
 
+/** Repair reaches step 3: count it, reward the customer and clear a preventive device alert. */
+function completeRepair(state, item, cid) {
+  let next = updateItem(state, item.key, (i) => ({ ...i, repairs: (i.repairs ?? 0) + 1 }), cid)
+  next = addCoins(next, COINS.repair, cid)
+  if (item.repair.preventive) next = forCustomerId(next, cid, 'telemetry', () => false, false)
+  return next
+}
+
+function redeemReward(state, rewardId) {
+  const reward = isId(rewardId) ? rewardById(rewardId) : undefined
+  const cid = state.customerId
+  if (!reward || (state.coins?.[cid] ?? 0) < reward.cost) return state
+  const redemption = { id: `${cid}-r-${state.seq}`, rewardId: reward.id, on: TODAY }
+  const next = forCustomer({ ...state, seq: state.seq + 1 }, 'redemptions', (r) => [...r, redemption], [])
+  return addCoins(next, -reward.cost)
+}
+
+function markNotificationsRead(state, ids) {
+  if (!Array.isArray(ids) || ids.length > MAX_NOTIFICATION_IDS || !ids.every(isId)) return state
+  const read = state.readNotifications?.[state.customerId] ?? []
+  const fresh = [...new Set(ids)].filter((id) => !read.includes(id))
+  if (!fresh.length) return state
+  // keep the list bounded so a long-running demo cannot grow it without limit
+  return forCustomer(state, 'readNotifications', (r) => [...r, ...fresh].slice(-500), [])
+}
+
+/** A partner reports progress on a customer's repair (the customer need not be the active one). */
+function partnerUpdateRepair(state, { customerId, itemKey, status }) {
+  const cid = customerId ?? state.customerId
+  if (!customers.some((c) => c.id === cid) || !PARTNER_REPAIR_STATUSES.includes(status)) return state
+  const item = findItem(state, itemKey, cid)
+  if (!item?.repair || item.returned) return state
+  const step = Math.max(item.repair.step, PARTNER_STATUS_STEP[status]) // a repair never moves backwards
+  const next = updateItem(state, item.key, (i) => ({ ...i, repair: { ...i.repair, step, partnerStatus: status, updatedOn: TODAY } }), cid)
+  return step === 3 && item.repair.step < 3 ? completeRepair(next, item, cid) : next
+}
+
 const returned = (i) => ({ ...i, returned: true, repair: null, returnedOn: TODAY })
+
+/** Only known keys with boolean values; anything else makes the whole action invalid. */
+function setDataPreferences(state, prefs) {
+  if (!prefs || typeof prefs !== 'object' || Array.isArray(prefs)) return state
+  const entries = Object.entries(prefs)
+  if (!entries.length || entries.some(([k, v]) => !DATA_PREFERENCE_KEYS.includes(k) || typeof v !== 'boolean')) return state
+  const next = forCustomer(state, 'dataPreferences', (p) => ({ ...p, ...prefs, completedOn: TODAY }), defaultDataPreferences(state.consent))
+  return 'kateTips' in prefs ? { ...next, consent: prefs.kateTips } : next
+}
 
 export function loopReducer(state, action) {
   switch (action?.type) {
@@ -125,8 +190,14 @@ export function loopReducer(state, action) {
       if (!customers.some((c) => c.id === action.customerId)) return state
       return { ...state, ...home, view: 'klant', customerId: action.customerId }
 
-    case 'SET_CONSENT':
-      return { ...state, consent: Boolean(action.value) }
+    case 'SET_CONSENT': {
+      const consent = Boolean(action.value)
+      const next = forCustomer(state, 'dataPreferences', (p) => ({ ...p, kateTips: consent }), defaultDataPreferences(state.consent))
+      return { ...next, consent }
+    }
+
+    case 'SET_DATA_PREFERENCES':
+      return setDataPreferences(state, action.preferences)
 
     case 'NAVIGATE':
       if (!SCREENS.includes(action.screen)) return state
@@ -170,12 +241,8 @@ export function loopReducer(state, action) {
       const item = findItem(state, action.itemKey)
       if (!item?.repair || item.repair.step >= 3) return state
       const step = item.repair.step + 1
-      let next = updateItem(state, item.key, (i) => ({ ...i, repair: { ...i.repair, step }, repairs: step === 3 ? (i.repairs ?? 0) + 1 : i.repairs }))
-      if (step === 3) {
-        next = addCoins(next, COINS.repair)
-        if (item.repair.preventive) next = forCustomer(next, 'telemetry', () => false, false)
-      }
-      return next
+      const next = updateItem(state, item.key, (i) => ({ ...i, repair: { ...i.repair, step } }))
+      return step === 3 ? completeRepair(next, item, state.customerId) : next
     }
 
     case 'CLOSE_REPAIR': {
@@ -211,6 +278,15 @@ export function loopReducer(state, action) {
 
     case 'STOP_CAMPAIGN':
       return stopCampaign(state, action.segmentId)
+
+    case 'REDEEM_REWARD':
+      return redeemReward(state, action.rewardId)
+
+    case 'MARK_NOTIFICATIONS_READ':
+      return markNotificationsRead(state, action.ids)
+
+    case 'PARTNER_UPDATE_REPAIR':
+      return partnerUpdateRepair(state, action)
 
     default:
       return state

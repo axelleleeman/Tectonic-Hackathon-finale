@@ -1,0 +1,20 @@
+/* Notifications bell and panel in the KBC LOOP header */
+.ib { position: relative; }
+.lp .ib-bell { position: relative; }
+.ib-badge { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--lp-btn); color: var(--lp-on-btn); font-size: .6875rem; font-weight: 600; display: grid; place-items: center; line-height: 1; }
+.ib-panel { position: absolute; right: 0; top: calc(100% + var(--s2)); width: min(360px, calc(100vw - 32px)); max-height: min(70vh, 520px); overflow: auto; box-shadow: var(--lp-shadow); z-index: 80; color: var(--lp-ink); background: var(--lp-surface); animation: lp-fade .15s; }
+.ib-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s2); padding: var(--s3) var(--s3) var(--s2) var(--s4); border-bottom: 1px solid var(--lp-line); }
+.ib-head b { font-weight: 600; font-size: .9375rem; }
+.ib-list { list-style: none; margin: 0; padding: var(--s1) 0; }
+.lp .ib-item { width: 100%; display: flex; gap: var(--s3); align-items: flex-start; text-align: left; padding: var(--s3) var(--s4); background: transparent; border: 0; color: inherit; font: inherit; cursor: pointer; }
+.lp .ib-item:hover { background: var(--lp-surface2); }
+.ib-dot { width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; flex: none; background: transparent; }
+.ib-unread .ib-dot { background: var(--lp-accent); }
+.ib-body { flex: 1; min-width: 0; display: grid; gap: 2px; font-size: .875rem; }
+.ib-body b { font-weight: 500; }
+.ib-item:not(.ib-unread) .ib-body b { font-weight: 400; color: var(--lp-muted); }
+.ib-body span { color: var(--lp-muted); font-size: .8125rem; }
+.ib-date { color: var(--lp-dim); font-size: .75rem; white-space: nowrap; margin-top: 2px; }
+.ib-empty { color: var(--lp-muted); font-size: .875rem; padding: var(--s4); margin: 0; }
+/* Over the navy start-screen hero the header uses light text: keep the panel navy so it stays readable */
+.lp-top-over .ib-panel { --lp-surface: #0B2140; --lp-dim: #8196B5; --lp-accent: #4AABEE; border-color: rgba(255, 255, 255, .16); }

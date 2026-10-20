@@ -1,15 +1,19 @@
 import { euro } from '@kbc-loop/shared/engine/format.js'
 import { LoopIcon } from '../LoopIcon.jsx'
 import { ProductThumb } from '../product/ProductThumb.jsx'
+import { secondLifeMonthly } from './secondLife.js'
+import '../modals/borrow.css'
 
 /** One catalogue product: name, partner, monthly price and "Add" (opens the borrow dialog with the full details). */
 export function CatalogCard({ product, partnerName, owned, onAdd }) {
+  const refurb = secondLifeMonthly(product)
   return (
     <article className="lp-card lp-item" title={product.detail}>
       <ProductThumb product={product} />
       <div className="lp-min0 lp-item-text">
         <h4>{product.name}</h4>
         <span className="lp-sub">{partnerName}{owned ? ' · In your home' : ''}</span>
+        {refurb && <span className="lp-refurb" title="A refurbished unit is also available">Refurbished · {euro(refurb, 2)} / mo</span>}
       </div>
       <div className="lp-item-end">
         <span className="lp-price lp-num"><b>{euro(product.monthly)}</b><small> / mo</small></span>

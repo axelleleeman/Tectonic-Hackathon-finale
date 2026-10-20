@@ -8,6 +8,7 @@
 //   TRUST_PROXY      'true' achter een HTTPS-proxy (bv. Cloud Run), om x-forwarded-proto/-for te vertrouwen
 //   PROXY_HOPS       aantal vertrouwde proxy's vóór de api (1); bepaalt welk x-forwarded-for-adres telt
 //   NODE_ENV         'production' zet HSTS aan
+//   LOG_LEVEL        'info' (default), 'error' or 'silent' (default under node --test)
 import { fileURLToPath } from 'node:url'
 
 const DEV_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://localhost:8081', 'http://127.0.0.1:8081']
@@ -26,5 +27,6 @@ export function loadConfig(env = process.env) {
     trustProxy: env.TRUST_PROXY === 'true',
     proxyHops: Math.max(1, Number.parseInt(env.PROXY_HOPS, 10) || 1),
     production: env.NODE_ENV === 'production',
+    logLevel: env.LOG_LEVEL ?? (env.NODE_TEST_CONTEXT ? 'silent' : 'info'),
   }
 }

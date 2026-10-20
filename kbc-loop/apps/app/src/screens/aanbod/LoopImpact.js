@@ -5,6 +5,8 @@ import { loopTotals } from '@kbc-loop/shared/engine/impact.js'
 import { num } from '@kbc-loop/shared/engine/format.js'
 import { T } from '../../ui/T.js'
 import { CostSnapshot } from './CostSnapshot.js'
+import { ShareImpact } from '../share/ShareImpact.js'
+import { Press } from '../../ui/Press.js'
 import { cardShadow, colors } from '../../theme.js'
 
 const ECO = '#0f6e4a'
@@ -30,17 +32,21 @@ function Small({ label, value }) {
   )
 }
 
-export function LoopImpact({ items, coins, actions }) {
+export function LoopImpact({ items, coins, actions, onOpenRewards }) {
   const t = loopTotals(items)
+  const openRewards = onOpenRewards ?? (() => actions.navigate('rewards'))
   return (
     <View style={styles.wrap}>
       <Big label="CO₂ saved" value={num(t.co2Kg)} unit="kg" color={ECO} note={`≈ ${num(t.carKm)} km less by car`} />
-      <Big label="Kate Coins" value={num(coins)} color={colors.kmBlue} note="Earned with every repair and return" />
+      <Press onPress={openRewards} label={`Kate Coins: ${num(coins)}. Open rewards`}>
+        <Big label="Kate Coins" value={num(coins)} color={colors.kmBlue} note="Earned with every repair and return · Rewards ›" />
+      </Press>
       <CostSnapshot items={items} onViewAll={() => actions.navigate('costs')} />
       <View style={styles.row}>
         <Small label="Products in use" value={num(t.active)} />
         <Small label="Repairs" value={num(t.repairs)} />
       </View>
+      <ShareImpact totals={t} coins={coins} />
     </View>
   )
 }

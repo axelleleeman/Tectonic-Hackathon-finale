@@ -1,13 +1,11 @@
-// Product picture for the product and cost screens. TEMPORARY fallback until ui/ProductImage.js lands:
-// the category illustration with the product emoji.
-import { categoryOf } from '@kbc-loop/shared/engine/catalog.js'
-import { Photo } from '../../ui/Photo.js'
+// Product picture for the product and cost screens, drawn by the shared ProductImage:
+// small rows get the crisp illustration, larger sizes the real product photo.
+import { ProductImage } from '../../ui/ProductImage.js'
 
-const SIZES = { sm: { box: 44, icon: 22 }, md: { box: 64, icon: 30 }, lg: { box: 96, icon: 44 }, hero: { box: 200, icon: 84 } }
+const SIZES = { sm: { box: 48, radius: 12, photo: false }, md: { box: 64, radius: 14, photo: true }, lg: { box: 96, radius: 16, photo: true } }
 
 export function ProductArt({ product, size = 'md', style }) {
+  if (size === 'hero') return <ProductImage product={product} size="hero" style={style} />
   const s = SIZES[size] ?? SIZES.md
-  const cat = categoryOf(product)
-  const frame = size === 'hero' ? { height: s.box, borderRadius: 20 } : { width: s.box, height: s.box, borderRadius: 14 }
-  return <Photo tint={cat?.tint ?? ['#e9f4fb', '#cde8f6']} icon={product.icon} iconSize={s.icon} style={[frame, style]} />
+  return <ProductImage product={product} photo={s.photo} style={[{ width: s.box, height: s.box, borderRadius: s.radius }, style]} />
 }

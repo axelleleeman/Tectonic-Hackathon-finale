@@ -45,7 +45,14 @@ export function createLoopClient(baseUrl, { apiKey = null, allowInsecure = false
   async function request(path, options = {}) {
     const res = await fetch(`${api}${path}`, { ...options, headers: { 'content-type': 'application/json', ...authHeaders, ...options.headers } })
     const body = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(body.error ?? `KBC Loop API responded with ${res.status}`)
+    if (!res.ok) {
+      // Errors are { error: { code, message } }; older servers sent { error: 'message' }.
+      const err = body?.error
+      const error = new Error((typeof err === 'string' ? err : err?.message) || `KBC Loop API responded with ${res.status}`)
+      error.status = res.status
+      error.code = typeof err === 'object' && err ? err.code : undefined
+      throw error
+    }
     return body
   }
 

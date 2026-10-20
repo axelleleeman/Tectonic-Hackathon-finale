@@ -1,4 +1,4 @@
-// Totale kost over de looptijd: kopen (incl. herstellingen en losse verzekering) vs. lenen.
+// Total cost over the term: buying (incl. repairs and separate insurance) vs. borrowing.
 
 export function costs(product) {
   const months = product.termMonths

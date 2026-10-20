@@ -5,6 +5,7 @@ import { bindActions } from '../src/state/actions.js'
 import { COINS, TODAY } from '../src/config/index.js'
 
 const run = (...actions) => actions.reduce(loopReducer, createInitialState())
+const startCoins = (cid) => createInitialState().coins[cid]
 
 test('borrowing adds an item and shows the confirmation', () => {
   const before = createInitialState().items.lotte.length
@@ -29,7 +30,7 @@ test('a repair goes through 3 steps and earns Kate Coins', () => {
   const lamp = s.items.lotte[0]
   assert.equal(lamp.repair.step, 3)
   assert.equal(lamp.repairs, 2)
-  assert.equal(s.coins.lotte, COINS.repair)
+  assert.equal(s.coins.lotte, startCoins('lotte') + COINS.repair)
 })
 
 test('a preventive repair starts at step 2 and clears the device alert', () => {
@@ -63,7 +64,7 @@ test('returning marks the item, records the date and rewards the customer once',
   const s = run({ type: 'RETURN_ITEM', itemKey: 'lotte-0' })
   assert.equal(s.items.lotte[0].returned, true)
   assert.equal(s.items.lotte[0].returnedOn, TODAY)
-  assert.equal(s.coins.lotte, COINS.return)
+  assert.equal(s.coins.lotte, startCoins('lotte') + COINS.return)
   assert.equal(loopReducer(s, { type: 'RETURN_ITEM', itemKey: 'lotte-0' }), s)
   assert.equal(loopReducer(s, { type: 'RETURN_ITEM', itemKey: 'unknown' }), s)
 })
@@ -80,7 +81,7 @@ test('upgrading returns the old item and adds the new one atomically', () => {
     { productId: 'phone-pro', since: TODAY, repairs: 0, returned: false, upgradedFrom: 'lotte-new-0' },
   )
   assert.equal(new Set(s.items.lotte.map((i) => i.key)).size, s.items.lotte.length)
-  assert.equal(s.coins.lotte, COINS.return)
+  assert.equal(s.coins.lotte, startCoins('lotte') + COINS.return)
   assert.equal(s.screen, 'item')
   assert.equal(s.active.itemKey, upgraded.key)
 })

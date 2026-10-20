@@ -13,8 +13,6 @@ import { TabBar } from './phone/TabBar.js'
 import { Fab } from './phone/Fab.js'
 import { PushNotification } from './phone/PushNotification.js'
 import { PREVENTIVE_ISSUE } from '@kbc-loop/shared/data/index.js'
-import { Home } from './screens/Home.js'
-import { MyKbc } from './screens/MyKbc.js'
 import { Shop } from './screens/Shop.js'
 import { Category } from './screens/Category.js'
 import { Product } from './screens/Product.js'
@@ -23,8 +21,14 @@ import { Repair } from './screens/Repair.js'
 import { ItemScreen } from './screens/item/ItemScreen.js'
 import { ChromeContext } from './screens/item/chrome.js'
 import { CostOverview } from './screens/costs/CostOverview.js'
+import { RewardsScreen } from './screens/rewards/RewardsScreen.js'
+import { InboxScreen, inboxList } from './screens/inbox/InboxScreen.js'
 import { KateScreen } from './kate/KateScreen.js'
 import { Connecting, ConnectionError, OfflineBanner } from './ConnectionScreens.js'
+
+// Persona switch behind the header avatar: Lotte (individual) and Bakkerij Peeters (business).
+const PERSONAL_ID = 'lotte'
+const BUSINESS_ID = 'peeters'
 
 export default function LoopApp() {
   const loop = useLoop()
@@ -107,8 +111,9 @@ export default function LoopApp() {
 
   const shared = { customer, items, signals, actions }
   const screen = {
-    home: () => <Home {...shared} coins={coins} consent={state.consent} />,
-    mykbc: () => <MyKbc {...shared} coins={coins} />,
+    // Everything happens inside Loop: the old Home and My KBC screens show Loop as well.
+    home: () => <Shop {...shared} coins={coins} />,
+    mykbc: () => <Shop {...shared} coins={coins} />,
     shop: () => <Shop {...shared} coins={coins} />,
     category: () => <Category {...shared} categoryId={state.active.categoryId} />,
     product: () => <Product customer={customer} productId={state.active.productId} signal={activeSignal} actions={actions} />,
@@ -119,6 +124,8 @@ export default function LoopApp() {
         celebrate={celebrate} onCelebrated={() => setCelebrate(null)} onUpgrading={setCelebrate} />
     ) : null),
     costs: () => <CostOverview items={items} actions={actions} />,
+    rewards: () => <RewardsScreen state={state} customer={customer} coins={coins} actions={actions} />,
+    inbox: () => <InboxScreen state={state} actions={actions} />,
   }[screenId] ?? (() => null)
 
   const banner = actionError ? `Action failed: ${actionError}` : status === 'offline' ? 'Offline: reconnecting…' : null
@@ -126,7 +133,9 @@ export default function LoopApp() {
   return (
     <View style={styles.app}>
       <StatusBar style="dark" />
-      <AppBar variant={chrome ? 'back' : meta.bar} title={chrome?.title ?? meta.title} placeholder={meta.placeholder} onKate={actions.openKate} onBack={goBack} />
+      <AppBar variant={chrome ? 'back' : meta.bar} title={chrome?.title ?? meta.title} placeholder={meta.placeholder} onKate={actions.openKate} onBack={goBack}
+        onPersona={() => actions.switchCustomer(customer.id === BUSINESS_ID ? PERSONAL_ID : BUSINESS_ID)} persona={customer}
+        onBell={() => actions.navigate('inbox')} unread={inboxList(state).filter((n) => !n.read).length} />
       <View style={styles.body}>
         <LinearGradient colors={['#ffffff', '#ffffff', '#f3f8fc']} locations={[0, 0.3, 1]} style={styles.bg} pointerEvents="none" />
         <ScrollView ref={scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
@@ -150,5 +159,5 @@ const styles = StyleSheet.create({
   app: { flex: 1, backgroundColor: '#f3f8fc' },
   body: { flex: 1 },
   bg: { position: 'absolute', top: 0, left: 0, right: 0, height: 380 },
-  content: { paddingTop: 14, paddingHorizontal: 16, paddingBottom: 150 },
+  content: { paddingTop: 14, paddingHorizontal: 16, paddingBottom: 190 }, // clears the floating tab bar and the round transfer button
 })

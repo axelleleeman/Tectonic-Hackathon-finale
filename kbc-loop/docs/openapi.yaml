@@ -1,0 +1,359 @@
+openapi: 3.1.0
+info:
+  title: KBC Loop API
+  version: 1.0.0
+  summary: Shared demo state, actions, insights and the partner catalogue for KBC Loop.
+  description: |
+    REST + WebSocket API on a single SQLite database (`apps/api`). Web, KBC Loop Insights and the
+    customer app all read the same state and send actions here; every change is pushed live over
+    the WebSocket `/api/live`.
+
+    **Errors.** Every error response has the shape `{ "error": { "code", "message" } }`. `code` is
+    stable and safe to branch on; `message` is human-readable and may change. Internal errors never
+    reveal details.
+
+    **Request ids.** Every response carries `X-Request-Id`. A client may send its own
+    (`[A-Za-z0-9-]{1,64}`); otherwise the server generates a UUID. The id appears in the structured
+    request log (one JSON line per request: `ts`, `method`, `path` without query, `status`, `ms`,
+    `requestId`).
+
+    **CORS.** Only the server's own origin and the origins in `ALLOWED_ORIGINS` are allowed; other
+    origins get `403 forbidden_origin`. Requests without an `Origin` header (native app, servers) are
+    allowed but still subject to the API key.
+
+    **Rate limits.** Per client IP and per minute: 60 `POST` requests and 600 other requests
+    (`429 rate_limited`). `/api/health` is not rate limited.
+
+    **WebSocket `/api/live`.** Connect with subprotocol `kbc-loop` (plus `key.<API_KEY>` when an API
+    key is configured). The same origin rules apply; a refused handshake gets HTTP 403 (origin) or
+    401 (key). On connect and after every applied action the server sends
+    `{ "type": "state", "version": <int>, "state": <object> }` (see the `Snapshot` schema). The socket
+    is read only: any client message closes it with code `1003`. Messages are limited to 1 kB. On
+    shutdown the server closes sockets with code `1001` (going away); clients should reconnect with
+    backoff and keep only snapshots with a higher `version`.
+  license:
+    name: Hackathon prototype, not an official KBC API
+servers:
+  - url: http://127.0.0.1:4000
+    description: Local development (npm run dev:api)
+  - url: http://localhost:8080
+    description: Docker / docker compose
+security:
+  - {}
+  - bearerAuth: []
+tags:
+  - name: Operations
+  - name: State
+  - name: Insights
+  - name: Catalogue
+paths:
+  /api/health:
+    get:
+      tags: [Operations]
+      summary: Liveness probe
+      description: Always available without an API key and without rate limiting.
+      security: [{}]
+      responses:
+        '200':
+          description: The process is up.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, uptime, version]
+                properties:
+                  status: { type: string, const: ok }
+                  uptime: { type: integer, description: Process uptime in seconds }
+                  version: { type: string, description: Version from apps/api/package.json, example: 1.0.0 }
+  /api/ready:
+    get:
+      tags: [Operations]
+      summary: Readiness probe
+      description: 200 when the database answers a trivial query. No API key required; rate limited.
+      security: [{}]
+      responses:
+        '200':
+          description: Ready to serve traffic.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status: { type: string, const: ready }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '503':
+          description: Database not reachable (`code` = `unavailable`).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+  /api/state:
+    get:
+      tags: [State]
+      summary: Current demo state
+      responses:
+        '200':
+          description: The latest snapshot.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Snapshot' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /api/actions:
+    post:
+      tags: [State]
+      summary: Apply an action
+      description: |
+        Applies one action with the shared reducer (`packages/shared/src/state/loopReducer.js`) in a
+        single database transaction, logs it, broadcasts the new snapshot over `/api/live` and returns
+        it. Only known action types are accepted (`400 bad_request` otherwise). A known type with an
+        invalid payload is accepted but leaves the state unchanged (the version still increases).
+        Body: `application/json` only (`415`), at most 16 kB (`413`).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Action' }
+            examples:
+              borrow: { value: { type: BORROW, productId: phone } }
+              reset: { value: { type: RESET } }
+      responses:
+        '200':
+          description: The new snapshot.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Snapshot' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '413': { $ref: '#/components/responses/PayloadTooLarge' }
+        '415': { $ref: '#/components/responses/UnsupportedMediaType' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /api/actions/recent:
+    get:
+      tags: [State]
+      summary: Latest actions from the log
+      parameters:
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+          description: Values outside 1..100 are clamped.
+      responses:
+        '200':
+          description: Newest first.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [actions]
+                properties:
+                  actions:
+                    type: array
+                    items:
+                      type: object
+                      required: [version, type, payload, created_at]
+                      properties:
+                        version: { type: integer }
+                        type: { $ref: '#/components/schemas/ActionType' }
+                        payload: { type: object, description: The action without its type }
+                        created_at: { type: string, format: date-time }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /api/insights:
+    get:
+      tags: [Insights]
+      summary: Anonymised spending groups and recommendations (KBC Loop Insights)
+      description: Groups under 100 customers are never returned.
+      parameters:
+        - name: kind
+          in: query
+          schema: { type: string, enum: [alle, herstelling, herhaalaankoop], default: alle }
+        - name: customerType
+          in: query
+          schema: { type: string, enum: [alle, particulier, kmo], default: alle }
+      responses:
+        '200':
+          description: Segments, recommendations and the running campaigns.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [segments, campaigns]
+                properties:
+                  segments: { type: array, items: { type: object } }
+                  campaigns: { type: array, items: { type: string }, description: Segment ids with a running campaign }
+                additionalProperties: true
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /api/catalog:
+    get:
+      tags: [Catalogue]
+      summary: Partner catalogue
+      description: Same shapes as `packages/shared/src/data` (partners keyed by id, products as an array).
+      responses:
+        '200':
+          description: The catalogue.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [categories, partners, products]
+                properties:
+                  categories: { type: array, items: { type: object } }
+                  partners:
+                    type: object
+                    additionalProperties: { $ref: '#/components/schemas/Partner' }
+                  products: { type: array, items: { $ref: '#/components/schemas/Product' } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+  /api/catalog/partners/{id}:
+    get:
+      tags: [Catalogue]
+      summary: One partner with its products
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string, pattern: '^[a-z0-9-]{1,64}$' }
+      responses:
+        '200':
+          description: The partner.
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/Partner'
+                  - type: object
+                    required: [products]
+                    properties:
+                      products: { type: array, items: { $ref: '#/components/schemas/Product' } }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/ForbiddenOrigin' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        Optional. When the server runs with `API_KEY`, every request except `/api/health` and
+        `/api/ready` must send `Authorization: Bearer <API_KEY>` (WebSocket: subprotocol
+        `key.<API_KEY>`). Compared in constant time.
+  headers:
+    X-Request-Id:
+      description: Request id (echoed when the client sent a valid one, otherwise a UUID).
+      schema: { type: string, pattern: '^[A-Za-z0-9-]{1,64}$' }
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              enum: [bad_request, unauthorized, forbidden_origin, not_found, payload_too_large,
+                     unsupported_media_type, rate_limited, internal, unavailable]
+            message: { type: string }
+      example: { error: { code: not_found, message: Unknown API path } }
+    Snapshot:
+      type: object
+      required: [type, version, state]
+      properties:
+        type: { type: string, const: state }
+        version: { type: integer, minimum: 1, description: Increases by one per applied action }
+        state:
+          type: object
+          description: Full demo state (see `createInitialState` in loopReducer.js).
+          additionalProperties: true
+    ActionType:
+      type: string
+      enum: [RESET, SET_VIEW, SWITCH_CUSTOMER, SET_CONSENT, NAVIGATE, OPEN_KATE, CLOSE_KATE, DISMISS_SIGNAL,
+             BORROW, REPORT_DEFECT, ADVANCE_REPAIR, CLOSE_REPAIR, RETURN_ITEM, UPGRADE_ITEM, TRIGGER_TELEMETRY,
+             TOGGLE_CAMPAIGN, START_CAMPAIGN, STOP_CAMPAIGN, REDEEM_REWARD, MARK_NOTIFICATIONS_READ,
+             PARTNER_UPDATE_REPAIR]
+    Action:
+      type: object
+      required: [type]
+      description: |
+        Discriminated by `type`. Payload fields per type (all validated by the reducer):
+
+        | type | fields |
+        |---|---|
+        | RESET, OPEN_KATE, CLOSE_KATE, TRIGGER_TELEMETRY | – |
+        | SET_VIEW | `view`: klant / partner / kbc |
+        | SWITCH_CUSTOMER | `customerId` |
+        | SET_CONSENT | `value`: boolean |
+        | NAVIGATE | `screen`, `active` (`productId`, `signalId`, `itemKey`, `categoryId`) |
+        | DISMISS_SIGNAL | `signalId` |
+        | BORROW | `productId` |
+        | REPORT_DEFECT | `itemKey`, `issue` (≤ 120 chars), `preventive`, `note` (≤ 200 chars), `photo` |
+        | ADVANCE_REPAIR, CLOSE_REPAIR, RETURN_ITEM | `itemKey` |
+        | UPGRADE_ITEM | `itemKey`, `productId` |
+        | TOGGLE_CAMPAIGN, STOP_CAMPAIGN | `segmentId` |
+        | START_CAMPAIGN | `segmentId`, `audience` (consented / consented-active), `budget` (≤ 100000), `message` (≤ 280 chars) |
+        | REDEEM_REWARD | `rewardId` |
+        | MARK_NOTIFICATIONS_READ | `ids` (array, ≤ 100) |
+        | PARTNER_UPDATE_REPAIR | `itemKey`, `status` (scheduled / on-the-way / in-progress / repaired), `customerId` (optional) |
+      properties:
+        type: { $ref: '#/components/schemas/ActionType' }
+      additionalProperties: true
+    Partner:
+      type: object
+      required: [id, category, name, short, tagline]
+      properties:
+        id: { type: string }
+        category: { type: string }
+        name: { type: string }
+        short: { type: string }
+        tagline: { type: string }
+    Product:
+      type: object
+      required: [id, partnerId, name]
+      properties:
+        id: { type: string }
+        partnerId: { type: string }
+        name: { type: string }
+        monthly: { type: number }
+        buyPrice: { type: number }
+        termMonths: { type: integer }
+        co2Kg: { type: number }
+      additionalProperties: true
+  responses:
+    BadRequest:
+      description: Invalid input (`bad_request`).
+      headers: { X-Request-Id: { $ref: '#/components/headers/X-Request-Id' } }
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    Unauthorized:
+      description: Missing or invalid API key (`unauthorized`).
+      headers: { X-Request-Id: { $ref: '#/components/headers/X-Request-Id' } }
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    ForbiddenOrigin:
+      description: Origin not allowed (`forbidden_origin`).
+      headers: { X-Request-Id: { $ref: '#/components/headers/X-Request-Id' } }
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    NotFound:
+      description: Unknown path or resource (`not_found`).
+      headers: { X-Request-Id: { $ref: '#/components/headers/X-Request-Id' } }
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    PayloadTooLarge:
+      description: Body over 16 kB (`payload_too_large`); the connection is closed afterwards.
+      headers: { X-Request-Id: { $ref: '#/components/headers/X-Request-Id' } }
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    UnsupportedMediaType:
+      description: Content-Type is not application/json (`unsupported_media_type`).
+      headers: { X-Request-Id: { $ref: '#/components/headers/X-Request-Id' } }
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+    RateLimited:
+      description: Too many requests from this IP (`rate_limited`).
+      headers: { X-Request-Id: { $ref: '#/components/headers/X-Request-Id' } }
+      content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }

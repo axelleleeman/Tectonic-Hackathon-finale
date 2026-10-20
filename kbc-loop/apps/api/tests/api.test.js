@@ -26,7 +26,7 @@ test('fetching state and applying an action increments the version', async () =>
   assert.equal(s2.state.screen, 'done')
 })
 
-test('onbekende of kapotte acties worden geweigerd', async () => {
+test('unknown or malformed actions are refused', async () => {
   assert.equal((await post({ type: 'DROP_TABLE' })).status, 400)
   const bad = await fetch(`${base}/api/actions`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{nope' })
   assert.equal(bad.status, 400)

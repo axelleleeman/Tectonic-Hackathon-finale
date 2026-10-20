@@ -1,10 +1,11 @@
 import { Icon } from './Icon.jsx'
 import { href } from '../useRoute.js'
+import { LiveIndicator } from './LiveIndicator.jsx'
 
 const NAV = [['overview', 'Overview', href.overview], ['campaigns', 'Campaigns', href.campaigns], ['groups', 'Groups', href.groups]]
 
 /** Sticky app bar: KBC LOOP Insights brand, main navigation, privacy badge and theme toggle. */
-export function AppHeader({ page, theme, onToggleTheme, runningCount }) {
+export function AppHeader({ page, theme, onToggleTheme, runningCount, status }) {
   const toLight = theme === 'dark'
   const themeLabel = toLight ? 'Switch to light mode' : 'Switch to dark mode'
   return (
@@ -22,7 +23,8 @@ export function AppHeader({ page, theme, onToggleTheme, runningCount }) {
           ))}
         </nav>
         <div className="ins-top-right">
-          <span className="ins-privacy"><Icon name="shield" size={16} />Anonymised</span>
+          <LiveIndicator status={status} />
+          <span className="ins-privacy" title="Only aggregated groups, never individual customers"><Icon name="shield" size={16} /><span className="ins-privacy-l">Anonymised data</span></span>
           <button type="button" className="ins-iconbtn" onClick={onToggleTheme} aria-label={themeLabel} title={themeLabel}>
             <Icon name={toLight ? 'sun' : 'moon'} size={18} />
           </button>

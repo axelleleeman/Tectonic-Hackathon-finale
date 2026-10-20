@@ -2,13 +2,14 @@
 import { StyleSheet, View } from 'react-native'
 import { T } from '../../ui/T.js'
 import { colors } from '../../theme.js'
+import { partnerStatusChip } from './partnerStatus.js'
 
 export function itemStatus(item) {
   if (item.returned) return { kind: 'returned', label: 'Returned' }
   if (item.repair) {
     return item.repair.step >= 3
       ? { kind: 'repaired', label: 'Repaired' }
-      : { kind: 'repair', label: `Repair step ${item.repair.step} of 3` }
+      : { kind: 'repair', label: partnerStatusChip(item.repair.partnerStatus) ?? `Repair step ${item.repair.step} of 3` }
   }
   return { kind: 'active', label: 'Active' }
 }

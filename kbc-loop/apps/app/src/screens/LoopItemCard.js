@@ -9,6 +9,7 @@ import { itemStatus } from './item/status.js'
 import { Glyph } from './item/Glyph.js'
 import { money } from './item/format.js'
 import { cardShadow, colors } from '../theme.js'
+import { radius, space, tabular } from '../ui/tokens.js'
 
 const DOT = { ok: '#1aa36f', warn: '#e0a100', off: 'transparent' }
 
@@ -38,13 +39,13 @@ export function LoopItemCard({ item, actions }) {
 }
 
 const styles = StyleSheet.create({
-  card: { backgroundColor: '#fff', borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14, marginVertical: 6, ...cardShadow },
+  card: { backgroundColor: '#fff', borderRadius: radius.lg, paddingVertical: space.md, paddingHorizontal: space.md, marginVertical: 6, ...cardShadow },
   returned: { opacity: 0.7 },
   head: { flexDirection: 'row', gap: 12, alignItems: 'center' },
   headText: { flex: 1 },
   name: { fontWeight: '600', color: colors.ink, fontSize: 15 },
-  small: { color: colors.muted, fontSize: 12.5, marginTop: 2 },
-  fee: { fontWeight: '600', color: colors.ink, fontSize: 14 },
+  small: { color: colors.kmSub, fontSize: 13, marginTop: 2 },
+  fee: { fontWeight: '600', color: colors.ink, fontSize: 15, ...tabular },
   muted: { color: colors.muted },
   dot: { width: 8, height: 8, borderRadius: 4 },
   dotOff: { borderWidth: 1.5, borderColor: colors.muted },

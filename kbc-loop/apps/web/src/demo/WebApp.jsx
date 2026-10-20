@@ -1,6 +1,8 @@
 import { useLoop } from '@kbc-loop/web-ui/useLoop.js'
 import { useHashRoute } from '../hooks/useHashRoute.js'
 import { LoopPage } from '../loop/LoopPage.jsx'
+import { useTheme } from '../loop/useTheme.js'
+import { PartnerPortal } from './dashboards/PartnerDashboard.jsx'
 import { KbcAppsTop, KbcAppsGrid } from './site/KbcAppsPage.jsx'
 
 // Web view: thin router between the KBC "All apps" page (pixel-exact screenshot with a clickable
@@ -8,7 +10,9 @@ import { KbcAppsTop, KbcAppsGrid } from './site/KbcAppsPage.jsx'
 export default function WebApp() {
   const { route, param, go } = useHashRoute()
   const loop = useLoop()
+  const { theme, toggle } = useTheme()
 
+  if (route === 'partner') return <PartnerPortal loop={loop} theme={theme} onToggleTheme={toggle} onBack={() => go(null)} />
   if (route) return <LoopPage route={route} param={param} go={go} loop={loop} />
 
   return (

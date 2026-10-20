@@ -1,0 +1,43 @@
+# KBC Loop: the production image locally (api + built web, Insights and app on one address).
+#   docker compose up --build      then open http://localhost:8080
+# Optional settings via a .env file next to this file (never commit it), for example:
+#   API_KEY=choose-a-long-random-key
+#   ALLOWED_ORIGINS=https://kbc-loop.example.com
+#   LOG_LEVEL=info
+services:
+  api:
+    build: .
+    image: kbc-loop:local
+    ports:
+      - "127.0.0.1:8080:8080"   # localhost only; put an HTTPS proxy in front for anything else
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "8080"
+      DB_PATH: /data/kbc-loop.db
+      STATIC_DIR: /srv/public
+      # Locally there is no proxy in front: do not trust x-forwarded-* headers.
+      TRUST_PROXY: "false"
+      API_KEY: ${API_KEY:-}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - kbc-loop-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    stop_signal: SIGTERM
+    stop_grace_period: 15s
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/api/health').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  kbc-loop-data:

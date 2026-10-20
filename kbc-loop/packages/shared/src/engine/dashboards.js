@@ -1,4 +1,4 @@
-// Cijfers voor het partner- en KBC-dashboard: pilotbasis + live demo-acties.
+// Figures for the partner and KBC dashboards: pilot baseline + live demo actions.
 import { customers, partnerPilot, kbcPilot } from '../data/index.js'
 import { KBC_MARGIN_RATE, TODAY } from '../config/index.js'
 import { productById } from './catalog.js'
@@ -10,7 +10,7 @@ function allItems(itemsByCustomer) {
   })
 }
 
-/** Nieuwe items = alles wat tijdens de demo is bijgekomen (initiële items zitten al in de pilotbasis). */
+/** New items = everything added during the demo (initial items are already in the pilot baseline). */
 const isNew = (i) => i.since >= TODAY
 
 export function partnerStats(partnerId, itemsByCustomer, telemetryByCustomer) {

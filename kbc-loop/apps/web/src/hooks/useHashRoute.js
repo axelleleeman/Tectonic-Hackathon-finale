@@ -5,10 +5,12 @@
 //   #loop/catalog/<categoryId> → the catalogue, opened on one category
 //   #loop/product/<itemKey>    → detail page of one product the customer has
 //   #loop/costs                → cost overview
+//   #loop/rewards              → Kate Coins rewards
 //   #loop/presentation         → presenter panel, dashboards and app (URL only, not linked from the page)
+//   #partner                   → partner portal (KBC Partner Hub view: KPIs and live repair tickets)
 import { useCallback, useEffect, useState } from 'react'
 
-const HASHES = { home: '#loop', catalog: '#loop/catalog', product: '#loop/product', costs: '#loop/costs', presentation: '#loop/presentation' }
+const HASHES = { home: '#loop', catalog: '#loop/catalog', product: '#loop/product', costs: '#loop/costs', rewards: '#loop/rewards', presentation: '#loop/presentation', partner: '#partner' }
 const ALIASES = { '#loop/marketplace': 'catalog', '#loop/mykbc': 'home' }
 const ROUTES = { ...Object.fromEntries(Object.entries(HASHES).map(([route, hash]) => [hash, route])), ...ALIASES }
 const PARAM = /^[A-Za-z0-9_-]{1,64}$/ // category ids and item keys only; anything else is ignored

@@ -1,5 +1,7 @@
-// English formatting for the product and cost screens (dates as "22 Oct 2026", amounts as "€ 6" or "€ 6.50").
+// Formatting for the product and cost screens: dates in English ("22 Oct 2026"), amounts in the Belgian
+// format of the shared engine ("€ 6", "€ 165,90", "€ 1.234").
 import { TECHNICIAN_SLOT, TODAY } from '@kbc-loop/shared/config/index.js'
+import { euro } from '@kbc-loop/shared/engine/format.js'
 
 const toDate = (iso) => new Date(`${iso}T12:00:00`)
 
@@ -11,12 +13,11 @@ export function dateText(iso, { withYear = true, weekday = false } = {}) {
   })
 }
 
-/** "€ 6" for whole amounts, "€ 6.50" otherwise. */
+/** "€ 6" for whole amounts, "€ 6,50" otherwise (Belgian format, thousands with a dot). */
 export function money(n) {
   const value = Number(n) || 0
-  const whole = Math.abs(value % 1) < 0.005
-  const text = Math.abs(value).toLocaleString('en-GB', { minimumFractionDigits: whole ? 0 : 2, maximumFractionDigits: whole ? 0 : 2 })
-  return `${value < 0 ? '−' : ''}€ ${text}`
+  const whole = Math.abs(value % 1) < 0.005 || Math.abs(value % 1) > 0.995
+  return `${value < 0 ? '−' : ''}${euro(Math.abs(value), whole ? 0 : 2)}`
 }
 
 /** "+ € 4" / "− € 2" / "€ 0" for a monthly difference. */

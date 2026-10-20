@@ -1,6 +1,7 @@
 // KBC Loop-api: REST + WebSocket bovenop één SQLite-database.
 //
-//   GET  /api/health                         status (zonder sleutel)
+//   GET  /api/health                         liveness { status, uptime, version } (no key, no rate limit)
+//   GET  /api/ready                          readiness: 200 when the database answers, 503 otherwise (no key)
 //   GET  /api/state                          { version, state }
 //   POST /api/actions                        { type, ... } → past de actie toe, geeft de nieuwe state terug
 //   GET  /api/insights?kind=&customerType=   geanonimiseerde groepen + aanbevelingen (KBC Loop Insights)
@@ -9,8 +10,12 @@
 //   GET  /api/catalog/partners/:id           one partner with its products (404 when unknown)
 //   WS   /api/live                           { type: 'state', version, state } bij verbinden en elke wijziging
 //
+// Every response carries an X-Request-Id; every request is logged as one JSON line (logger.js).
+// Errors always have the shape { error: { code, message } } (errors.js). API contract: docs/openapi.yaml.
+//
 // In productie serveert dezelfde server ook de gebouwde web (STATIC_DIR): alles op één (HTTPS-)adres.
 import { createServer as createHttpServer } from 'node:http'
+import { readFileSync } from 'node:fs'
 import { ACTION_TYPES } from '@kbc-loop/shared/state/loopReducer.js'
 import { insights } from '@kbc-loop/shared/engine/insights.js'
 import { openDb } from './db.js'
@@ -19,21 +24,21 @@ import { liveUpdates } from './live.js'
 import { staticFiles } from './static.js'
 import { HSTS, SECURITY_HEADERS, clientIp, keyCheck, originCheck, rateLimiter } from './security.js'
 import { loadConfig } from './config.js'
+import { HttpError, errorBody, statusOf } from './errors.js'
+import { createLogger, logRequest, requestId } from './logger.js'
 
 const MAX_BODY = 16 * 1024
 const KINDS = ['alle', 'herstelling', 'herhaalaankoop']
 const CUSTOMER_TYPES = ['alle', 'particulier', 'kmo']
 const PARTNER_PATH = '/api/catalog/partners/'
 
-class HttpError extends Error {
-  constructor(status, message) { super(message); this.status = status }
-}
+const VERSION = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')).version
 
 function readJson(req) {
   if (!String(req.headers['content-type'] ?? '').startsWith('application/json')) {
     return Promise.reject(new HttpError(415, 'Expected application/json'))
   }
-  if (Number(req.headers['content-length']) > MAX_BODY) return Promise.reject(new HttpError(413, 'Request too large'))
+  if (Number(req.headers['content-length']) > MAX_BODY) return Promise.reject(new HttpError(413, 'Payload too large'))
   return new Promise((ok, fail) => {
     let size = 0
     let tooBig = false
@@ -44,7 +49,7 @@ function readJson(req) {
       else chunks.push(c)
     })
     req.on('end', () => {
-      if (tooBig) return fail(new HttpError(413, 'Request too large'))
+      if (tooBig) return fail(new HttpError(413, 'Payload too large'))
       try { ok(JSON.parse(Buffer.concat(chunks).toString() || '{}')) } catch { fail(new HttpError(400, 'Invalid JSON')) }
     })
     req.on('error', () => fail(new HttpError(400, 'Request aborted')))
@@ -58,6 +63,7 @@ export function createServer(overrides = {}) {
   const checkKey = keyCheck(config)
   const writeLimit = rateLimiter({ limit: 60, windowMs: 60_000 })
   const readLimit = rateLimiter({ limit: 600, windowMs: 60_000 })
+  const logger = config.logger ?? createLogger(config.logLevel)
   const serveStatic = config.staticDir ? staticFiles(config.staticDir, config.production ? HSTS : {}) : null
 
   function respond(res, status, body, origin) {
@@ -67,26 +73,37 @@ export function createServer(overrides = {}) {
       ...(status === 413 ? { connection: 'close' } : {}),
       ...SECURITY_HEADERS,
       ...(config.production ? HSTS : {}),
-      ...(origin ? { 'access-control-allow-origin': origin, vary: 'Origin' } : {}),
+      ...(origin ? { 'access-control-allow-origin': origin, 'access-control-expose-headers': 'x-request-id', vary: 'Origin' } : {}),
     })
     res.end(JSON.stringify(body))
   }
 
   async function handleApi(req, res, url, origin) {
     const { pathname } = url
-    if (pathname === '/api/health' && req.method === 'GET') return respond(res, 200, { ok: true }, origin)
-    if (!checkKey(req)) throw new HttpError(401, 'Invalid or missing key')
+    // Liveness: cheap, no key and no rate limit, so container and load-balancer probes always get through.
+    if (pathname === '/api/health' && req.method === 'GET') {
+      return respond(res, 200, { status: 'ok', uptime: Math.round(process.uptime()), version: VERSION }, origin)
+    }
 
+    // Rate limit before the key check, so key guessing is throttled as well.
     const ip = clientIp(req, config.trustProxy, config.proxyHops)
     const write = req.method === 'POST'
     if (!(write ? writeLimit(ip) : readLimit(ip))) throw new HttpError(429, 'Too many requests, please try again shortly')
+
+    // Readiness: the database must answer. No key (reveals nothing but up/down), but rate limited.
+    if (pathname === '/api/ready' && req.method === 'GET') {
+      if (!db.ping()) throw new HttpError(503, 'Database not reachable')
+      return respond(res, 200, { status: 'ready' }, origin)
+    }
+
+    if (!checkKey(req)) throw new HttpError(401, 'Invalid or missing key')
 
     if (pathname === '/api/state' && req.method === 'GET') return respond(res, 200, { type: 'state', ...db.read() }, origin)
 
     if (pathname === '/api/actions' && write) {
       const action = await readJson(req)
       if (!action || typeof action !== 'object' || Array.isArray(action) || !ACTION_TYPES.includes(action.type)) {
-        throw new HttpError(400, 'Unknown action')
+        throw new HttpError(400, 'Unknown action type')
       }
       let snapshot
       try { snapshot = db.apply(action) } catch { throw new HttpError(400, `Action ${action.type} could not be applied`) }
@@ -121,6 +138,9 @@ export function createServer(overrides = {}) {
 
   const server = createHttpServer(async (req, res) => {
     let origin = null
+    const id = requestId(req)
+    res.setHeader('x-request-id', id)
+    logRequest(logger, req, res, id)
     try {
       const url = new URL(req.url, 'http://localhost')
       const isApi = url.pathname.startsWith('/api/')
@@ -132,7 +152,7 @@ export function createServer(overrides = {}) {
           res.writeHead(204, {
             ...(origin ? { 'access-control-allow-origin': origin, vary: 'Origin' } : {}),
             'access-control-allow-methods': 'GET, POST',
-            'access-control-allow-headers': 'content-type, authorization',
+            'access-control-allow-headers': 'content-type, authorization, x-request-id',
             'access-control-max-age': '600',
           })
           return res.end()
@@ -142,11 +162,11 @@ export function createServer(overrides = {}) {
       if (serveStatic && (req.method === 'GET' || req.method === 'HEAD')) return await serveStatic(res, url.pathname)
       throw new HttpError(404, 'Not found')
     } catch (err) {
-      const status = err instanceof HttpError ? err.status : 500
-      if (status === 500) console.error(err)
-      // Bij een te groot verzoek: eerst antwoorden, dan de verbinding sluiten (rest van de upload niet lezen)
+      const status = statusOf(err)
+      if (status === 500) logger.error({ requestId: id, message: err?.message, stack: err?.stack })
+      // Payload too large: answer first, then close the connection (do not read the rest of the upload)
       if (status === 413) res.once('finish', () => req.destroy())
-      if (!res.headersSent) respond(res, status, { error: status === 500 ? 'Interne fout' : err.message }, origin)
+      if (!res.headersSent) respond(res, status, errorBody(err), origin)
     }
   })
   server.requestTimeout = 10_000
@@ -158,6 +178,17 @@ export function createServer(overrides = {}) {
     server,
     config,
     listen: (port = config.port, host = config.host) => new Promise((ok) => server.listen(port, host, () => ok(server.address()))),
-    close: () => new Promise((ok) => { live.close(); server.close(() => { db.close(); ok() }) }),
+    // Graceful shutdown: stop accepting, close WebSocket clients with 1001, let in-flight requests
+    // finish (idle keep-alive sockets are closed at once, the rest after graceMs), then close the database.
+    close: async (graceMs = 5000) => {
+      const stopped = new Promise((ok) => server.close(ok))
+      server.closeIdleConnections()
+      const force = setTimeout(() => server.closeAllConnections(), graceMs)
+      force.unref()
+      await live.close()
+      await stopped
+      clearTimeout(force)
+      db.close()
+    },
   }
 }
