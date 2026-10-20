@@ -403,7 +403,7 @@ a.lp-tile:hover .lp-tile-arrow { color: var(--lp-accent); transform: translateX(
 .lp-tips-sec .lp-tip-actions { padding-top: var(--s3); }
 
 /* ---------- Explore the app (phone frame) ---------- */
-.lp-appx { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto); gap: var(--s7); align-items: center; margin-bottom: var(--s8); padding: var(--s6); background: var(--lp-surface); border: 1px solid var(--lp-line); border-radius: 28px; }
+.lp-appx { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s7); align-items: center; margin-bottom: var(--s8); padding: var(--s6); background: var(--lp-surface); border: 1px solid var(--lp-line); border-radius: 28px; }
 .lp-appx-copy { max-width: 46ch; }
 .lp-ui .lp-appx .lp-h2 { font-size: 1.375rem; }
 .lp-appx-lead { color: var(--lp-muted); margin: var(--s2) 0 var(--s5); }
@@ -413,9 +413,17 @@ a.lp-tile:hover .lp-tile-arrow { color: var(--lp-accent); transform: translateX(
 .lp-appx-fit { width: 100%; min-width: 0; display: flex; justify-content: center; }
 .lp-phone-box { position: relative; flex: none; }
 .lp-phone { position: absolute; top: 0; left: 0; transform-origin: 0 0; width: calc(390px + 24px); height: calc(844px + 24px); padding: 12px; border-radius: 56px; background: #0A1322; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08) inset, 0 0 0 2px #26324A, 0 24px 60px rgba(6, 24, 47, .28); }
-.lp-phone iframe { display: block; width: 390px; height: 844px; border: 0; border-radius: 44px; background: #FFFFFF; }
-.lp-phone-notch { position: absolute; z-index: 2; top: 22px; left: 50%; translate: -50% 0; width: 110px; height: 30px; border-radius: var(--r-pill); background: #0A1322; pointer-events: none; }
-.lp-phone-skel { position: absolute; inset: 12px; border-radius: 44px; background: linear-gradient(100deg, var(--lp-surface2) 30%, var(--lp-surface) 50%, var(--lp-surface2) 70%) 0 0 / 300% 100%; animation: lp-shimmer 1.4s linear infinite; }
+.lp-phone-screen { position: relative; width: 390px; height: 844px; border-radius: 44px; overflow: hidden; background: #F3F6FA; }
+.lp-phone-status { height: 44px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 28px; color: #0B1F3A; font: 600 15px/1 -apple-system, "SF Pro Text", system-ui, sans-serif; background: #F3F6FA; }
+.lp-phone-status > span:first-child { justify-self: start; padding-left: 8px; }
+.lp-phone-sys { justify-self: end; display: flex; gap: 5px; align-items: center; }
+.lp-phone-sys i { display: block; width: 16px; height: 10px; border-radius: 3px; background: #0B1F3A; opacity: .85; }
+.lp-phone-sys i:nth-child(1) { width: 14px; clip-path: polygon(0 100%, 100% 0, 100% 100%); border-radius: 1px; }
+.lp-phone-sys i:nth-child(2) { width: 14px; border-radius: 50% 50% 2px 2px / 70% 70% 2px 2px; opacity: .7; }
+.lp-phone-sys i:nth-child(3) { width: 24px; height: 11px; border-radius: 3px; background: transparent; border: 1.5px solid #0B1F3A; box-shadow: inset 0 0 0 1.5px #F3F6FA, inset 18px 0 0 #0B1F3A; }
+.lp-phone iframe { display: block; width: 390px; height: 800px; border: 0; background: #F3F6FA; }
+.lp-phone-notch { display: block; width: 116px; height: 32px; margin-top: 6px; border-radius: var(--r-pill); background: #0A1322; pointer-events: none; }
+.lp-phone-skel { position: absolute; inset: 44px 0 0; border-radius: 0 0 44px 44px; background: linear-gradient(100deg, var(--lp-surface2) 30%, var(--lp-surface) 50%, var(--lp-surface2) 70%) 0 0 / 300% 100%; animation: lp-shimmer 1.4s linear infinite; }
 @keyframes lp-shimmer { to { background-position: -150% 0; } }
 .lp-appx-fallback { width: 100%; max-width: 360px; text-align: center; }
 

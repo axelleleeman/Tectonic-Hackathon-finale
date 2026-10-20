@@ -5,7 +5,8 @@ import { LoopIcon } from '../LoopIcon.jsx'
 const SCREEN_W = 390
 const SCREEN_H = 844
 const BEZEL = 12
-const MAX_SCALE = 0.86
+const MAX_SCALE = 0.72
+const STATUS_H = 44 // fake iOS status bar above the app, so the notch never covers app content
 const LOAD_TIMEOUT = 12000
 
 // Only the configured app address is ever framed (no user input); anything that is not http(s) is refused.
@@ -51,10 +52,16 @@ function Phone({ scale, loading, onLoad }) {
   return (
     <div className="lp-phone-box" style={{ width: (SCREEN_W + BEZEL * 2) * scale, height: (SCREEN_H + BEZEL * 2) * scale }}>
       <div className="lp-phone" style={{ transform: `scale(${scale})` }}>
-        <span className="lp-phone-notch" aria-hidden="true" />
-        {loading && <div className="lp-phone-skel" aria-hidden="true" />}
-        <iframe src={SAFE_URL} title="KBC Loop mobile app (demo)" loading="lazy" width={SCREEN_W} height={SCREEN_H}
-          sandbox="allow-scripts allow-same-origin allow-forms" referrerPolicy="no-referrer" onLoad={onLoad} />
+        <div className="lp-phone-screen">
+          <div className="lp-phone-status" aria-hidden="true">
+            <span>9:41</span>
+            <span className="lp-phone-notch" />
+            <span className="lp-phone-sys"><i /><i /><i /></span>
+          </div>
+          {loading && <div className="lp-phone-skel" aria-hidden="true" />}
+          <iframe src={SAFE_URL} title="KBC Loop mobile app (demo)" loading="lazy" width={SCREEN_W} height={SCREEN_H - STATUS_H}
+            sandbox="allow-scripts allow-same-origin allow-forms" referrerPolicy="no-referrer" onLoad={onLoad} />
+        </div>
       </div>
     </div>
   )
