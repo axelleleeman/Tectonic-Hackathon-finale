@@ -4,7 +4,7 @@ KBC Loop is an npm workspaces monorepo with three front ends, one API and one SQ
 logic (catalogue, pricing, impact, signals, the state reducer) lives in `packages/shared` and runs the same way
 in the browser, on the phone and on the server.
 
-See also: [README](../README.md) for setup and scripts, [DEMO.md](DEMO.md) for the pitch demo, and
+See also: [README](../../README.md) for setup and scripts, [DEMO.md](DEMO.md) for the pitch demo, and
 [openapi.yaml](openapi.yaml) for the REST contract.
 
 ## Overview

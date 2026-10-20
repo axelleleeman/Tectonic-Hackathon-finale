@@ -1,4 +1,4 @@
-// Checks that README.md describes the actual project structure.
+// Checks that the repository README (one level above kbc-loop/) describes the actual project structure.
 // Usage: npm run check:readme (also runs as part of npm test).
 //   1. every app (apps/*) and package (packages/*), their subfolders in src/, and every file in apps/api/src
 //   2. every npm script in package.json
@@ -15,7 +15,8 @@ const inside = (p) => {
   return full
 }
 const read = (p) => readFileSync(inside(p), 'utf8')
-const readme = read('README.md')
+// The single README lives at the repository root, next to the kbc-loop/ folder.
+const readme = readFileSync(resolve(root, '..', 'README.md'), 'utf8')
 const IGNORE = new Set(['node_modules', 'dist', '.expo', 'assets'])
 
 const missing = []
@@ -49,7 +50,7 @@ for (const m of read('apps/api/src/live.js').matchAll(/path: '(\/api\/[^']*)'/g)
 for (const r of routes) expect(r, 'API path')
 
 if (missing.length) {
-  console.error('README.md is out of date. Missing from kbc-loop/README.md:')
+  console.error('README.md is out of date. Missing from the repository README.md:')
   for (const m of missing) console.error(`  - ${m}`)
   console.error('Update the README (e.g. the structure block or the API table) and run again: npm run check:readme')
   process.exit(1)
