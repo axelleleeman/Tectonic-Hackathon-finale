@@ -19,12 +19,12 @@ function RewardsSegment({ customer, coins, actions }) {
   return <RewardsPanel state={state} customer={customer} coins={coins} actions={actions} style={{ marginTop: 20 }} />
 }
 
-export function Shop({ customer, items, signals, coins, actions }) {
+export function Shop({ customer, items, signals, coins, actions, kateLevel }) {
   const [segment, setSegment] = useState('home')
   return (
     <>
       <Segmented options={SEGMENTS} value={segment} onChange={setSegment} />
-      {segment === 'home' ? <LoopHome customer={customer} items={items} signals={signals} actions={actions} /> : null}
+      {segment === 'home' ? <LoopHome customer={customer} items={items} signals={signals} actions={actions} kateLevel={kateLevel} /> : null}
       {segment === 'impact'
         ? <LoopImpact items={items} coins={coins} actions={actions} onOpenRewards={() => setSegment('rewards')} />
         : null}

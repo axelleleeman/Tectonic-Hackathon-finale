@@ -30,7 +30,7 @@ export function homeGroups(items, customerType) {
   return [...groups.values()].sort((a, b) => rank(a.category.id) - rank(b.category.id))
 }
 
-export function LoopHome({ customer, items, signals, actions }) {
+export function LoopHome({ customer, items, signals, actions, kateLevel }) {
   const groups = homeGroups(items, customer.type)
   const add = () => actions.navigate('category', { categoryId: null })
   return (
@@ -53,7 +53,7 @@ export function LoopHome({ customer, items, signals, actions }) {
           {g.items.map((item) => <LoopItemCard key={item.key} item={item} actions={actions} />)}
         </View>
       ))}
-      <KateTips signals={signals} actions={actions} />
+      <KateTips signals={signals} actions={actions} kateLevel={kateLevel} />
     </View>
   )
 }

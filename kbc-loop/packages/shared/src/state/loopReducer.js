@@ -6,6 +6,9 @@ import { COINS, MIN_GROUP_SIZE, TODAY } from '../config/index.js'
 import { expandProduct, productById } from '../engine/catalog.js'
 import { isValidUpgrade } from '../engine/upgrades.js'
 import { rewardById } from '../data/rewards.js'
+import { DEFAULT_KATE_LEVEL, KATE_LEVEL_IDS } from '../data/dataChoices.js'
+
+export { KATE_LEVELS, KATE_LEVEL_IDS, DEFAULT_KATE_LEVEL } from '../data/dataChoices.js'
 
 // Allowed values; anything else is ignored so the shared state never breaks.
 export const VIEWS = ['klant', 'partner', 'kbc']
@@ -33,10 +36,11 @@ export const MAX_CAMPAIGN_BUDGET = 100_000
 export const MAX_CAMPAIGN_MESSAGE_LENGTH = 280
 
 // Data preferences a customer chooses on the consent screen. kateTips mirrors state.consent.
+// kateLevel ('basic' | 'proactive' | 'ecosystem') sets how far Kate goes on her own (see engine/signals.js).
 export const DATA_PREFERENCE_KEYS = ['kateTips', 'insights', 'partners', 'telemetry']
 /** Privacy by default: only Kate tips follow the existing consent; everything else is off. */
 export const defaultDataPreferences = (consent = false) =>
-  ({ kateTips: Boolean(consent), insights: false, partners: false, telemetry: false, completedOn: null })
+  ({ kateTips: Boolean(consent), insights: false, partners: false, telemetry: false, kateLevel: DEFAULT_KATE_LEVEL, completedOn: null })
 
 const ACTIVE_KEYS = ['productId', 'signalId', 'itemKey', 'categoryId', 'partnerId']
 const isId = (v) => typeof v === 'string' && v.length > 0 && v.length <= MAX_ID_LENGTH
@@ -168,11 +172,13 @@ function partnerUpdateRepair(state, { customerId, itemKey, status }) {
 
 const returned = (i) => ({ ...i, returned: true, repair: null, returnedOn: TODAY })
 
-/** Only known keys with boolean values; anything else makes the whole action invalid. */
+const validPreference = ([k, v]) => (k === 'kateLevel' ? KATE_LEVEL_IDS.includes(v) : DATA_PREFERENCE_KEYS.includes(k) && typeof v === 'boolean')
+
+/** Only known keys with valid values (booleans, or a known kateLevel); anything else makes the whole action invalid. */
 function setDataPreferences(state, prefs) {
   if (!prefs || typeof prefs !== 'object' || Array.isArray(prefs)) return state
   const entries = Object.entries(prefs)
-  if (!entries.length || entries.some(([k, v]) => !DATA_PREFERENCE_KEYS.includes(k) || typeof v !== 'boolean')) return state
+  if (!entries.length || !entries.every(validPreference)) return state
   const next = forCustomer(state, 'dataPreferences', (p) => ({ ...p, ...prefs, completedOn: TODAY }), defaultDataPreferences(state.consent))
   return 'kateTips' in prefs ? { ...next, consent: prefs.kateTips } : next
 }

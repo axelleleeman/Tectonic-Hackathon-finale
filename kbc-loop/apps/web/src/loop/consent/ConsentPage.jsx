@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { LoopIcon } from '../LoopIcon.jsx'
 import { date } from '../product/format.js'
-import { CHOICES, NEVER } from '@kbc-loop/shared/data/dataChoices.js'
+import { CHOICES, NEVER, kateLevelOf } from '@kbc-loop/shared/data/dataChoices.js'
+import { KateLevelPicker } from './KateLevelPicker.jsx'
 import './consent.css'
 
 /** Accessible on/off switch with a visible label and description. */
@@ -25,7 +26,10 @@ function Choice({ choice, on, onToggle }) {
 /** #loop/consent: choose what happens with your data. Nothing beyond what the service needs is shared unless switched on here. */
 export function ConsentPage({ loop, actions, onBack, onSaved }) {
   const current = loop.dataPreferences ?? {}
-  const [prefs, setPrefs] = useState(() => Object.fromEntries(CHOICES.map((c) => [c.key, current[c.key] === true])))
+  const [prefs, setPrefs] = useState(() => ({
+    ...Object.fromEntries(CHOICES.map((c) => [c.key, current[c.key] === true])),
+    kateLevel: kateLevelOf(current.kateLevel),
+  }))
   const [busy, setBusy] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -58,6 +62,11 @@ export function ConsentPage({ loop, actions, onBack, onSaved }) {
         </section>
       ) : (
         <>
+          <section className="lp-card cs-level" aria-labelledby="cs-level-h">
+            <h2 id="cs-level-h" className="cs-h2">Kate level</h2>
+            <p className="cs-level-sub">How far Kate goes on her own.</p>
+            <KateLevelPicker value={prefs.kateLevel} onChange={(kateLevel) => setPrefs((p) => ({ ...p, kateLevel }))} labelId="cs-level-h" />
+          </section>
           <ul className="cs-list lp-card" aria-label="Data choices">
             {CHOICES.map((c) => (
               <Choice key={c.key} choice={c} on={prefs[c.key]} onToggle={() => setPrefs((p) => ({ ...p, [c.key]: !p[c.key] }))} />

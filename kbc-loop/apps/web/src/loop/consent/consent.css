@@ -44,3 +44,9 @@
   .cs-actions .lp-btn { flex: 1; min-width: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .cs-switch::before, .cs-knob { transition: none; } }
+
+/* Kate level (KateLevelPicker.jsx) above the toggles */
+.cs-level { padding: var(--s5); margin-bottom: var(--s4); text-align: center; }
+.cs-level .cs-h2 { margin-bottom: var(--s1); }
+.cs-level-sub { margin: 0 0 var(--s4); color: var(--lp-muted); font-size: .9rem; }
+.cs-level .lp-level-line { min-height: 0; }

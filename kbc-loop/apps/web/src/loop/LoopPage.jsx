@@ -156,7 +156,7 @@ export function LoopPage({ route, param, go, loop }) {
         <div className="lp-ui">
           <StartScreen customer={customer} items={items} totals={totals} coins={coins} sections={sections} signals={signals} onHeroOver={setOverHero}
             flashKey={flashKey} onOpen={openProduct} onBrowse={openCatalog} onAdd={() => openCatalog()} onCosts={openCosts} onRewards={showRewards}
-            tab={homeTab} onTab={setHomeTab} loop={loop} actions={actions}
+            tab={homeTab} onTab={setHomeTab} loop={loop} actions={actions} onNotify={notify}
             notice={<ConsentBanner preferences={loop.dataPreferences} onReview={() => go('consent')} />}
             tips={{
               onOffer: (productId) => openModal({ kind: 'add', productId }),

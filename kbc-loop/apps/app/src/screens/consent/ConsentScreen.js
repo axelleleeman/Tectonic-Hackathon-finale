@@ -3,7 +3,7 @@
 // ConsentCard is the calm prompt at the top of Loop > Home until the choices are saved.
 import { useState } from 'react'
 import { StyleSheet, Switch, View } from 'react-native'
-import { CHOICES, NEVER } from '@kbc-loop/shared/data/dataChoices.js'
+import { CHOICES, KATE_LEVELS, NEVER, kateLevelOf } from '@kbc-loop/shared/data/dataChoices.js'
 import { Icon } from '../../ui/Icon.js'
 import { Press } from '../../ui/Press.js'
 import { T } from '../../ui/T.js'
@@ -31,8 +31,33 @@ export function ConsentCard({ preferences, onReview }) {
   )
 }
 
+/** Kate level as a segmented radio group (Basic · Proactive · Ecosystem) with the line for the selected level. */
+export function KateLevelSelector({ value, onChange }) {
+  const current = kateLevelOf(value)
+  return (
+    <View style={[styles.card, styles.level]}>
+      <T style={styles.title} role="heading" nativeID="kate-level-h">Kate level</T>
+      <T style={styles.sub}>How far Kate goes on her own.</T>
+      <View style={styles.seg} role="radiogroup" aria-labelledby="kate-level-h">
+        {KATE_LEVELS.map((l) => {
+          const on = l.id === current
+          return (
+            <Press key={l.id} role="radio" aria-checked={on} label={`${l.label}: ${l.line}`} onPress={() => onChange(l.id)} style={[styles.segItem, on && styles.segOn]}>
+              <T style={[styles.segText, on && styles.segTextOn]} numberOfLines={1}>{l.label}</T>
+            </Press>
+          )
+        })}
+      </View>
+      <T style={styles.levelLine} accessibilityLiveRegion="polite">{KATE_LEVELS.find((l) => l.id === current).line}</T>
+    </View>
+  )
+}
+
 export function ConsentScreen({ preferences = {}, actions }) {
-  const [prefs, setPrefs] = useState(() => Object.fromEntries(CHOICES.map((c) => [c.key, preferences[c.key] === true])))
+  const [prefs, setPrefs] = useState(() => ({
+    ...Object.fromEntries(CHOICES.map((c) => [c.key, preferences[c.key] === true])),
+    kateLevel: kateLevelOf(preferences.kateLevel),
+  }))
   const [busy, setBusy] = useState(false)
   const [saved, setSaved] = useState(false)
   const back = () => actions.navigate('shop')
@@ -57,6 +82,7 @@ export function ConsentScreen({ preferences = {}, actions }) {
         </View>
       ) : (
         <>
+          <KateLevelSelector value={prefs.kateLevel} onChange={(kateLevel) => setPrefs((p) => ({ ...p, kateLevel }))} />
           <View style={styles.card}>
             {CHOICES.map((c, n) => (
               <View key={c.key} style={[styles.row, n > 0 && styles.rowLine]}>
@@ -107,5 +133,12 @@ const styles = StyleSheet.create({
   btnText: { fontSize: 14, fontWeight: '600', color: colors.button },
   btnTextPrimary: { color: '#fff' },
   never: { flexDirection: 'row', gap: 8, alignItems: 'flex-start' },
+  level: { padding: 14 },
+  seg: { flexDirection: 'row', backgroundColor: '#e7edf3', borderRadius: 12, padding: 3, marginTop: 12 },
+  segItem: { flex: 1, minWidth: 0, minHeight: 40, justifyContent: 'center', paddingHorizontal: 4, borderRadius: 10, alignItems: 'center' },
+  segOn: { backgroundColor: colors.kmNavy },
+  segText: { fontSize: 14, fontWeight: '600', color: colors.kmSub },
+  segTextOn: { color: '#fff' },
+  levelLine: { fontSize: 13, color: colors.kmSub, marginTop: 10, lineHeight: 18 },
   neverText: { flex: 1, color: colors.kmSub, fontSize: 14 },
 })

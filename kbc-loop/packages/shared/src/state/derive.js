@@ -7,11 +7,15 @@ import { upgradeOptions } from '../engine/upgrades.js'
 import { rewardById } from '../data/rewards.js'
 import { TODAY } from '../config/index.js'
 import { defaultDataPreferences } from './loopReducer.js'
+import { kateLevelOf } from '../data/dataChoices.js'
 
 export function derive(state) {
   const cid = state.customerId
   const customer = customers.find((c) => c.id === cid) ?? customers[0]
   const items = state.items[customer.id] ?? []
+  // Tolerates older persisted state without dataPreferences (or without kateLevel); kateTips always mirrors consent
+  const dataPreferences = { ...defaultDataPreferences(state.consent), ...state.dataPreferences?.[customer.id], kateTips: Boolean(state.consent) }
+  dataPreferences.kateLevel = kateLevelOf(dataPreferences.kateLevel)
   const signals = detectSignals(customer, {
     consent: state.consent,
     dismissed: state.dismissed[customer.id] ?? [],
@@ -19,6 +23,7 @@ export function derive(state) {
     telemetry: state.telemetry[customer.id] ?? false,
     campaigns: state.campaigns ?? [],
     campaignDetails: state.campaignDetails ?? {},
+    kateLevel: dataPreferences.kateLevel,
   })
   return {
     customer,
@@ -26,8 +31,7 @@ export function derive(state) {
     signals,
     coins: state.coins[customer.id] ?? 0,
     redemptions: state.redemptions?.[customer.id] ?? [],
-    // Tolerates older persisted state without dataPreferences; kateTips always mirrors consent
-    dataPreferences: { ...defaultDataPreferences(state.consent), ...state.dataPreferences?.[customer.id], kateTips: Boolean(state.consent) },
+    dataPreferences,
     activeSignal: signals.find((s) => s.id === state.active.signalId) ?? null,
     activeItem: items.find((i) => i.key === state.active.itemKey) ?? null,
   }

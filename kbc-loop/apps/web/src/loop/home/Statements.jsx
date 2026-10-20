@@ -1,12 +1,6 @@
 import { LoopIcon } from '../LoopIcon.jsx'
 import { useReveal } from '../useReveal.js'
-
-/** One big centred line that reveals word by word (the words are decorative; the section carries the label). */
-function Words({ text }) {
-  return text.split(' ').map((w, i) => (
-    <span key={`${w}-${i}`} className="lp-rv lp-word" style={{ '--i': i }}>{w} </span>
-  ))
-}
+import { StayInControl, StoryMoment, TripleWin, Words } from './Story.jsx'
 
 function Statement({ id, text, panel = false }) {
   const [ref] = useReveal({ threshold: 0.4 })
@@ -42,13 +36,20 @@ function Values() {
   )
 }
 
-/** Scroll story between the hero and "Your home": two statements and three value tiles. */
-export function Statements() {
+/**
+ * Scroll story between the hero and "Your home": problem → solution → two statements and three value tiles
+ * → triple win → you stay in control (the real Kate level).
+ */
+export function Statements({ loop, actions, onNotify }) {
   return (
     <div className="lp-statements" id="lp-statements">
+      <StoryMoment id="lp-problem" label="The problem" line="We can fly to the moon. Yet we can't make a light that lasts." sub="Producers earn when you buy again." />
+      <StoryMoment id="lp-solution" label="The solution" line="Don't buy lamps. Pay for light." sub="One monthly fee. The partner repairs it before you even notice." />
       <Statement id="lp-stmt-1" text="We work towards a circular economy." />
       <Statement id="lp-stmt-2" text="Use instead of own. Repair before replace." panel />
       <Values />
+      <TripleWin />
+      <StayInControl loop={loop} actions={actions} onNotify={onNotify} />
     </div>
   )
 }

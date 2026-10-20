@@ -10,13 +10,13 @@ import { YourHome } from './YourHome.jsx'
 import { AppPreview } from './AppPreview.jsx'
 import { RewardsPage } from '../rewards/RewardsPage.jsx'
 
-/** Start screen (#loop): navy hero with the 3D loop → scroll statements → one framed module (Home / Impact / Rewards) → Kate tips → the mobile app in a phone frame → FAQ. */
-export function StartScreen({ customer, items, totals, coins, sections, signals, flashKey, onOpen, onBrowse, onAdd, onCosts, onRewards, tips, onHeroOver, tab, onTab, loop, actions, notice }) {
+/** Start screen (#loop): navy hero with the 3D loop → scroll story (problem, solution, statements, triple win, Kate level) → one framed module (Home / Impact / Rewards) → Kate tips → the mobile app in a phone frame → FAQ. */
+export function StartScreen({ customer, items, totals, coins, sections, signals, flashKey, onOpen, onBrowse, onAdd, onCosts, onRewards, tips, onHeroOver, tab, onTab, loop, actions, notice, onNotify }) {
   const rows = sections.flatMap((s) => s.rows)
   return (
     <>
     <Hero targetId="lp-statements" onOver={onHeroOver} />
-    <Statements />
+    <Statements loop={loop} actions={actions} onNotify={onNotify} />
     <main className="lp-wrap lp-main lp-start" id="lp-content">
       <div className="lp-eyebrow lp-hello">{greeting()}, {customer.name}</div>
       {notice}

@@ -14,3 +14,14 @@ export const NEVER = [
   `KBC Loop Insights only shows anonymised groups of at least ${MIN_GROUP_SIZE} customers.`,
   'You can change these choices at any time.',
 ]
+
+// How far Kate goes on her own (state.dataPreferences[customerId].kateLevel). 'proactive' is the default.
+export const KATE_LEVELS = [
+  { id: 'basic', label: 'Basic', line: 'Kate only looks when you ask.' },
+  { id: 'proactive', label: 'Proactive', line: 'Kate spots signals in your spending and suggests circular alternatives.' },
+  { id: 'ecosystem', label: 'Ecosystem', line: 'Anonymous preferences unlock exclusive partner offers.' },
+]
+export const KATE_LEVEL_IDS = KATE_LEVELS.map((l) => l.id)
+export const DEFAULT_KATE_LEVEL = 'proactive'
+/** The level as stored, or the default when it is missing or unknown (older state). */
+export const kateLevelOf = (level) => (KATE_LEVEL_IDS.includes(level) ? level : DEFAULT_KATE_LEVEL)

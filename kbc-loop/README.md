@@ -138,15 +138,18 @@ kbc-loop/
       src/config/      demo settings (date, CO₂ factor, Kate Coins, bundle discount, KBC margin, technician slot)
       src/data/        data only: categories, partners, products (+ bundles), customers, repairIssues,
                        pilotStats, spendSegments, kbcServices, rewards (Kate Coins rewards: rewards, rewardById),
-                       dataChoices (copy for the data-preferences screen on web and app),
+                       dataChoices (copy for the data-preferences screen on web and app, and KATE_LEVELS:
+                       Basic / Proactive / Ecosystem),
                        partnerProfiles (about, key facts, services and demo certifications per partner; illustrative)
       src/engine/      logic: rules, signals, catalog, pricing, impact, dashboards, insights, kateIntents …
                        costs.js: cost overview per item and customer (paid, remaining, split, upcoming payments)
                        upgrades.js: upgrade options and quote for a borrowed product
                        campaigns.js: Kate campaign forecasts and results for KBC Loop Insights
                        rules.js also turns a running Insights campaign into a Kate tip for matching customers
+                       signals.js applies the Kate level: basic = no proactive tips, proactive = no campaign tips,
+                       ecosystem = campaign tips too (notifications follow the same rule)
       src/state/       loopReducer.js (all actions, with input validation, pure and tested; SET_DATA_PREFERENCES
-                       stores the customer's data choices), actions.js,
+                       stores the customer's data choices incl. kateLevel), actions.js,
                        derive.js (derive, notificationsFor: inbox items, unreadCount)
       src/kate/        Kate's conversation engine (greeting, suggestions, intents, replies as action descriptors),
                        shared by the app's Kate screen and the web's Kate panel
@@ -199,7 +202,7 @@ kbc-loop/
       src/screens/     screens: home/ (Home), mykbc/ (My KBC), aanbod/ (Offers), item/, costs/ and the KBC Loop
                        screens (category, product, buying vs. borrowing, repair …); rewards/ (redeem Kate Coins),
                        inbox/ (notifications behind the header bell), share/ (impact card + native Share sheet),
-                       consent/ (data preferences: Kate tips, Insights, partners, connected devices)
+                       consent/ (data preferences: Kate level, Kate tips, Insights, partners, connected devices)
       src/ui/          shared building blocks: Icon, Button, Stat, Photo, KateAvatar, KbcLogo …
       src/             api.js (API address + client), useLoop.js, navigation.js, theme.js
       app.json         Expo config (web under base path /app)

@@ -1,8 +1,11 @@
 // "Tips from Kate" on Loop > Home: every current Kate signal as a calm card with a title, one line,
 // the main action, "Dismiss" and a "Why?" toggle that lists the reasons behind the tip.
+// A small "Kate level" chip opens the consent screen; on the Basic level Kate shows no tips at all.
 import { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { PREVENTIVE_ISSUE } from '@kbc-loop/shared/data/index.js'
+import { KATE_LEVELS, kateLevelOf } from '@kbc-loop/shared/data/dataChoices.js'
+import { Icon } from '../../ui/Icon.js'
 import { Card } from '../../ui/Card.js'
 import { KateAvatar } from '../../ui/KateAvatar.js'
 import { Press } from '../../ui/Press.js'
@@ -57,14 +60,28 @@ function Tip({ signal, actions }) {
   )
 }
 
-export function KateTips({ signals, actions }) {
-  const list = signals ?? []
+/** "Kate level: Proactive ›" — opens the data choices. */
+function LevelChip({ level, actions }) {
+  const label = KATE_LEVELS.find((l) => l.id === level)?.label
+  return (
+    <Press onPress={() => actions.navigate('consent')} style={styles.chip} label={`Kate level: ${label}. Change your data choices`} hitSlop={6}>
+      <T style={styles.chipText} numberOfLines={1}>Kate level: {label}</T>
+      <Icon name="chevron" size={14} color={colors.kmBlue} />
+    </Press>
+  )
+}
+
+export function KateTips({ signals, actions, kateLevel }) {
+  const level = kateLevelOf(kateLevel)
+  const list = level === 'basic' ? [] : signals ?? []
   return (
     <View style={styles.section}>
-      <SectionHeader title="Tips from Kate" leading={<KateAvatar size={26} />} />
-      {list.length === 0
-        ? <T style={styles.empty}>No new tips. Kate lets you know when something can save you money.</T>
-        : list.map((s) => <Tip key={s.id} signal={s} actions={actions} />)}
+      <SectionHeader title="Tips from Kate" leading={<KateAvatar size={26} />} right={<LevelChip level={level} actions={actions} />} />
+      {level === 'basic'
+        ? <T style={styles.empty}>{KATE_LEVELS[0].line}</T>
+        : list.length === 0
+          ? <T style={styles.empty}>No new tips. Kate lets you know when something can save you money.</T>
+          : list.map((s) => <Tip key={s.id} signal={s} actions={actions} />)}
     </View>
   )
 }
@@ -84,4 +101,6 @@ const styles = StyleSheet.create({
   link: { minHeight: TAP, minWidth: TAP, justifyContent: 'center', alignItems: 'center', paddingHorizontal: space.sm },
   linkText: { ...font.caption, fontWeight: '600', color: colors.kmBlue },
   empty: { ...font.caption, color: colors.kmSub },
+  chip: { flexDirection: 'row', alignItems: 'center', gap: 2, minHeight: 32, paddingLeft: space.md, paddingRight: space.sm, borderRadius: radius.pill, backgroundColor: colors.kmSky },
+  chipText: { ...font.caption, fontWeight: '600', color: colors.kmBlue },
 })

@@ -112,7 +112,7 @@ export default function LoopApp() {
 
   if (!state) return error ? <ConnectionError error={error} fatal={fatal} /> : <Connecting />
 
-  const shared = { customer, items, signals, actions }
+  const shared = { customer, items, signals, actions, kateLevel: loop.dataPreferences?.kateLevel }
   const screen = {
     // Everything happens inside Loop: the old Home and My KBC screens show Loop as well.
     home: () => <Shop {...shared} coins={coins} />,
