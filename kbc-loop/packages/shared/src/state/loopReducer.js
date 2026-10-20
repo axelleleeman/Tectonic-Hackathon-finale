@@ -1,24 +1,47 @@
-// Alle demo-state en acties op één plek. Puur (geen side effects), dus makkelijk te testen.
-import { customers } from '../data/index.js'
-import { COINS, TODAY } from '../config/index.js'
+// All demo state and actions in one place. Pure (no side effects), so it is easy to test.
+// The api applies actions sent by clients, so every action payload is validated here:
+// an invalid action returns the state unchanged (same object).
+import { customers, spendSegments } from '../data/index.js'
+import { COINS, MIN_GROUP_SIZE, TODAY } from '../config/index.js'
 import { expandProduct, productById } from '../engine/catalog.js'
+import { isValidUpgrade } from '../engine/upgrades.js'
 
-// Geldige waarden; alles daarbuiten wordt genegeerd, zodat de gedeelde state nooit stukgaat.
+// Allowed values; anything else is ignored so the shared state never breaks.
 export const VIEWS = ['klant', 'partner', 'kbc']
-export const SCREENS = ['home', 'mykbc', 'shop', 'category', 'product', 'done', 'repair']
+export const SCREENS = ['home', 'mykbc', 'shop', 'category', 'product', 'done', 'repair', 'item', 'costs']
 export const ACTION_TYPES = [
   'RESET', 'SET_VIEW', 'SWITCH_CUSTOMER', 'SET_CONSENT', 'NAVIGATE', 'OPEN_KATE', 'CLOSE_KATE', 'DISMISS_SIGNAL',
-  'BORROW', 'REPORT_DEFECT', 'ADVANCE_REPAIR', 'CLOSE_REPAIR', 'RETURN_ITEM', 'TRIGGER_TELEMETRY', 'TOGGLE_CAMPAIGN',
+  'BORROW', 'REPORT_DEFECT', 'ADVANCE_REPAIR', 'CLOSE_REPAIR', 'RETURN_ITEM', 'UPGRADE_ITEM', 'TRIGGER_TELEMETRY',
+  'TOGGLE_CAMPAIGN', 'START_CAMPAIGN', 'STOP_CAMPAIGN',
 ]
 
+export const MAX_ISSUE_LENGTH = 120
+export const MAX_NOTE_LENGTH = 200
+const MAX_ID_LENGTH = 64
+
+// Kate campaigns started from KBC Loop Insights
+export const CAMPAIGN_AUDIENCES = ['consented', 'consented-active']
+export const MAX_CAMPAIGN_BUDGET = 100_000
+export const MAX_CAMPAIGN_MESSAGE_LENGTH = 280
+
 const ACTIVE_KEYS = ['productId', 'signalId', 'itemKey', 'categoryId']
-const pickActive = (active) => Object.fromEntries(Object.entries(active ?? {}).filter(([k]) => ACTIVE_KEYS.includes(k)))
+const isId = (v) => typeof v === 'string' && v.length > 0 && v.length <= MAX_ID_LENGTH
+const pickActive = (active) => (active && typeof active === 'object' && !Array.isArray(active)
+  ? Object.fromEntries(Object.entries(active).filter(([k, v]) => ACTIVE_KEYS.includes(k) && (v === null || isId(v))))
+  : {})
+
+/** Trimmed string of at most `max` characters, or null when it is not a non-empty string. */
+const cleanText = (v, max) => {
+  if (typeof v !== 'string') return null
+  const t = v.trim().slice(0, max)
+  return t || null
+}
 
 const perCustomer = (fn) => Object.fromEntries(customers.map((c) => [c.id, fn(c)]))
 
 export function createInitialState() {
   return {
-    view: 'klant', // 'klant' | 'partner' | 'kbc'
+    view: 'klant', // 'klant' (customer) | 'partner' | 'kbc'
     customerId: customers[0].id,
     consent: true,
     screen: 'home',
@@ -29,18 +52,68 @@ export function createInitialState() {
     dismissed: perCustomer(() => []),
     coins: perCustomer(() => 0),
     telemetry: perCustomer(() => false),
-    campaigns: [], // groepen uit KBC Loop Insights waarvoor een Kate-campagne loopt
+    campaigns: [], // ids of KBC Loop Insights groups with a running Kate campaign
+    campaignDetails: {}, // { [segmentId]: { segmentId, audience, budget, message, channel, startedOn, status } }
   }
 }
 
-// Helpers die enkel de huidige klant aanpassen
-const forCustomer = (state, key, fn) => ({ ...state, [key]: { ...state[key], [state.customerId]: fn(state[key][state.customerId]) } })
-const updateItem = (state, itemKey, fn) => forCustomer(state, 'items', (items) => items.map((i) => (i.key === itemKey ? fn(i) : i)))
-const addCoins = (state, n) => forCustomer(state, 'coins', (c) => c + n)
+// Helpers that only touch the current customer (tolerant of older persisted state without that customer)
+const forCustomer = (state, key, fn, empty) => ({ ...state, [key]: { ...state[key], [state.customerId]: fn(state[key]?.[state.customerId] ?? empty) } })
+const itemsOf = (state) => state.items?.[state.customerId] ?? []
+const findItem = (state, itemKey) => (isId(itemKey) ? itemsOf(state).find((i) => i.key === itemKey) : undefined)
+const updateItem = (state, itemKey, fn) => forCustomer(state, 'items', (items) => items.map((i) => (i.key === itemKey ? fn(i) : i)), [])
+const addCoins = (state, n) => forCustomer(state, 'coins', (c) => c + n, 0)
+const customerType = (state) => customers.find((c) => c.id === state.customerId)?.type
 const home = { screen: 'home', active: { productId: null, signalId: null, itemKey: null, categoryId: null }, kateOpen: false }
 
+const newItem = (state, n, productId, extra = {}) => ({
+  key: `${state.customerId}-new-${state.seq + n}`, productId, since: TODAY, repairs: 0, repair: null, returned: false, ...extra,
+})
+/** A segment can get a campaign when it exists and is large enough to be shown (anonymity). */
+const campaignSegment = (segmentId) => (isId(segmentId) ? spendSegments.find((s) => s.id === segmentId && s.customers >= MIN_GROUP_SIZE) : undefined)
+
+/** Validated campaign details, or null when a field is invalid. Missing (or null) fields get defaults; the budget is clamped. */
+function campaignDetails(segmentId, fields = {}) {
+  const audience = fields.audience ?? 'consented'
+  const budget = fields.budget ?? 0
+  const message = fields.message ?? ''
+  if (!CAMPAIGN_AUDIENCES.includes(audience)) return null
+  if (typeof budget !== 'number' || !Number.isFinite(budget)) return null
+  if (typeof message !== 'string') return null
+  return {
+    segmentId,
+    audience,
+    budget: Math.round(Math.min(MAX_CAMPAIGN_BUDGET, Math.max(0, budget)) * 100) / 100,
+    message: message.trim().slice(0, MAX_CAMPAIGN_MESSAGE_LENGTH),
+    channel: 'kate',
+    startedOn: TODAY,
+    status: 'running',
+  }
+}
+
+function startCampaign(state, segmentId, fields) {
+  if (!campaignSegment(segmentId)) return state
+  const details = campaignDetails(segmentId, fields)
+  if (!details) return state
+  const campaigns = state.campaigns.includes(segmentId) ? state.campaigns : [...state.campaigns, segmentId]
+  return { ...state, campaigns, campaignDetails: { ...state.campaignDetails, [segmentId]: details } }
+}
+
+function stopCampaign(state, segmentId) {
+  if (!state.campaigns.includes(segmentId)) return state
+  const all = state.campaignDetails ?? {}
+  const details = all[segmentId] ? { ...all[segmentId], status: 'stopped' } : null
+  return {
+    ...state,
+    campaigns: state.campaigns.filter((id) => id !== segmentId),
+    campaignDetails: details ? { ...all, [segmentId]: details } : all,
+  }
+}
+
+const returned = (i) => ({ ...i, returned: true, repair: null, returnedOn: TODAY })
+
 export function loopReducer(state, action) {
-  switch (action.type) {
+  switch (action?.type) {
     case 'RESET':
       return createInitialState()
 
@@ -66,49 +139,78 @@ export function loopReducer(state, action) {
       return { ...state, kateOpen: false }
 
     case 'DISMISS_SIGNAL':
-      return forCustomer(state, 'dismissed', (d) => [...d, action.signalId])
+      if (!isId(action.signalId)) return state
+      return forCustomer(state, 'dismissed', (d) => (d.includes(action.signalId) ? d : [...d, action.signalId]), [])
 
     case 'BORROW': {
-      if (!productById(action.productId)) return state
+      if (!isId(action.productId) || !productById(action.productId)) return state
       const ids = expandProduct(action.productId)
-      const seq = state.seq + ids.length
-      const newItems = ids.map((productId, n) => ({
-        key: `${state.customerId}-new-${state.seq + n}`, productId, since: TODAY, repairs: 0, repair: null, returned: false,
-      }))
-      return { ...forCustomer({ ...state, seq }, 'items', (items) => [...items, ...newItems]), screen: 'done', active: { ...state.active, productId: action.productId } }
+      const newItems = ids.map((productId, n) => newItem(state, n, productId))
+      const next = forCustomer({ ...state, seq: state.seq + ids.length }, 'items', (items) => [...items, ...newItems], [])
+      return { ...next, screen: 'done', active: { ...state.active, productId: action.productId } }
     }
 
     case 'REPORT_DEFECT': {
-      const step = action.preventive ? 2 : 1 // preventief: Philips plant meteen in
-      const next = updateItem(state, action.itemKey, (i) => ({ ...i, repair: { issue: action.issue, step, preventive: Boolean(action.preventive) } }))
-      return { ...next, screen: 'repair', active: { ...state.active, itemKey: action.itemKey }, kateOpen: false, view: 'klant' }
+      const item = findItem(state, action.itemKey)
+      const issue = cleanText(action.issue, MAX_ISSUE_LENGTH)
+      if (!item || item.returned || !issue) return state
+      const preventive = action.preventive === true
+      const repair = {
+        issue,
+        step: preventive ? 2 : 1, // preventive: the partner schedules the visit right away
+        preventive,
+        note: cleanText(action.note, MAX_NOTE_LENGTH),
+        photo: action.photo === true,
+      }
+      const next = updateItem(state, item.key, (i) => ({ ...i, repair }))
+      return { ...next, screen: 'repair', active: { ...state.active, itemKey: item.key }, kateOpen: false, view: 'klant' }
     }
 
     case 'ADVANCE_REPAIR': {
-      const item = state.items[state.customerId].find((i) => i.key === action.itemKey)
+      const item = findItem(state, action.itemKey)
       if (!item?.repair || item.repair.step >= 3) return state
       const step = item.repair.step + 1
-      let next = updateItem(state, action.itemKey, (i) => ({ ...i, repair: { ...i.repair, step }, repairs: step === 3 ? i.repairs + 1 : i.repairs }))
+      let next = updateItem(state, item.key, (i) => ({ ...i, repair: { ...i.repair, step }, repairs: step === 3 ? (i.repairs ?? 0) + 1 : i.repairs }))
       if (step === 3) {
         next = addCoins(next, COINS.repair)
-        if (item.repair.preventive) next = forCustomer(next, 'telemetry', () => false)
+        if (item.repair.preventive) next = forCustomer(next, 'telemetry', () => false, false)
       }
       return next
     }
 
-    case 'CLOSE_REPAIR':
-      return { ...updateItem(state, action.itemKey, (i) => ({ ...i, repair: null })), screen: 'mykbc', view: 'klant' }
+    case 'CLOSE_REPAIR': {
+      const item = findItem(state, action.itemKey)
+      if (!item) return state
+      return { ...updateItem(state, item.key, (i) => ({ ...i, repair: null })), screen: 'mykbc', view: 'klant' }
+    }
 
-    case 'RETURN_ITEM':
-      return addCoins(updateItem(state, action.itemKey, (i) => ({ ...i, returned: true, repair: null })), COINS.return)
+    case 'RETURN_ITEM': {
+      const item = findItem(state, action.itemKey)
+      if (!item || item.returned) return state
+      return addCoins(updateItem(state, item.key, returned), COINS.return)
+    }
+
+    case 'UPGRADE_ITEM': {
+      const item = findItem(state, action.itemKey)
+      if (!item || item.returned || !isId(action.productId)) return state
+      if (!isValidUpgrade(item.productId, action.productId, customerType(state))) return state
+      const upgraded = newItem(state, 0, action.productId, { upgradedFrom: item.key })
+      let next = updateItem({ ...state, seq: state.seq + 1 }, item.key, returned)
+      next = forCustomer(next, 'items', (items) => [...items, upgraded], [])
+      return { ...addCoins(next, COINS.return), screen: 'item', active: { ...state.active, itemKey: upgraded.key, productId: action.productId }, kateOpen: false, view: 'klant' }
+    }
 
     case 'TRIGGER_TELEMETRY':
-      return { ...forCustomer(state, 'telemetry', () => true), ...home, view: 'klant' }
+      return { ...forCustomer(state, 'telemetry', () => true, false), ...home, view: 'klant' }
 
-    case 'TOGGLE_CAMPAIGN': {
-      const on = state.campaigns.includes(action.segmentId)
-      return { ...state, campaigns: on ? state.campaigns.filter((id) => id !== action.segmentId) : [...state.campaigns, action.segmentId] }
-    }
+    case 'TOGGLE_CAMPAIGN': // backwards compatible: start with default details, or stop
+      return state.campaigns.includes(action.segmentId) ? stopCampaign(state, action.segmentId) : startCampaign(state, action.segmentId)
+
+    case 'START_CAMPAIGN':
+      return startCampaign(state, action.segmentId, { audience: action.audience, budget: action.budget, message: action.message })
+
+    case 'STOP_CAMPAIGN':
+      return stopCampaign(state, action.segmentId)
 
     default:
       return state

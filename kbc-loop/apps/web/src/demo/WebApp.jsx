@@ -6,10 +6,10 @@ import { KbcAppsTop, KbcAppsGrid } from './site/KbcAppsPage.jsx'
 // Web view: thin router between the KBC "All apps" page (pixel-exact screenshot with a clickable
 // KBC Loop tab and card) and the KBC LOOP page. Web, app and dashboards share one api and database.
 export default function WebApp() {
-  const [loopTab, go] = useHashRoute()
+  const { route, param, go } = useHashRoute()
   const loop = useLoop()
 
-  if (loopTab) return <LoopPage tab={loopTab} onTab={go} onBack={() => go(null)} loop={loop} />
+  if (route) return <LoopPage route={route} param={param} go={go} loop={loop} />
 
   return (
     <div className="site">

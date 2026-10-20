@@ -1,14 +1,12 @@
 import { num } from '@kbc-loop/shared/engine/format.js'
 import { Kate } from '@kbc-loop/web-ui/kate/index.js'
 import { LoopIcon } from './LoopIcon.jsx'
-import { TabNav } from './TabNav.jsx'
 
 /**
- * Sticky app bar.
- * Row 1: back to KBC, brand, Kate ("How can I help?"), Kate Coins, theme toggle, "+" (opens Loop) and initials.
- * Row 2 (desktop): the shared KBC Mobile tabs. On narrow widths the tabs move to a floating bottom bar.
+ * Sticky app bar: back to all KBC apps, brand, Kate ("How can I help?"), Kate Coins, theme toggle and initials.
+ * There is no tab bar on the web; adding a product lives on the start screen ("Add a product").
  */
-export function LoopHeader({ tab, onTab, onBack, onAdd, coins, avatar, theme, onToggleTheme, kate }) {
+export function LoopHeader({ onBack, onHome, coins, avatar, theme, onToggleTheme, kate }) {
   const toLight = theme === 'dark'
   const themeLabel = toLight ? 'Switch to light mode' : 'Switch to dark mode'
   return (
@@ -17,7 +15,7 @@ export function LoopHeader({ tab, onTab, onBack, onAdd, coins, avatar, theme, on
         <button type="button" className="lp-back" onClick={onBack} aria-label="Back to all KBC apps">
           <LoopIcon name="back" size={16} /><span className="lp-back-long">All KBC apps</span><span className="lp-back-short">KBC</span>
         </button>
-        <a className="lp-brand" href="#loop" aria-label="KBC LOOP home" onClick={(e) => { e.preventDefault(); onTab('home') }}>
+        <a className="lp-brand" href="#loop" aria-label="KBC LOOP home" onClick={(e) => { e.preventDefault(); onHome() }}>
           <span className="lp-mark" aria-hidden="true" /><b>KBC LOOP</b>
         </a>
         <div className="lp-kate-slot">
@@ -28,12 +26,8 @@ export function LoopHeader({ tab, onTab, onBack, onAdd, coins, avatar, theme, on
           <button type="button" className="lp-iconbtn" onClick={onToggleTheme} aria-label={themeLabel} title={themeLabel}>
             <LoopIcon name={toLight ? 'sun' : 'moon'} size={18} />
           </button>
-          <button type="button" className="lp-plus-btn" onClick={onAdd} aria-label="Add a product" title="Add a product"><LoopIcon name="plus" size={18} /></button>
           <span className="lp-avatar" aria-hidden="true">{avatar}</span>
         </div>
-      </div>
-      <div className="lp-subnav">
-        <div className="lp-wrap"><TabNav active={tab} onSelect={onTab} variant="top" /></div>
       </div>
     </header>
   )

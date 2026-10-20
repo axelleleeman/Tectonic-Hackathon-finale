@@ -1,12 +1,12 @@
-// Hook that attaches the 3D loop (see buildScene.js) to the hero canvas.
+// Hook that attaches the 3D loop (see buildScene.js) to a canvas.
 import { useEffect, useRef } from 'react'
 
 /**
  * Attaches the 3D loop to a <canvas>. `circular` drives the morph (true = loop, false = straight line);
- * `theme` ('light' | 'dark') picks the colour palette.
+ * `theme` ('light' | 'dark') picks the colour palette; `options.compact` renders a small, centred loop without particles.
  * Silently falls back to the plain background when WebGL is unavailable.
  */
-export function useLoopScene(canvasRef, circular, theme) {
+export function useLoopScene(canvasRef, circular, theme, { compact = false } = {}) {
   const api = useRef(null)
   const target = useRef(circular ? 1 : 0) // latest mode, applied once the scene has loaded
   const built = useRef(false) // after the first build (e.g. a theme switch), skip the intro morph
@@ -25,7 +25,7 @@ export function useLoopScene(canvasRef, circular, theme) {
     // three.js is loaded on demand, so the page (and the KBC apps page) render without waiting for it
     import('./buildScene.js').then(({ buildScene }) => {
       if (cancelled) return
-      try { s = buildScene(canvas, reduce, theme) } catch { return } // no WebGL: no 3D
+      try { s = buildScene(canvas, reduce, theme, { compact }) } catch { return } // no WebGL: no 3D
       const frame = (now) => { s.render(now); if (running) raf = requestAnimationFrame(frame) }
       const start = () => {
         if (running || !onScreen || document.hidden) return
@@ -65,7 +65,7 @@ export function useLoopScene(canvasRef, circular, theme) {
       api.current = null
       teardown()
     }
-  }, [canvasRef, theme]) // a theme change rebuilds the scene with the matching palette
+  }, [canvasRef, theme, compact]) // a theme change rebuilds the scene with the matching palette
 
   useEffect(() => {
     target.current = circular ? 1 : 0

@@ -65,3 +65,29 @@ test('state blijft bewaard in de database na herstart', async () => {
   assert.equal(log.actions[0].type, 'SET_CONSENT')
   await b.close()
 })
+
+// Known action types with an invalid payload are accepted (200) but the reducer leaves the state
+// unchanged: the version still goes up and the attempt is logged. Unknown types are refused with 400.
+test('upgrading an item via the api; an invalid upgrade leaves the state unchanged', async () => {
+  await post({ type: 'RESET' })
+  await post({ type: 'BORROW', productId: 'phone' })
+  const invalid = await (await post({ type: 'UPGRADE_ITEM', itemKey: 'lotte-new-0', productId: 'washer' })).json()
+  assert.equal(invalid.state.items.lotte.length, 2)
+  assert.equal(invalid.state.items.lotte[1].returned, false)
+  const res = await post({ type: 'UPGRADE_ITEM', itemKey: 'lotte-new-0', productId: 'phone-pro' })
+  assert.equal(res.status, 200)
+  const { state, version } = await res.json()
+  assert.equal(version, invalid.version + 1)
+  assert.equal(state.items.lotte[1].returned, true)
+  assert.equal(state.items.lotte[2].productId, 'phone-pro')
+  assert.equal(state.items.lotte[2].upgradedFrom, 'lotte-new-0')
+})
+
+test('starting and stopping a campaign via the api', async () => {
+  await post({ type: 'RESET' })
+  const on = await (await post({ type: 'START_CAMPAIGN', segmentId: 'seg-baby', audience: 'consented', budget: 1500, message: 'Borrow baby gear' })).json()
+  assert.deepEqual(on.state.campaigns, ['seg-baby'])
+  assert.equal(on.state.campaignDetails['seg-baby'].budget, 1500)
+  const off = await (await post({ type: 'STOP_CAMPAIGN', segmentId: 'seg-baby' })).json()
+  assert.equal(off.state.campaignDetails['seg-baby'].status, 'stopped')
+})

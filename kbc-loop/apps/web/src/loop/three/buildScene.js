@@ -1,5 +1,5 @@
-// Builds the three.js scene for the hero (loaded on demand by LoopScene.js).
-// 3D loop in the hero: a tube that morphs from a straight line (linear) into a loop (circular),
+// Builds the three.js scene (loaded on demand by LoopScene.js).
+// 3D loop: a tube that morphs from a straight line (linear) into a loop (circular),
 // a ball rolling along it and a wavy particle field. Pauses when off-screen or in a hidden tab,
 // respects prefers-reduced-motion and disposes everything on unmount.
 import * as THREE from 'three'
@@ -27,7 +27,7 @@ const PALETTES = {
   },
 }
 
-export function buildScene(canvas, reduce, theme = 'dark') {
+export function buildScene(canvas, reduce, theme = 'dark', { compact = false } = {}) {
   const P = PALETTES[theme] ?? PALETTES.dark
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true })
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75))
@@ -124,6 +124,13 @@ export function buildScene(canvas, reduce, theme = 'dark') {
     renderer.setSize(w, h, false)
     cam.aspect = w / h
     cam.updateProjectionMatrix()
+    if (compact) {
+      // Small decorative canvas: the loop centred and filling most of the height, no particle field
+      group.position.set(0, 0.1, 0)
+      group.scale.setScalar(1.05)
+      pts.visible = false
+      return
+    }
     const narrow = w < 760
     group.position.set(narrow ? 0 : 3.2, narrow ? 0.3 : 0, 0)
     group.scale.setScalar(narrow ? 0.6 : 0.92)
@@ -158,8 +165,10 @@ export function buildScene(canvas, reduce, theme = 'dark') {
     } else ball.scale.setScalar(1)
     group.rotation.x = -0.38 + (1 - state.k) * 0.25
     group.rotation.y = state.mx * 0.2
-    pmat.color.copy(cBlue).lerp(cGreen, smooth(state.k))
-    wave(reduce ? 0 : t)
+    if (pts.visible) {
+      pmat.color.copy(cBlue).lerp(cGreen, smooth(state.k))
+      wave(reduce ? 0 : t)
+    }
     renderer.render(scene, cam)
   }
 

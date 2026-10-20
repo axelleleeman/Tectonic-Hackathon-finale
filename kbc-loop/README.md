@@ -86,6 +86,8 @@ kbc-loop/
       src/data/        enkel data: categories, partners, products (+ bundels), customers, repairIssues,
                        pilotStats, spendSegments, kbcServices
       src/engine/      logica: rules, signals, catalog, pricing, impact, dashboards, insights, kateIntents …
+                       costs.js: cost overview per item and customer (paid, remaining, split, upcoming payments)
+                       upgrades.js: upgrade options and quote for a borrowed product
       src/state/       loopReducer.js (alle acties, met invoercontrole, puur en getest), actions.js, derive.js
       src/kate/        Kate's conversation engine (greeting, suggestions, intents, replies as action descriptors),
                        shared by the app's Kate screen and the web's Kate panel
@@ -108,9 +110,10 @@ kbc-loop/
       index.html       KBC-appspagina (pixel-exacte screenshot + KBC Loop-tab en -kaart), presentatiepaneel,
                        Philips- en KBC-dashboards, de app in een iframe
       src/demo/        WebApp, presenter/ (presentatiepaneel), dashboards/, site/ (KBC-appspagina)
-      src/loop/        the KBC LOOP page (#loop, #loop/mykbc, #loop/marketplace, #loop/presentation): header with the
-                       shared tabs, hero with a three.js loop (three/), KPIs, Kate tips, products, Kate Coins,
-                       marketplace, drawer, dialogs; light and dark theme
+      src/loop/        the KBC LOOP page: #loop (metrics with a small three.js loop from three/, "Your home" per
+                       category, Kate tips, FAQ), #loop/catalog[/<category>] (alias #loop/marketplace: catalogue per
+                       category and partner), #loop/product/<itemKey>, #loop/costs and #loop/presentation (URL only);
+                       header without tabs, dialogs, light and dark theme
       src/hooks/       useAutoplay (demo automatisch afspelen), useHashRoute (KBC apps page ↔ KBC LOOP)
       src/styles/      opmaak van de site en het telefoonkader
       src/assets/      screenshot-onderdelen van de KBC-appspagina

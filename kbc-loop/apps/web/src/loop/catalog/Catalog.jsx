@@ -1,0 +1,63 @@
+import { useMemo, useState } from 'react'
+import { LoopIcon } from '../LoopIcon.jsx'
+import { Disclaimer } from '../Disclaimer.jsx'
+import { catalogue, filterCatalogue } from '../model.js'
+import { CategoryNav } from './CategoryNav.jsx'
+import { PartnerGroup } from './PartnerGroup.jsx'
+
+/**
+ * Product catalogue (#loop/catalog): the shared catalogue for the customer's type, grouped by category
+ * and then by partner. Search, category filter with counts, and "Add" → borrow dialog.
+ */
+export function Catalog({ customerType, initialCategory, ownedIds, searchRef, onAdd, onBack }) {
+  const cats = useMemo(() => catalogue(customerType), [customerType])
+  const [query, setQuery] = useState('')
+  const [cat, setCat] = useState(() => (cats.some((c) => c.id === initialCategory) ? initialCategory : 'all'))
+  const q = query.trim()
+  const filtered = useMemo(() => filterCatalogue(cats, q), [cats, q])
+  const total = filtered.reduce((s, c) => s + c.count, 0)
+  const shown = filtered.filter((c) => (cat === 'all' || c.id === cat) && c.count)
+  const selected = cats.find((c) => c.id === cat)
+
+  return (
+    <main className="lp-wrap lp-main lp-market">
+      <button type="button" className="lp-backlink" onClick={onBack}><LoopIcon name="back" size={16} />Back to your home</button>
+      <section className="lp-mkhead">
+        <div className="lp-min0">
+          <div className="lp-eyebrow">KBC LOOP · Product catalogue</div>
+          <h1>{selected ? selected.name : 'Add a product'}</h1>
+          <p>{selected?.blurb ?? 'One monthly price per product. Delivery, maintenance, repairs and KBC Insurance cover are always included.'}</p>
+        </div>
+        <label className="lp-search">
+          <LoopIcon name="search" />
+          <span className="lp-sr">Search products or partners</span>
+          <input ref={searchRef} type="search" placeholder="Search products or partners" autoComplete="off" value={query} onChange={(e) => setQuery(e.target.value)} />
+        </label>
+      </section>
+      <div className="lp-mk">
+        <CategoryNav cats={filtered} total={total} active={cat} onSelect={setCat} />
+        <div className="lp-min0">
+          {cats.length === 0 && <div className="lp-card lp-empty">There are no products available for you yet.</div>}
+          {cats.length > 0 && shown.length === 0 && (
+            <div className="lp-card lp-empty">
+              <p>{q ? `No products match “${q}”${selected ? ` in ${selected.name}` : ''}.` : 'No products in this category yet.'}</p>
+              {(q || cat !== 'all') && (
+                <button type="button" className="lp-btn lp-sm" onClick={() => { setQuery(''); setCat('all') }}>Show all products</button>
+              )}
+            </div>
+          )}
+          {shown.map((c) => (
+            <section key={c.id} className="lp-section lp-catblock" aria-labelledby={`lp-sec-${c.id}`}>
+              <h2 className="lp-sechead" id={`lp-sec-${c.id}`}>
+                {c.name}
+                <span className="lp-n lp-num">{c.partners.length} {c.partners.length === 1 ? 'partner' : 'partners'} · {c.count} {c.count === 1 ? 'product' : 'products'}</span>
+              </h2>
+              {c.partners.map((pa) => <PartnerGroup key={pa.id} partner={pa} categoryId={c.id} ownedIds={ownedIds} onAdd={onAdd} />)}
+            </section>
+          ))}
+        </div>
+      </div>
+      <Disclaimer />
+    </main>
+  )
+}
