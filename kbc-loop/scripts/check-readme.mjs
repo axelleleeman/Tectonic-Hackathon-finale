@@ -4,17 +4,27 @@
 //   2. every npm script in package.json
 //   3. every API path in apps/api/src/server.js and the WebSocket path in apps/api/src/live.js
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, relative, resolve, isAbsolute } from 'node:path'
 
 const root = join(import.meta.dirname, '..')
-const read = (p) => readFileSync(join(root, p), 'utf8')
+// Only paths inside the repo (kbc-loop/): workspaces come from package.json, but never leave the root.
+const inside = (p) => {
+  const full = resolve(root, p)
+  const rel = relative(root, full)
+  if (rel.startsWith('..') || isAbsolute(rel)) throw new Error(`Path outside the repo: ${p}`)
+  return full
+}
+const read = (p) => readFileSync(inside(p), 'utf8')
 const readme = read('README.md')
 const IGNORE = new Set(['node_modules', 'dist', '.expo', 'assets'])
 
 const missing = []
 const expect = (name, what) => { if (!readme.includes(name)) missing.push(`${what}: ${name}`) }
 
-const entries = (dir) => (existsSync(join(root, dir)) ? readdirSync(join(root, dir), { withFileTypes: true }) : [])
+const entries = (dir) => {
+  const full = inside(dir)
+  return existsSync(full) ? readdirSync(full, { withFileTypes: true }) : []
+}
 
 // 1. Folders and files
 // Workspaces are globs such as "apps/*" and "packages/*": every folder below them is an app or package.
