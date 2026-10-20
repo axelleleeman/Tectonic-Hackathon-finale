@@ -12,7 +12,9 @@
 .site-menu { display: flex; gap: 26px; flex: 1; font-weight: 700; font-size: 17px; flex-wrap: wrap; }
 .site-btn { padding: 12px 22px; border-radius: 99px; background: #f0f2f5; font-size: 16px; }
 
-.site-hero { background: linear-gradient(100deg, #f3f6f9 0%, #e4ecf3 55%, #c9d8e6 100%); padding: 110px 32px; }
+.site-hero { padding: 110px 32px; background-color: #f1f4f7;
+  background-image: linear-gradient(90deg, #f1f4f7 0%, #f1f4f7 30%, rgba(241, 244, 247, 0) 48%), url('/img/site/hero-apps.jpg');
+  background-size: auto, auto 100%; background-position: left, right center; background-repeat: no-repeat; }
 .site-hero h1 { max-width: 1336px; margin: 0 auto; color: var(--navy); font-size: 40px; }
 
 .site-body { max-width: 1400px; margin: 0 auto; padding: 0 32px 40px; }
@@ -48,7 +50,7 @@
 @media (max-width: 900px) {
   .site-head, .site-body { padding-left: 16px; padding-right: 16px; }
   .site-top, .site-menu, .site-btn { display: none; }
-  .site-hero { padding: 56px 16px; }
+  .site-hero { padding: 56px 16px; background-image: linear-gradient(90deg, rgba(241, 244, 247, .95) 0%, rgba(241, 244, 247, .7) 100%), url('/img/site/hero-apps.jpg'); background-size: auto, cover; }
   .site-hero h1 { font-size: 28px; }
   .site-tabs { gap: 20px; font-size: 17px; }
 }
