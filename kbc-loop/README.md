@@ -90,7 +90,7 @@ De container draait als niet-root gebruiker (nginx-unprivileged) en zet beveilig
 
 ## Onaf / disclaimers
 
-- Conceptprototype, geen officiële KBC-app. Geen KBC-logo of Kate-icoon gebruikt.
+- Conceptprototype, geen officiële KBC-app. Het KBC-logo is enkel gebruikt voor deze hackathon-demo; geen Kate-icoon.
 - Klanten, rekeningen en bedragen zijn fictief en indicatief. Philips (Signify) is een voorbeeldpartner,
   geen bestaande samenwerking; alle andere partners zijn fictief.
 - Geen echte bank-API's: data staat in `src/data/`. Volgende stap: PSD2/transactiedata, KBC Partner Hub,

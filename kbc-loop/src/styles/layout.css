@@ -24,3 +24,7 @@
 .caption-bar span { display: block; height: 100%; background: var(--blue); transition: width .4s; }
 
 @media (max-width: 760px) { .presenter { width: 100%; max-width: 380px; } }
+
+.brand { gap: 12px; }
+.brand span { line-height: 1; }
+.kbc-logo { display: inline-block; vertical-align: middle; width: auto; }

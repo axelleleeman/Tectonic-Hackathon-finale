@@ -131,3 +131,4 @@ button.note { width: 100%; text-align: left; }
 .based-on { margin: 8px 0 6px; color: var(--navy) !important; font-weight: 600; }
 .svc-chips.rows { flex-direction: column; }
 .svc-chips.rows .svc-chip { border-radius: 10px; padding: 6px 10px 6px 6px; }
+.done-by { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 14px 0 0; font-size: 13px; }

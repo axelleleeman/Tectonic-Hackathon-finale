@@ -1,5 +1,6 @@
 import { Icon } from '../components/ui/Icon.jsx'
 import { customers } from '../data/index.js'
+import { KbcLogo } from '../components/ui/KbcLogo.jsx'
 
 const VIEWS = [['klant', 'Klant'], ['partner', 'Philips'], ['kbc', 'KBC']]
 const FLOW = [
@@ -11,7 +12,7 @@ export function PresenterPanel({ state, items, actions, autoplay }) {
   const hasConnected = items.some((i) => i.productId.startsWith('lamp') && !i.returned)
   return (
     <aside className="presenter">
-      <div className="brand"><span className="logo"><Icon name="loop" size={24} /></span> KBC Loop</div>
+      <div className="brand"><KbcLogo height={40} /><span>Loop</span></div>
       <p className="pitch">Lenen in plaats van kopen, in KBC Mobile. Partners zoals Philips blijven eigenaar en komen herstellen als iets kapot gaat. KBC brengt klant en partner samen en regelt financiering en verzekering.</p>
 
       <button className={`play ${autoplay.playing ? 'on' : ''}`} onClick={autoplay.playing ? autoplay.stop : autoplay.start}>

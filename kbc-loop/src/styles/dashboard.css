@@ -27,3 +27,5 @@
 .int-row b { color: var(--navy); }
 .int-chip { display: inline-block; background: #eef4f9; color: var(--navy); border-radius: 6px; padding: 3px 8px; margin: 0 4px 4px 0; font-size: 12px; }
 .dashboard .svc-chips { margin-bottom: 4px; }
+.dash-head { position: relative; }
+.dash-logo { position: absolute; top: 0; right: 0; }

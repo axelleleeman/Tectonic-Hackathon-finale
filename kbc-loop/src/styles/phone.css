@@ -30,3 +30,4 @@
 .kate-input button { width: 34px; height: 34px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; }
 
 @media (max-width: 760px) { .phone { width: 100%; max-width: 380px; } }
+.appbar-brand { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; }

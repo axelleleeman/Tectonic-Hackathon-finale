@@ -22,10 +22,10 @@ import { KbcDashboard } from './dashboards/KbcDashboard.jsx'
 const SCREENS = {
   home: { title: '', tab: 'home' },
   mykbc: { title: 'Mijn KBC', tab: 'mykbc' },
-  shop: { title: 'KBC Loop', tab: 'shop' },
-  category: { title: 'KBC Loop', tab: 'shop', back: () => 'shop' },
-  product: { title: 'KBC Loop', tab: 'shop', back: (a) => (a.categoryId ? 'category' : a.signalId ? 'home' : 'shop') },
-  done: { title: 'KBC Loop', tab: 'mykbc', back: () => 'mykbc' },
+  shop: { brand: true, tab: 'shop' },
+  category: { brand: true, tab: 'shop', back: () => 'shop' },
+  product: { brand: true, tab: 'shop', back: (a) => (a.categoryId ? 'category' : a.signalId ? 'home' : 'shop') },
+  done: { brand: true, tab: 'mykbc', back: () => 'mykbc' },
   repair: { title: 'Herstelling', tab: 'mykbc', back: () => 'mykbc' },
 }
 
@@ -56,7 +56,7 @@ export default function App() {
       {state.view === 'kbc' && <KbcDashboard state={state} />}
       {state.view === 'klant' && (
         <PhoneFrame
-          header={<AppBar title={meta.title} avatar={customer.avatar} onKate={actions.openKate}
+          header={<AppBar title={meta.title} brand={meta.brand} avatar={customer.avatar} onKate={actions.openKate}
             onBack={meta.back && (() => actions.navigate(meta.back(state.active)))} />}
           footer={<TabBar active={meta.tab} onSelect={(id) => actions.navigate(id)} />}
           overlay={state.kateOpen && <KateSheet {...shared} />}
