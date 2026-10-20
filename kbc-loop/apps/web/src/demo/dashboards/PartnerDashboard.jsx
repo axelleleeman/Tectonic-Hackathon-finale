@@ -226,7 +226,7 @@ export function PartnerPortal({ loop, theme, onToggleTheme, onBack }) {
     <div className="lp pt" data-theme={theme}>
       <header className="lp-top">
         <div className="lp-top-in">
-          <button type="button" className="lp-back" onClick={onBack} aria-label="All KBC apps" title="All KBC apps">
+          <button type="button" className="lp-back" onClick={onBack} aria-label="Back to KBC LOOP" title="Back to KBC LOOP">
             <LoopIcon name="back" size={18} />
           </button>
           <span className="lp-brand"><span className="lp-mark" aria-hidden="true" /><b>KBC LOOP</b><span className="pt-brand-sub">Partner portal</span></span>

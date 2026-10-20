@@ -41,7 +41,6 @@ No simulator? The same app also runs inside the website: scroll to **Explore the
 
 | Page | Link | What you see |
 |---|---|---|
-| KBC apps overview | http://localhost:5173 | Start of the story: the KBC "All apps" page, click **KBC LOOP** |
 | KBC LOOP start screen | http://localhost:5173/#loop | Hero animation, the story (problem → solution → triple win → you stay in control), then **Home · Impact · Rewards**, Kate tips, Explore the app, Questions |
 | Rewards tab | http://localhost:5173/#loop/rewards | Redeem Kate Coins |
 | Product catalogue | http://localhost:5173/#loop/catalog | How borrowing works, all partners, all products per category |
@@ -101,7 +100,7 @@ npm test         # engine, reducer and api tests + README check
 
 | What | Where |
 |---|---|
-| Web with presentation panel, partner and KBC dashboards | http://localhost:5173 |
+| Web: the KBC LOOP portal (opens directly; `http://localhost:5173` redirects to `#loop`) | http://localhost:5173/#loop |
 | Customer app (KBC Mobile, web version) | http://localhost:8081 (or scan the QR code with Expo Go) |
 | KBC Loop Insights (internal, for KBC staff) | http://localhost:5174/kbc/ |
 | API (REST + WebSocket) | http://127.0.0.1:4000 |
@@ -250,7 +249,7 @@ kbc-loop/
 ├── apps/
 │   ├── api/                 # @kbc-loop/api: Node REST + WebSocket on SQLite; in production also serves
 │   │                        #   web at /, KBC Loop Insights at /kbc/, app web export at /app/
-│   ├── web/                 # @kbc-loop/web (Vite + React, :5173): KBC apps page (screenshot + KBC Loop tab/card),
+│   ├── web/                 # @kbc-loop/web (Vite + React, :5173): the KBC LOOP portal (opens directly on #loop),
 │   │                        #   presentation panel, Philips/KBC dashboards, the app in an iframe
 │   ├── insights/            # @kbc-loop/insights (Vite + React, :5174, /kbc/): KBC Loop Insights, internal dashboard
 │   │                        #   for KBC staff: anonymised spending groups, recommended rental products, Kate campaigns
@@ -400,7 +399,7 @@ WebSocket) in the dashboards on the web and in Insights, and vice versa, also ac
 ```
   ┌────────────────────────┐ ┌────────────────────────┐ ┌──────────────────────────────┐
   │ apps/web (Vite+React)  │ │ apps/insights          │ │ apps/app (Expo/React Native) │
-  │  KBC apps page,        │ │  (Vite + React)        │ │  iOS + Android (Expo Go /    │
+  │  KBC LOOP portal,      │ │  (Vite + React)        │ │  iOS + Android (Expo Go /    │
   │  presenter panel,      │ │  KBC Loop Insights,    │ │  build), web version under   │
   │  Philips and KBC       │ │  internal, under /kbc/ │ │  /app/ (also as an iframe in │
   │  dashboards            │ │                        │ │  the web, Customer view)     │
@@ -480,10 +479,10 @@ kbc-loop/
       data-examples/   partner-feed.example.json: example feed of a fictional partner (GreenSpin)
       tests/
     web/             @kbc-loop/web: Vite + React, dev on http://localhost:5173
-      index.html       KBC apps page (pixel-exact screenshot + KBC Loop tab and card), presenter panel,
+      index.html       the KBC LOOP portal (root URL redirects to #loop), presenter panel,
                        Philips and KBC dashboards, the app in an iframe
       src/demo/        WebApp, presenter/ (presenter panel), dashboards/ (KBC dashboard; PartnerDashboard.jsx = the partner
-                       portal on #partner, partnerTickets.js = its tickets and KPIs), site/ (KBC apps page)
+                       portal on #partner, partnerTickets.js = its tickets and KPIs)
       src/loop/        the KBC LOOP page: #loop (metrics with a small three.js loop from three/, "Your home" per
                        category, Kate tips, FAQ), #loop/catalog[/<category>] (alias #loop/marketplace: catalogue per
                        category and partner, with "How borrowing works" and "Our partners"), #loop/catalog/product/<productId>
@@ -493,9 +492,8 @@ kbc-loop/
                        Canvas 2D and downloaded as a PNG), consent/ (#loop/consent: choose what happens with your data),
                        kate/ (TipFlow.jsx + tipFlow.css: each Kate tip as expenditure pattern → data insight → Kate
                        card)
-      src/hooks/       useAutoplay (plays the demo automatically), useHashRoute (KBC apps page ↔ KBC LOOP)
+      src/hooks/       useAutoplay (plays the demo automatically), useHashRoute (KBC LOOP routes; no hash → #loop)
       src/styles/      styling of the site and the phone frame
-      src/assets/      screenshot parts of the KBC apps page
     insights/        @kbc-loop/insights: KBC Loop Insights, internal dashboard for KBC staff
       src/             InsightsApp.jsx, main.jsx, model.js, useInsights.js, useRoute.js,
                        pages/, campaign/, components/, styles/
@@ -743,9 +741,7 @@ healthcheck. Optional `API_KEY`, `ALLOWED_ORIGINS` and `LOG_LEVEL` come from a l
 
 ## Limitations / disclaimers
 
-- Concept prototype, not an official KBC app or website. The web view imitates the KBC apps page, with the
-  KBC logo, the hero photo and the app icons from a screenshot (`apps/web/src/assets/site/`). The KBC logo is
-  also used in the app and the presentation. Intended only for the hackathon presentation; do not put it online
+- Concept prototype, not an official KBC app or website. The KBC logo is used in the app and the presentation. Intended only for the hackathon presentation; do not put it online
   publicly without KBC's permission. The customer app imitates the style of KBC Mobile (based on a screen
   recording of the real app) with its own icons; logos of other brands are not copied. Only KBC Loop is
   interactive; the rest of the app is scenery.

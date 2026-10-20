@@ -141,7 +141,7 @@ export function LoopPage({ route, param, go, loop }) {
 
   return (
     <div className={`lp ${overHero && route === 'home' ? 'lp-at-hero' : ''}`} data-theme={theme}>
-      <LoopHeader onBack={() => go(null)} onHome={goHome} coins={coins} avatar={customer.avatar}
+      <LoopHeader onHome={goHome} coins={coins} avatar={customer.avatar}
         theme={theme} overHero={overHero && route === 'home'} onToggleTheme={toggleTheme}
         onCoins={showRewards} inbox={{ loop, actions, go }}
         persona={{ customer, consentDone: Boolean(loop.dataPreferences?.completedOn), onConsent: () => go('consent'), onSwitch: (id) => { actions.switchCustomer(id); setModal(null); go('home'); notify('Customer switched') } }}

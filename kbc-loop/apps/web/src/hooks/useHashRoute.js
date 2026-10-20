@@ -1,5 +1,5 @@
 // Minimal hash router for the web demo:
-//   (no hash)                  → the KBC "All apps" page
+//   (no hash)                  → redirected to #loop (the portal opens directly)
 //   #loop                      → KBC LOOP start screen (metrics + your home)
 //   #loop/catalog              → the product catalogue (alias: #loop/marketplace)
 //   #loop/catalog/<categoryId> → the catalogue, opened on one category
@@ -52,7 +52,7 @@ function parse(hash) {
 }
 
 /**
- * Returns { route, param, go }. go(null) returns to the KBC apps page; go(route, param?) opens a KBC LOOP view
+ * Returns { route, param, go }. go(null) clears the hash (the app then shows #loop); go(route, param?) opens a KBC LOOP view
  * (param = category id for the catalogue, item key for a product).
  */
 export function useHashRoute() {
