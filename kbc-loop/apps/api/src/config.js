@@ -8,6 +8,8 @@
 //   TRUST_PROXY      'true' achter een HTTPS-proxy (bv. Cloud Run), om x-forwarded-proto/-for te vertrouwen
 //   PROXY_HOPS       aantal vertrouwde proxy's vóór de api (1); bepaalt welk x-forwarded-for-adres telt
 //   NODE_ENV         'production' zet HSTS aan
+import { fileURLToPath } from 'node:url'
+
 const DEV_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:5174', 'http://127.0.0.1:5174', 'http://localhost:8081', 'http://127.0.0.1:8081']
 
 const list = (v) => (v ? v.split(',').map((s) => s.trim()).filter(Boolean) : null)
@@ -16,7 +18,8 @@ export function loadConfig(env = process.env) {
   return {
     port: Number(env.PORT ?? 4000),
     host: env.HOST ?? '127.0.0.1',
-    dbPath: env.DB_PATH ?? new URL('../data/kbc-loop.db', import.meta.url).pathname,
+    // fileURLToPath i.p.v. .pathname: op Windows gaf .pathname '/C:/...', wat 'C:\C:\...' werd.
+    dbPath: env.DB_PATH ?? fileURLToPath(new URL('../data/kbc-loop.db', import.meta.url)),
     staticDir: env.STATIC_DIR || null,
     allowedOrigins: list(env.ALLOWED_ORIGINS) ?? DEV_ORIGINS,
     apiKey: env.API_KEY || null,
