@@ -1,67 +1,92 @@
-// Herstelling: probleem kiezen → tijdlijn in 3 stappen → Kate Coins.
+// Repair (screen 'repair'). Without an open repair it shows the "Report a problem" flow (e.g. opened by Kate);
+// with one it shows the confirmation with the technician slot and the live 3-step tracker. The demo advances
+// the steps with "Next step (demo)"; a completed repair earns Kate Coins.
 import { StyleSheet, View } from 'react-native'
 import { productById, partnerOf } from '@kbc-loop/shared/engine/catalog.js'
-import { issuesFor } from '@kbc-loop/shared/data/index.js'
-import { COINS, TECHNICIAN_SLOT } from '@kbc-loop/shared/config/index.js'
-import { PrimaryButton } from '../ui/Button.js'
-import { Press } from '../ui/Press.js'
+import { COINS } from '@kbc-loop/shared/config/index.js'
 import { T } from '../ui/T.js'
-import { boxes, cardShadow, colors, type } from '../theme.js'
+import { ReportFlow } from './item/report/ReportFlow.js'
+import { ActionButton, Card, SuccessHeader, SummaryRow } from './item/parts.js'
+import { ProductArt } from './item/ProductArt.js'
+import { Glyph } from './item/Glyph.js'
+import { technicianSlot } from './item/format.js'
+import { cardShadow, colors } from '../theme.js'
 
-export function Repair({ item, actions }) {
+function Timeline({ steps, current }) {
+  return (
+    <View style={styles.timeline} accessible aria-label={`Repair progress: step ${current} of ${steps.length}, ${steps[current - 1].title}`}>
+      {steps.map((s, n) => {
+        const on = n < current
+        const last = n === steps.length - 1
+        return (
+          <View key={s.title} style={[styles.step, last && styles.stepLast]}>
+            <View style={[styles.dot, on && styles.dotOn]}>{on ? <Glyph name="check" size={12} color="#fff" strokeWidth={3} /> : null}</View>
+            {!last ? <View style={[styles.line, n < current - 1 && styles.lineOn]} /> : null}
+            <T style={[styles.stepTitle, on && styles.stepTitleOn]}>{s.title}</T>
+            {s.sub ? <T style={styles.stepSub}>{s.sub}</T> : null}
+          </View>
+        )
+      })}
+    </View>
+  )
+}
+
+export function Repair({ item, actions, run }) {
   const p = productById(item.productId)
   const partner = partnerOf(p)
   const r = item.repair
+  const toItem = () => actions.navigate('item', { itemKey: item.key })
 
-  if (!r) {
-    return (
-      <>
-        <T style={type.h2} role="heading">Wat is er mis met je {p.name.toLowerCase()}?</T>
-        <T style={styles.intro}>{partner.name} krijgt je melding meteen. Herstel is inbegrepen in je abonnement.</T>
-        {issuesFor(p.id).map((issue) => (
-          <Press key={issue} style={styles.option} onPress={() => actions.reportDefect(item.key, issue)}>
-            <T style={styles.optionText}>{issue}</T><T style={styles.optionText}>›</T>
-          </Press>
-        ))}
-      </>
-    )
-  }
+  if (!r) return <ReportFlow item={item} product={p} partner={partner} actions={actions} onExit={toItem} />
 
+  const done = r.step >= 3
   const steps = [
-    r.preventive ? 'Slijtage gemeld door het toestel zelf' : 'Defect gemeld',
-    `${partner.name} plant een technieker in · ${TECHNICIAN_SLOT}`,
-    'Hersteld & getest',
+    { title: r.preventive ? 'Wear reported by the device itself' : 'Problem reported', sub: `“${r.issue}”${r.photo ? ' · photo attached' : ''}` },
+    { title: 'Technician scheduled', sub: partner.name },
+    { title: 'Repaired and tested', sub: '' },
   ]
-  const done = r.step === 3
+  const finish = () => run([{ type: 'CLOSE_REPAIR', itemKey: item.key }, { type: 'NAVIGATE', screen: 'item', active: { itemKey: item.key } }])
 
   return (
     <>
-      <T style={type.h2} role="heading">{done ? 'Hersteld!' : 'Herstelling loopt'}</T>
-      <T style={styles.intro}>{p.icon} {p.name} · “{r.issue}”</T>
-      <T style={[type.fine, styles.live]}>Live status van {partner.short}, rechtstreeks in KBC Mobile.</T>
-      <View style={styles.timeline}>
-        {steps.map((s, n) => {
-          const on = n < r.step
-          const last = n === steps.length - 1
-          return (
-            <View key={s} style={[styles.step, last && styles.stepLast]}>
-              <View style={[styles.dot, on && styles.dotOn]} />
-              {!last ? <View style={styles.line} /> : null}
-              <T style={[styles.stepText, on && styles.stepTextOn]}>{s}</T>
-            </View>
-          )
-        })}
-      </View>
+      {done ? (
+        <SuccessHeader title="Repaired" text={`€ 0 · +${COINS.repair} Kate Coins`} />
+      ) : (
+        <View style={styles.head}>
+          <ProductArt product={p} size="md" />
+          <View style={styles.headText}>
+            <T style={styles.title} role="heading">{r.step === 1 ? 'Report received' : 'Repair in progress'}</T>
+            <T style={styles.sub}>{p.name}</T>
+          </View>
+        </View>
+      )}
+
       {!done ? (
-        <PrimaryButton onPress={() => actions.advanceRepair(item.key)}>
-          {r.step === 1 ? 'Volgende: technieker ingepland' : 'Volgende: technieker herstelt'}
-        </PrimaryButton>
+        <Card style={styles.slot}>
+          <View style={styles.slotIcon}><Glyph name="calendar" size={22} color={colors.kmBlue} /></View>
+          <View style={styles.headText}>
+            <T style={styles.slotLabel}>Technician visit</T>
+            <T style={styles.slotValue}>{technicianSlot}</T>
+          </View>
+        </Card>
+      ) : null}
+
+      <Card style={styles.card}><Timeline steps={steps} current={r.step} /></Card>
+
+      {r.note ? (
+        <Card style={styles.card}>
+          <SummaryRow label="Your description" value={r.note} last />
+        </Card>
+      ) : null}
+
+      {!done ? (
+        <>
+          <ActionButton onPress={() => actions.advanceRepair(item.key)} label="Next step of the repair (demo)">Next step (demo)</ActionButton>
+          <ActionButton variant="secondary" onPress={toItem}>Back to product</ActionButton>
+        </>
       ) : (
         <>
-          <View style={boxes.saving}>
-            <T style={boxes.savingText}>♻ Hersteld in plaats van vervangen. Kost voor jou: <T style={[boxes.savingText, type.bold]}>€ 0</T>. +{COINS.repair} Kate Coins omdat je liet herstellen.</T>
-          </View>
-          <PrimaryButton onPress={() => actions.closeRepair(item.key)}>Terug naar Mijn KBC</PrimaryButton>
+          <ActionButton onPress={finish}>Back to product</ActionButton>
         </>
       )}
     </>
@@ -69,16 +94,23 @@ export function Repair({ item, actions }) {
 }
 
 const styles = StyleSheet.create({
-  intro: { color: colors.muted, fontSize: 14, lineHeight: 20, marginBottom: 12 },
-  live: { marginTop: 0 },
-  option: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: 10, padding: 14, marginBottom: 8, ...cardShadow },
-  optionText: { fontWeight: '600', color: colors.ink },
-  timeline: { marginVertical: 16 },
-  step: { paddingLeft: 30, paddingBottom: 22, minHeight: 40 },
+  head: { flexDirection: 'row', alignItems: 'center', gap: 14, marginBottom: 14 },
+  headText: { flex: 1 },
+  title: { fontSize: 22, fontWeight: '800', letterSpacing: -0.3 },
+  sub: { color: colors.kmSub, fontSize: 13.5, marginTop: 3 },
+  slot: { flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: colors.kmSky, boxShadow: 'none' },
+  slotIcon: { width: 44, height: 44, borderRadius: 12, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
+  slotLabel: { fontSize: 12.5, color: colors.kmSub, fontWeight: '600' },
+  slotValue: { fontSize: 16, fontWeight: '800', marginTop: 2 },
+  card: { marginTop: 12, ...cardShadow },
+  timeline: { paddingVertical: 4 },
+  step: { paddingLeft: 36, paddingBottom: 22, minHeight: 44 },
   stepLast: { paddingBottom: 0 },
-  dot: { position: 'absolute', left: 0, top: 2, width: 16, height: 16, borderRadius: 8, borderWidth: 2, borderColor: colors.line, backgroundColor: '#fff' },
+  dot: { position: 'absolute', left: 0, top: 0, width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: colors.kmLine, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
   dotOn: { backgroundColor: colors.green, borderColor: colors.green },
-  line: { position: 'absolute', left: 7, top: 22, bottom: 2, width: 2, backgroundColor: colors.line },
-  stepText: { color: colors.muted },
-  stepTextOn: { color: colors.ink, fontWeight: '600' },
+  line: { position: 'absolute', left: 10, top: 24, bottom: 2, width: 2, backgroundColor: colors.kmLine },
+  lineOn: { backgroundColor: colors.green },
+  stepTitle: { color: colors.kmGrey, fontWeight: '700', fontSize: 15 },
+  stepTitleOn: { color: colors.kmNavy },
+  stepSub: { color: colors.kmSub, fontSize: 13, marginTop: 3, lineHeight: 18 },
 })

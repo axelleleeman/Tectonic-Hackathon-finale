@@ -1,76 +1,51 @@
-// A borrowed product with its lifecycle (delivered → new life) and its KBC Loop actions.
+// A borrowed product as one calm row: picture, name, partner, monthly fee and a status dot.
+// Tapping opens the product detail (screen 'item') with the lifecycle, repairs and all actions.
 import { StyleSheet, View } from 'react-native'
 import { productById, partnerOf } from '@kbc-loop/shared/engine/catalog.js'
-import { euro, formatDate } from '@kbc-loop/shared/engine/format.js'
-import { COINS } from '@kbc-loop/shared/config/index.js'
 import { Press } from '../ui/Press.js'
-import { LinkButton } from '../ui/Button.js'
 import { T } from '../ui/T.js'
+import { ProductArt } from './item/ProductArt.js'
+import { itemStatus } from './item/status.js'
+import { Glyph } from './item/Glyph.js'
+import { money } from './item/format.js'
 import { cardShadow, colors } from '../theme.js'
 
-const STAGES = ['Delivered', 'In use', 'Repair', 'Return', 'New life']
-
-function stageState(item, n) {
-  if (item.returned) return 'on'
-  if (n < 2) return 'on'
-  if (n === 2 && (item.repairs > 0 || item.repair)) return item.repair ? 'busy' : 'on'
-  return ''
-}
+const DOT = { ok: '#1aa36f', warn: '#e0a100', off: 'transparent' }
 
 export function LoopItemCard({ item, actions }) {
   const p = productById(item.productId)
+  if (!p) return null
+  const partner = partnerOf(p)
+  const open = () => actions.navigate('item', { itemKey: item.key })
+  const status = itemStatus(item)
+  const tone = item.returned ? 'off' : item.repair && item.repair.step < 3 ? 'warn' : 'ok'
+
   return (
-    <View style={[styles.sub, item.returned && styles.returned]}>
+    <Press onPress={open} style={[styles.card, item.returned && styles.returned]}
+      label={`${p.name}, ${partner.name}, ${status.label}, ${money(p.monthly)} per month. Open product details`}>
       <View style={styles.head}>
-        <T style={styles.icon}>{p.icon}</T>
+        <ProductArt product={p} size="sm" />
         <View style={styles.headText}>
-          <T style={styles.name}>{p.name}</T>
-          <T style={styles.small}>{partnerOf(p).name} · since {formatDate(item.since, { withYear: !item.since.startsWith('2026') })} · {euro(p.monthly)}/month</T>
+          <T style={styles.name} numberOfLines={1}>{p.name}</T>
+          <T style={styles.small} numberOfLines={1}>{partner.name}</T>
         </View>
+        <T style={[styles.fee, item.returned && styles.muted]}>{item.returned ? '—' : money(p.monthly)}</T>
+        <View style={[styles.dot, { backgroundColor: DOT[tone] }, tone === 'off' && styles.dotOff]} aria-hidden />
+        <Glyph name="chevron" size={18} color={colors.kmGrey} />
       </View>
-      <View style={styles.lifecycle} aria-label={`Lifecycle: ${STAGES.filter((_, n) => stageState(item, n)).join(', ')}`}>
-        {STAGES.map((st, n) => {
-          const s = stageState(item, n)
-          return (
-            <View key={st} style={[styles.stage, s === 'on' && styles.stageOn, s === 'busy' && styles.stageBusy]}>
-              <T style={[styles.stageText, s === 'on' && styles.stageTextOn, s === 'busy' && styles.stageTextBusy]} numberOfLines={1} adjustsFontSizeToFit>
-                {st}{n === 2 && item.repairs > 0 ? ` ×${item.repairs}` : ''}
-              </T>
-            </View>
-          )
-        })}
-      </View>
-      {item.returned ? (
-        <T style={styles.secondLife}>♻ Refurbished by {partnerOf(p).short}: this product lives on with a new customer. +{COINS.return} Kate Coins</T>
-      ) : (
-        <View style={styles.actions}>
-          <Press style={styles.report} label={`Report a defect with ${p.name} and schedule a free repair`} onPress={() => actions.navigate('repair', { itemKey: item.key })}>
-            <T style={styles.reportText}>⚠ Report a defect</T>
-          </Press>
-          <LinkButton small onPress={() => actions.returnItem(item.key)} label={`Return ${p.name} and earn ${COINS.return} Kate Coins`}>Return</LinkButton>
-        </View>
-      )}
-    </View>
+    </Press>
   )
 }
 
 const styles = StyleSheet.create({
-  sub: { backgroundColor: '#fff', borderRadius: 10, paddingVertical: 12, paddingHorizontal: 14, marginVertical: 10, ...cardShadow },
-  returned: { opacity: 0.85 },
-  head: { flexDirection: 'row', gap: 10, alignItems: 'center' },
+  card: { backgroundColor: '#fff', borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14, marginVertical: 6, ...cardShadow },
+  returned: { opacity: 0.7 },
+  head: { flexDirection: 'row', gap: 12, alignItems: 'center' },
   headText: { flex: 1 },
-  icon: { fontSize: 24 },
-  name: { fontWeight: '700', color: colors.ink },
-  small: { color: colors.muted, fontSize: 12, marginTop: 2 },
-  lifecycle: { flexDirection: 'row', gap: 3, marginTop: 10 },
-  stage: { flex: 1, paddingVertical: 5, paddingHorizontal: 2, borderRadius: 6, backgroundColor: colors.line, alignItems: 'center' },
-  stageOn: { backgroundColor: colors.green },
-  stageBusy: { backgroundColor: colors.yellow },
-  stageText: { fontSize: 9.5, color: colors.muted, textAlign: 'center' },
-  stageTextOn: { color: '#fff' },
-  stageTextBusy: { color: '#5c4400' },
-  actions: { flexDirection: 'row', gap: 8, alignItems: 'center', marginTop: 10 },
-  report: { flex: 1, padding: 9, borderRadius: 10, borderWidth: 1, borderColor: colors.noteLine, backgroundColor: colors.noteBg, alignItems: 'center' },
-  reportText: { fontWeight: '600', fontSize: 14, color: colors.ink },
-  secondLife: { fontSize: 13, color: colors.savingInk, marginTop: 10 },
+  name: { fontWeight: '600', color: colors.ink, fontSize: 15 },
+  small: { color: colors.muted, fontSize: 12.5, marginTop: 2 },
+  fee: { fontWeight: '600', color: colors.ink, fontSize: 14 },
+  muted: { color: colors.muted },
+  dot: { width: 8, height: 8, borderRadius: 4 },
+  dotOff: { borderWidth: 1.5, borderColor: colors.muted },
 })

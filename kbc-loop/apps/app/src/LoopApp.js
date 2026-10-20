@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { StatusBar } from 'expo-status-bar'
 import { bindActions } from '@kbc-loop/shared/state/actions.js'
 import { useLoop } from './useLoop.js'
+import { getClient } from './api.js'
 import { SCREENS } from './navigation.js'
 import { AppBar } from './phone/AppBar.js'
 import { TabBar } from './phone/TabBar.js'
@@ -19,6 +20,10 @@ import { Category } from './screens/Category.js'
 import { Product } from './screens/Product.js'
 import { Done } from './screens/Done.js'
 import { Repair } from './screens/Repair.js'
+import { ItemScreen } from './screens/item/ItemScreen.js'
+import { ChromeContext } from './screens/item/chrome.js'
+import { CostOverview } from './screens/costs/CostOverview.js'
+import { CostsEntry } from './screens/costs/CostsEntry.js'
 import { KateScreen } from './kate/KateScreen.js'
 import { Connecting, ConnectionError, OfflineBanner } from './ConnectionScreens.js'
 
@@ -27,10 +32,39 @@ export default function LoopApp() {
   const { state, dispatch, customer, items, signals, coins, activeSignal, activeItem, status, error, fatal, actionError } = loop
   const actions = useMemo(() => bindActions(dispatch), [dispatch])
   const scroll = useRef(null)
+  // A flow inside a screen (report, upgrade, return, costs) can take over the header title and back button.
+  const [chrome, setChrome] = useState(null)
+  // Item key of the product that is being upgraded: its successor shows the upgrade confirmation once.
+  const [celebrate, setCelebrate] = useState(null)
+  const history = useRef([])
 
   const screenId = state?.screen
   const meta = SCREENS[screenId] ?? SCREENS.home
-  const goBack = meta.back && state ? () => actions.navigate(meta.back(state.active)) : null
+
+  // Remember the screens shown before, so item and costs can go back to where the customer came from.
+  useEffect(() => {
+    if (!screenId) return
+    const h = history.current
+    if (h[h.length - 1] !== screenId) history.current = [...h, screenId].slice(-12)
+  }, [screenId])
+  const previous = () => [...history.current].reverse().find((s) => s !== screenId) ?? null
+
+  const goBack = chrome?.back ?? (meta.back && state ? () => actions.navigate(meta.back(state.active, previous())) : null)
+
+  const chromeApi = useMemo(() => ({
+    set: (c) => setChrome(c),
+    clear: (token) => setChrome((c) => (c?.token === token ? null : c)),
+    scrollTop: () => scroll.current?.scrollTo({ y: 0, animated: false }),
+  }), [])
+
+  // Several actions in a fixed order (each waits for the api), e.g. close a repair and then open the product.
+  const run = useCallback(async (list) => {
+    try {
+      for (const action of list) await getClient().dispatch(action)
+    } catch {
+      list.forEach(dispatch) // fall back to the regular dispatch, which shows the error banner
+    }
+  }, [dispatch])
 
   // Pushmelding: elk nieuw Kate-inzicht verschijnt één keer als melding bovenaan (per klant).
   const [push, setPush] = useState(null)
@@ -53,7 +87,7 @@ export default function LoopApp() {
   }
 
   // Bij een ander scherm terug naar boven scrollen.
-  useEffect(() => { scroll.current?.scrollTo({ y: 0, animated: false }) }, [screenId, state?.active?.categoryId, state?.active?.productId])
+  useEffect(() => { scroll.current?.scrollTo({ y: 0, animated: false }) }, [screenId, state?.active?.categoryId, state?.active?.productId, state?.active?.itemKey])
 
   // Android-terugknop: eerst Kate sluiten, dan naar het vorige scherm.
   useEffect(() => {
@@ -69,26 +103,37 @@ export default function LoopApp() {
   if (!state) return error ? <ConnectionError error={error} fatal={fatal} /> : <Connecting />
 
   const shared = { customer, items, signals, actions }
+  const toCosts = () => actions.navigate('costs')
   const screen = {
     home: () => <Home {...shared} coins={coins} consent={state.consent} />,
     mykbc: () => <MyKbc {...shared} coins={coins} />,
-    shop: () => <Shop {...shared} />,
+    shop: () => (
+      <>
+        <CostsEntry items={items} onPress={toCosts} style={styles.costsEntry} />
+        <Shop {...shared} />
+      </>
+    ),
     category: () => <Category {...shared} categoryId={state.active.categoryId} />,
     product: () => <Product customer={customer} productId={state.active.productId} signal={activeSignal} actions={actions} />,
     done: () => <Done productId={state.active.productId} actions={actions} />,
-    repair: () => (activeItem ? <Repair item={activeItem} actions={actions} /> : null),
+    repair: () => (activeItem ? <Repair item={activeItem} actions={actions} run={run} /> : null),
+    item: () => (activeItem ? (
+      <ItemScreen key={activeItem.key} item={activeItem} items={items} customer={customer} actions={actions}
+        celebrate={celebrate} onCelebrated={() => setCelebrate(null)} onUpgrading={setCelebrate} />
+    ) : null),
+    costs: () => <CostOverview items={items} actions={actions} />,
   }[screenId] ?? (() => null)
 
-  const banner = actionError ? `Actie mislukt: ${actionError}` : status === 'offline' ? 'Offline: opnieuw verbinden…' : null
+  const banner = actionError ? `Action failed: ${actionError}` : status === 'offline' ? 'Offline: reconnecting…' : null
 
   return (
     <View style={styles.app}>
       <StatusBar style="dark" />
-      <AppBar variant={meta.bar} title={meta.title} placeholder={meta.placeholder} onKate={actions.openKate} onBack={goBack} />
+      <AppBar variant={chrome ? 'back' : meta.bar} title={chrome?.title ?? meta.title} placeholder={meta.placeholder} onKate={actions.openKate} onBack={goBack} />
       <View style={styles.body}>
         <LinearGradient colors={['#ffffff', '#ffffff', '#f3f8fc']} locations={[0, 0.3, 1]} style={styles.bg} pointerEvents="none" />
         <ScrollView ref={scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-          {screen()}
+          <ChromeContext.Provider value={chromeApi}>{screen()}</ChromeContext.Provider>
         </ScrollView>
       </View>
       <Fab />
@@ -109,4 +154,5 @@ const styles = StyleSheet.create({
   body: { flex: 1 },
   bg: { position: 'absolute', top: 0, left: 0, right: 0, height: 380 },
   content: { paddingTop: 14, paddingHorizontal: 16, paddingBottom: 150 },
+  costsEntry: { marginBottom: 14 },
 })
