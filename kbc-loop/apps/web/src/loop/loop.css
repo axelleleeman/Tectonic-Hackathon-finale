@@ -193,24 +193,13 @@
 .lp-scrollcue .lp-i { transform: rotate(90deg); }
 .lp-hero :focus-visible { outline-color: #4AABEE; }
 .lp-hero-end { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; pointer-events: none; }
-/* Story captions over the 3D scene (decorative; aligned with the scene layout in buildScene.js) */
-.lp-story { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-.lp-story-cap {
-  position: absolute; display: inline-flex; align-items: center; gap: var(--s2); padding: 7px 14px 7px 12px; border-radius: var(--r-pill);
-  font-size: .84375rem; font-weight: 600; letter-spacing: .02em; line-height: 1.2; color: #E8F0FA; white-space: nowrap;
-  background: rgba(8, 26, 56, .55); border: 1px solid rgba(255, 255, 255, .14); box-shadow: 0 8px 24px rgba(0, 0, 0, .25);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-  opacity: 0; translate: 0 8px; transition: opacity .6s ease, translate .6s cubic-bezier(.2, .8, .2, 1);
-}
-.lp-story-cap.lp-on { opacity: 1; translate: 0 0; }
-.lp-story-dot { width: 7px; height: 7px; border-radius: 50%; flex: none; background: #4AABEE; box-shadow: 0 0 0 3px rgba(74, 171, 238, .2); }
-.lp-story-loss .lp-story-dot { background: #FF7A59; box-shadow: 0 0 0 3px rgba(255, 122, 89, .2); }
-/* Tail pointing at the drop (right of the callout) */
-.lp-story-loss { right: 17%; top: 61%; }
-.lp-story-loss::after { content: ""; position: absolute; right: -5px; top: 50%; width: 9px; height: 9px; translate: 0 -50%; rotate: 45deg;
-  background: rgba(8, 26, 56, .55); border: 1px solid rgba(255, 255, 255, .14); border-left: 0; border-bottom: 0; }
-.lp-story-copy { position: absolute; left: 0; right: 0; top: calc(50% + 110px); pointer-events: none; z-index: 0; }
-.lp-story-keep { position: relative; }
+/* Story caption: one quiet centred line under the 3D scene, swapped per act (decorative) */
+.lp-story-line { position: absolute; left: 0; right: 0; bottom: calc(var(--s8) + 56px + env(safe-area-inset-bottom, 0px)); margin: 0;
+  padding-inline: var(--s4); text-align: center; pointer-events: none; z-index: 0;
+  font-size: .9375rem; font-weight: 500; letter-spacing: .01em; color: rgba(232, 240, 250, .72); }
+.lp-story-line span { display: inline-block; animation: lp-cap-in .7s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes lp-cap-in { from { opacity: 0; translate: 0 6px; } to { opacity: 1; translate: 0 0; } }
+@media (prefers-reduced-motion: reduce) { .lp-story-line span { animation: none; } }
 @keyframes lp-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 6px; } }
 #lp-content { scroll-margin-top: var(--lp-sticky); }
 
@@ -376,12 +365,10 @@ a.lp-tile:hover .lp-tile-arrow { color: var(--lp-accent); transform: translateX(
   .lp-main { padding-top: var(--s5); }
   .lp-hero-in { align-items: flex-end; padding-bottom: calc(var(--s8) * 2 + var(--s2)); }
   .lp-gl { top: var(--lp-sticky); height: 52%; bottom: auto; }
-  .lp-story-loss { right: var(--s4); top: calc(var(--lp-sticky) + 36%); }
-  .lp-story-loss::after { right: 22px; top: -5px; translate: 0 0; rotate: -45deg; }
   .lp-values-grid { grid-template-columns: 1fr; }
   .lp-value { padding: var(--s5) var(--s4); }
   .lp-panel { border-radius: 24px; min-height: 70svh; padding-inline: var(--s4); }
-  .lp-story-copy { top: auto; bottom: calc(var(--s8) + var(--s4)); }
+  .lp-story-line { font-size: .875rem; }
   .lp-at-hero .lp-add { opacity: 0; visibility: hidden; }
   .lp-start { padding-bottom: calc(var(--s8) + 48px + env(safe-area-inset-bottom, 0px)); }
   .lp-metrics { margin-bottom: var(--s6); }

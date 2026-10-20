@@ -5,23 +5,22 @@ import { LoopIcon } from '../LoopIcon.jsx'
 
 const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-// Two-act story, on repeat: linear (the ball falls off the end) → circular (products stay in the loop).
-const ACT = { linear: 6000, circular: 6000 }
-const DROP_AT = 4600 // ms into the linear act: the ball leaves the line (morph 1.5 s + run 3 s, see buildScene.js)
-const LOOP_AT = 1500 // ms into the circular act: the morph has settled
+// Two-act story, on repeat: linear (used once, then lost) → circular (products stay in the loop).
+const ACT_MS = 6000
+const CAPTION = {
+  linear: 'Linear: used once, then lost as costly material loss.',
+  circular: 'Circular: products stay in the loop.',
+}
 
-/** Drives the acts; returns whether the scene is circular and which caption (if any) is showing. */
+/** Alternates the scene between linear and circular; reduced motion stays on the circular end state. */
 function useStory(reduce) {
-  const [act, setAct] = useState(reduce ? 'circular' : 'linear')
-  const [caption, setCaption] = useState(reduce ? 'circular' : null)
+  const [circular, setCircular] = useState(reduce)
   useEffect(() => {
-    if (reduce) { setAct('circular'); setCaption('circular'); return undefined }
-    setCaption(null)
-    const show = setTimeout(() => setCaption(act), act === 'linear' ? DROP_AT : LOOP_AT)
-    const next = setTimeout(() => setAct(act === 'linear' ? 'circular' : 'linear'), ACT[act])
-    return () => { clearTimeout(show); clearTimeout(next) }
-  }, [act, reduce])
-  return { circular: act === 'circular', caption }
+    if (reduce) { setCircular(true); return undefined }
+    const id = setInterval(() => setCircular((c) => !c), ACT_MS)
+    return () => clearInterval(id)
+  }, [reduce])
+  return circular
 }
 
 /**
@@ -33,17 +32,14 @@ function Scene() {
   const canvasRef = useRef(null)
   const reduce = useMediaQuery('(prefers-reduced-motion: reduce)')
   const narrow = useMediaQuery('(max-width: 759px)')
-  const { circular, caption } = useStory(reduce)
+  const circular = useStory(reduce)
   useLoopScene(canvasRef, circular, 'dark', { compact: narrow })
   return (
     <>
       <canvas ref={canvasRef} className="lp-gl" aria-hidden="true" />
-      <div className="lp-story" aria-hidden="true">
-        <span className={`lp-story-cap lp-story-loss ${caption === 'linear' ? 'lp-on' : ''}`}><i className="lp-story-dot" />Costly material loss</span>
-      </div>
-      <div className="lp-wrap lp-story-copy" aria-hidden="true">
-        <span className={`lp-story-cap lp-story-keep ${caption === 'circular' ? 'lp-on' : ''}`}><i className="lp-story-dot" />Products stay in the loop</span>
-      </div>
+      <p className="lp-story-line" aria-hidden="true">
+        <span key={circular ? 'c' : 'l'}>{CAPTION[circular ? 'circular' : 'linear']}</span>
+      </p>
       <p className="lp-sr">Animation: in a linear model products are used once and lost as waste; with KBC LOOP they stay in the loop through repair, upgrade and reuse.</p>
     </>
   )
