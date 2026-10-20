@@ -76,13 +76,10 @@
 
   <!-- Chart grid -->
   <g stroke="#FFFFFF" stroke-opacity=".08" stroke-width="1">
-    <line x1="110" y1="250" x2="640" y2="250"/><line x1="110" y1="400" x2="640" y2="400"/>
-    <line x1="110" y1="550" x2="640" y2="550"/><line x1="110" y1="700" x2="640" y2="700"/>
+    <line x1="110" y1="700" x2="640" y2="700"/>
   </g>
   <g class="t-axis">
-    <text x="130" y="730" text-anchor="middle">Nov</text><text x="261" y="730" text-anchor="middle">Feb</text>
-    <text x="392" y="730" text-anchor="middle">May</text><text x="523" y="730" text-anchor="middle">Aug</text>
-    <text x="610" y="730" text-anchor="middle">Oct</text>
+    <text x="130" y="730" text-anchor="middle">Nov</text><text x="610" y="730" text-anchor="middle">Oct</text>
   </g>
 
   <!-- Spending line (12 months) -->
@@ -90,26 +87,21 @@
         d="M130 576 L174 610 L217 531 L261 565 L304 503 L348 543 L392 469 L435 340 L479 514 L523 385 L566 537 L610 408 L610 700 L130 700 Z"/>
   <path class="draw" pathLength="1" fill="none" stroke="#4AABEE" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" filter="url(#glow)"
         d="M130 576 L174 610 L217 531 L261 565 L304 503 L348 543 L392 469 L435 340 L479 514 L523 385 L566 537 L610 408"/>
-  <g fill="#9AD4FF" class="fade" style="animation-delay:1.2s">
-    <circle cx="130" cy="576" r="4"/><circle cx="174" cy="610" r="4"/><circle cx="217" cy="531" r="4"/><circle cx="261" cy="565" r="4"/>
-    <circle cx="304" cy="503" r="4"/><circle cx="348" cy="543" r="4"/><circle cx="392" cy="469" r="4"/><circle cx="479" cy="514" r="4"/>
-    <circle cx="566" cy="537" r="4"/>
-  </g>
 
   <!-- Key transactions -->
   <g class="pop" style="animation-delay:1.6s">
-    <rect x="268" y="323" width="130" height="34" rx="17" fill="#FFFFFF" fill-opacity=".1" stroke="#FFFFFF" stroke-opacity=".25"/>
-    <text x="333" y="346" text-anchor="middle" class="t-chip">€ 248 energy</text>
+    <rect x="318" y="323" width="80" height="34" rx="17" fill="#FFFFFF" fill-opacity=".1" stroke="#FFFFFF" stroke-opacity=".25"/>
+    <text x="358" y="346" text-anchor="middle" class="t-chip">€ 248</text>
     <circle cx="435" cy="340" r="9" fill="#F0A15A" stroke="#061633" stroke-width="3"/>
   </g>
   <g class="pop" style="animation-delay:1.75s">
-    <rect x="448" y="336" width="150" height="34" rx="17" fill="#FFFFFF" fill-opacity=".1" stroke="#FFFFFF" stroke-opacity=".25"/>
-    <text x="523" y="359" text-anchor="middle" class="t-chip">€ 135 washer fix</text>
+    <rect x="483" y="336" width="80" height="34" rx="17" fill="#FFFFFF" fill-opacity=".1" stroke="#FFFFFF" stroke-opacity=".25"/>
+    <text x="523" y="359" text-anchor="middle" class="t-chip">€ 135</text>
     <circle cx="523" cy="385" r="9" fill="#F0A15A" stroke="#061633" stroke-width="3"/>
   </g>
   <g class="pop" style="animation-delay:1.9s">
-    <rect x="634" y="358" width="150" height="34" rx="17" fill="#4AABEE" fill-opacity=".25" stroke="#4AABEE"/>
-    <text x="709" y="381" text-anchor="middle" class="t-chip">€ 179 phone fix</text>
+    <rect x="634" y="358" width="80" height="34" rx="17" fill="#4AABEE" fill-opacity=".25" stroke="#4AABEE"/>
+    <text x="674" y="381" text-anchor="middle" class="t-chip">€ 179</text>
     <circle class="pulse" cx="610" cy="408" r="9" fill="#4AABEE" style="animation-delay:2.4s"/>
     <circle cx="610" cy="408" r="10" fill="#FFFFFF" stroke="#4AABEE" stroke-width="4"/>
   </g>
@@ -124,19 +116,19 @@
 
   <!-- Insights -->
   <g class="fade" style="animation-delay:2.7s">
-    <rect x="760" y="262" width="340" height="76" rx="20" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".18"/>
+    <rect x="760" y="270" width="340" height="60" rx="20" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".18"/>
     <circle cx="792" cy="300" r="7" fill="#F0A15A"/>
-    <text x="812" y="294" class="t-node">Energy bill +18%</text><text x="812" y="320" class="t-node-sub">vs. same month last year</text>
+    <text x="812" y="307" class="t-node">Energy bill +18%</text>
   </g>
   <g class="fade" style="animation-delay:2.85s">
-    <rect x="760" y="412" width="340" height="76" rx="20" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".18"/>
+    <rect x="760" y="420" width="340" height="60" rx="20" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".18"/>
     <circle cx="792" cy="450" r="7" fill="#F0A15A"/>
-    <text x="812" y="444" class="t-node">2 washer repairs this year</text><text x="812" y="470" class="t-node-sub">machine is 6 years old</text>
+    <text x="812" y="457" class="t-node">2 washer repairs this year</text>
   </g>
   <g class="fade" style="animation-delay:3s">
-    <rect x="760" y="562" width="340" height="76" rx="20" fill="#4AABEE" fill-opacity=".16" stroke="#4AABEE" stroke-width="2"/>
+    <rect x="760" y="570" width="340" height="60" rx="20" fill="#4AABEE" fill-opacity=".16" stroke="#4AABEE" stroke-width="2"/>
     <circle cx="792" cy="600" r="7" fill="#4AABEE"/>
-    <text x="812" y="594" class="t-node">Phone repaired at 34 months</text><text x="812" y="620" class="t-node-sub">57% of similar customers replace soon</text>
+    <text x="812" y="607" class="t-node">Phone repaired at 34 months</text>
   </g>
 
   <!-- Insights flow into Kate -->
@@ -152,18 +144,15 @@
     <rect x="1190" y="300" width="330" height="340" rx="28" fill="#FFFFFF" filter="url(#shadow)"/>
     <circle cx="1236" cy="348" r="22" fill="#0A64B8"/>
     <text x="1236" y="356" text-anchor="middle" class="t-btn" style="font-size:20px">K</text>
-    <text x="1272" y="342" class="t-kate">Kate</text>
-    <text x="1272" y="364" class="t-kate-body" style="font-size:14px;fill:#5A6B82">Based on your transactions</text>
-    <text x="1218" y="418" class="t-kate-body">Your phone was just repaired.</text>
-    <text x="1218" y="446" class="t-kate-body">Borrow one with free repairs</text>
-    <text x="1218" y="474" class="t-kate-body">and insurance via KBC.</text>
+    <text x="1272" y="356" class="t-kate">Kate</text>
+    <text x="1218" y="428" class="t-kate-body">Borrow a phone with</text>
+    <text x="1218" y="456" class="t-kate-body">free repairs included.</text>
     <rect x="1218" y="498" width="140" height="38" rx="19" fill="#EAF2FB"/>
     <text x="1288" y="523" text-anchor="middle" class="t-kate" style="font-size:17px;fill:#0A64B8">€ 29 / month</text>
     <rect x="1218" y="560" width="274" height="48" rx="24" fill="#0A64B8"/>
     <text x="1355" y="590" text-anchor="middle" class="t-btn">View offer</text>
   </g>
 
-  <text x="800" y="820" text-anchor="middle" class="t-note fade" style="animation-delay:4.2s">With consent · anonymised groups · always explained</text>
 </svg>
 </body>
 </html>
