@@ -56,7 +56,9 @@ De demo bestaat uit twee aparte interfaces op dezelfde backend (`data/`, `engine
   Enkel KBC Loop is klikbaar (tab *KBC Loop* onderaan, Start en Mijn KBC); de rest van KBC Mobile
   staat lichtgrijs.
 - **Web** (`index.html`, code in `src/web/`): presentatiepaneel en de Philips- en KBC-dashboards.
-  In het perspectief *Klant* toont de web de app in een iframe.
+  Ziet eruit als de pagina "Alle apps van KBC": alles is lichtgrijs en niet klikbaar, behalve het
+  nieuwe tabblad *KBC Loop* (of `/#loop`). Daar staan het presentatiepaneel, de dashboards en, in het
+  perspectief *Klant*, de app in een iframe.
 
 Beide delen dezelfde state via `localStorage`: wat je in de app doet, verschijnt meteen in de
 dashboards (in dezelfde browser, ook in een ander tabblad).
