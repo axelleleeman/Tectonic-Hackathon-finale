@@ -32,12 +32,13 @@ function Small({ label, value }) {
   )
 }
 
-export function LoopImpact({ items, coins, actions }) {
+export function LoopImpact({ items, coins, actions, onOpenRewards }) {
   const t = loopTotals(items)
+  const openRewards = onOpenRewards ?? (() => actions.navigate('rewards'))
   return (
     <View style={styles.wrap}>
       <Big label="CO₂ saved" value={num(t.co2Kg)} unit="kg" color={ECO} note={`≈ ${num(t.carKm)} km less by car`} />
-      <Press onPress={() => actions.navigate('rewards')} label={`Kate Coins: ${num(coins)}. Open rewards`}>
+      <Press onPress={openRewards} label={`Kate Coins: ${num(coins)}. Open rewards`}>
         <Big label="Kate Coins" value={num(coins)} color={colors.kmBlue} note="Earned with every repair and return · Rewards ›" />
       </Press>
       <CostSnapshot items={items} onViewAll={() => actions.navigate('costs')} />

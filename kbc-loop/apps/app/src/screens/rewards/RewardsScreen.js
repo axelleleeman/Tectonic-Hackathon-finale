@@ -1,4 +1,5 @@
 // Kate Coins rewards: balance on top, rewards to redeem (confirm step + success state) and the redemption history.
+// RewardsPanel is the body; it is shown both as the 'rewards' screen and as the Rewards segment of the Loop tab.
 import { useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { rewards, rewardById } from '@kbc-loop/shared/data/rewards.js'
@@ -52,7 +53,7 @@ function Confirm({ step, coins, onConfirm, onCancel }) {
   )
 }
 
-export function RewardsScreen({ state, customer, coins = 0, actions }) {
+export function RewardsPanel({ state, customer, coins = 0, actions, style }) {
   const [step, setStep] = useState(null)
   const history = [...(state?.redemptions?.[customer?.id] ?? [])].reverse()
 
@@ -64,7 +65,7 @@ export function RewardsScreen({ state, customer, coins = 0, actions }) {
   }
 
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, style]}>
       <View style={[styles.card, styles.balance]} accessible accessibilityLabel={`Kate Coins balance: ${num(coins)}`}>
         <T style={styles.label}>Kate Coins</T>
         <T style={styles.balanceValue}>{num(coins)}</T>
@@ -111,6 +112,10 @@ export function RewardsScreen({ state, customer, coins = 0, actions }) {
       ) : <T style={styles.sub}>Nothing redeemed yet.</T>}
     </View>
   )
+}
+
+export function RewardsScreen(props) {
+  return <RewardsPanel {...props} />
 }
 
 const styles = StyleSheet.create({
