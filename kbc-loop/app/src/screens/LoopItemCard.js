@@ -28,7 +28,7 @@ export function LoopItemCard({ item, actions }) {
           <T style={styles.small}>{partnerOf(p).name} · sinds {formatDate(item.since, { withYear: !item.since.startsWith('2026') })} · {euro(p.monthly)}/maand</T>
         </View>
       </View>
-      <View style={styles.lifecycle}>
+      <View style={styles.lifecycle} aria-label={`Levenscyclus: ${STAGES.filter((_, n) => stageState(item, n)).join(', ')}`}>
         {STAGES.map((st, n) => {
           const s = stageState(item, n)
           return (
@@ -44,7 +44,7 @@ export function LoopItemCard({ item, actions }) {
         <T style={styles.secondLife}>♻ Gerefurbished door {partnerOf(p).short}: dit product leeft verder bij een nieuwe klant. +{COINS.return} Kate Coins</T>
       ) : (
         <View style={styles.actions}>
-          <Press style={styles.report} onPress={() => actions.navigate('repair', { itemKey: item.key })}>
+          <Press style={styles.report} label={`Meld een defect aan ${p.name}`} onPress={() => actions.navigate('repair', { itemKey: item.key })}>
             <T style={styles.reportText}>⚠ Meld een defect</T>
           </Press>
           <LinkButton small onPress={() => actions.returnItem(item.key)}>Inleveren</LinkButton>

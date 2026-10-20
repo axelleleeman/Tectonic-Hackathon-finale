@@ -1,12 +1,16 @@
+// Kate's avatar: het Kate-merkje (blauwe lijntjes) in een lichtblauw rondje, zoals in KBC Mobile.
 import { StyleSheet, View } from 'react-native'
-import { T } from './T.js'
+import { Icon } from './Icon.js'
 import { colors } from '../theme.js'
 
-export function KateAvatar() {
-  return <View style={styles.dot} aria-hidden><T style={styles.k}>K</T></View>
+export function KateAvatar({ size = 24 }) {
+  return (
+    <View style={[styles.dot, { width: size, height: size, borderRadius: size / 2 }]} aria-hidden>
+      <Icon name="kate" size={Math.round(size * 0.6)} color={colors.kmBlue} />
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
-  dot: { width: 24, height: 24, borderRadius: 12, backgroundColor: colors.navy, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
-  k: { color: '#fff', fontWeight: '800', fontSize: 12 },
+  dot: { backgroundColor: '#e3f3fb', borderWidth: 1, borderColor: '#cfe6f7', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
 })
