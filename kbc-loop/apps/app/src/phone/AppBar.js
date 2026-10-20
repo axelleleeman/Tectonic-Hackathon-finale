@@ -2,7 +2,7 @@
 //  search: tandwiel + Kate-zoekbalk ("Hoe kan ik je helpen?" met vergrootglas en Kate-label) + belletje (Start)
 //  title:  tandwiel + grote titel + belletje + Kate-knop (Mijn KBC, Aanbod)
 //  back:   terug + titel + Kate-knop (detailschermen)
-// Tikken op de zoekbalk of de Kate-knop opent Kate bovenaan (zie KatePanel).
+// Tikken op de zoekbalk of de Kate-knop opent het Kate-scherm (zie kate/KateScreen).
 import { StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Icon } from '../ui/Icon.js'

@@ -17,7 +17,7 @@ import { Category } from './screens/Category.js'
 import { Product } from './screens/Product.js'
 import { Done } from './screens/Done.js'
 import { Repair } from './screens/Repair.js'
-import { KatePanel } from './phone/KatePanel.js'
+import { KateScreen } from './kate/KateScreen.js'
 import { Connecting, ConnectionError, OfflineBanner } from './ConnectionScreens.js'
 
 export default function LoopApp() {
@@ -72,7 +72,7 @@ export default function LoopApp() {
       <Fab />
       <TabBar active={meta.tab} onSelect={(id) => actions.navigate(id)} />
       {banner ? <OfflineBanner message={banner} /> : null}
-      {state.kateOpen ? <KatePanel {...shared} placeholder={SCREENS.home.placeholder} /> : null}
+      <KateScreen open={Boolean(state.kateOpen)} {...shared} />
     </View>
   )
 }

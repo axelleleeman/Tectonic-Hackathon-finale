@@ -111,7 +111,8 @@ kbc-loop/
                        dev op http://localhost:5174, in productie onder /kbc/
     app/             @kbc-loop/app: Expo SDK 58-app (iPhone, Android en web)
       App.js           start van de app
-      src/phone/       KBC Mobile-kader: AppBar (Kate-zoekbalk), KatePanel, TabBar (zwevende menubalk), Fab
+      src/phone/       KBC Mobile-kader: AppBar (Kate-zoekbalk), TabBar (zwevende menubalk), Fab
+      src/kate/        Kate als volledig chatscherm (KateScreen, header, berichten, chips, invoerveld)
       src/screens/     schermen: home/ (Start), mykbc/ (Mijn KBC), aanbod/ (Aanbod) en de KBC Loop-
                        schermen (categorie, product, kopen vs. lenen, herstel …)
       src/ui/          gedeelde bouwstenen: Icon, Button, Stat, Photo, KateAvatar, KbcLogo …
