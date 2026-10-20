@@ -11,7 +11,7 @@ financiering en verzekering.
 
 | Perspectief | Wat je ziet |
 |---|---|
-| **Klant** (KBC Mobile) | Kate-inzichten op basis van verrichtingen, KBC Loop met categorieën en partners, kopen vs. lenen, Mijn KBC met levenscyclus, defect melden → herstel, inleveren → nieuw leven, Kate Coins |
+| **Klant** (KBC Mobile) | Startscherm in de stijl van KBC Mobile met de nieuwe knop **MyLoop** naast MyHome en MyMobility, Kate-tips in "Voor jou" op basis van verrichtingen, KBC Loop met categorieën en partners, kopen vs. lenen, Mijn KBC met levenscyclus, defect melden → herstel, inleveren → nieuw leven, Kate Coins |
 | **Philips** (partnerweergave) | Actieve contracten, terugkerende omzet, voorspelde defecten via sensoren, live herstelaanvragen |
 | **KBC** (interne weergave) | Loop-klanten, gefinancierd volume, terugkerende marge, CO₂-impact, triple win |
 

@@ -6,7 +6,7 @@ import { demoScript } from './presenter/demoScript.js'
 import { PresenterPanel } from './presenter/PresenterPanel.jsx'
 import { PhoneFrame } from './components/phone/PhoneFrame.jsx'
 import { AppBar } from './components/phone/AppBar.jsx'
-import { TabBar } from './components/phone/TabBar.jsx'
+import { Fab } from './components/phone/Fab.jsx'
 import { Home } from './screens/Home.jsx'
 import { MyKbc } from './screens/MyKbc.jsx'
 import { Shop } from './screens/Shop.jsx'
@@ -18,15 +18,15 @@ import { KateSheet } from './screens/KateSheet.jsx'
 import { PartnerDashboard } from './dashboards/PartnerDashboard.jsx'
 import { KbcDashboard } from './dashboards/KbcDashboard.jsx'
 
-// Per scherm: titel in de appbar, terug-bestemming en actief tabblad.
+// Per scherm: titel in de appbar en terug-bestemming.
 const SCREENS = {
-  home: { title: '', tab: 'home' },
-  mykbc: { title: 'Mijn KBC', tab: 'mykbc' },
-  shop: { brand: true, tab: 'shop' },
-  category: { brand: true, tab: 'shop', back: () => 'shop' },
-  product: { brand: true, tab: 'shop', back: (a) => (a.categoryId ? 'category' : a.signalId ? 'home' : 'shop') },
-  done: { brand: true, tab: 'mykbc', back: () => 'mykbc' },
-  repair: { title: 'Herstelling', tab: 'mykbc', back: () => 'mykbc' },
+  home: { title: '' },
+  mykbc: { title: 'Mijn KBC', back: () => 'home' },
+  shop: { brand: true, back: () => 'home' },
+  category: { brand: true, back: () => 'shop' },
+  product: { brand: true, back: (a) => (a.categoryId ? 'category' : a.signalId ? 'home' : 'shop') },
+  done: { brand: true, back: () => 'mykbc' },
+  repair: { title: 'Herstelling', back: () => 'mykbc' },
 }
 
 export default function App() {
@@ -57,8 +57,9 @@ export default function App() {
       {state.view === 'klant' && (
         <PhoneFrame
           header={<AppBar title={meta.title} brand={meta.brand} avatar={customer.avatar} onKate={actions.openKate}
+            onAvatar={() => actions.navigate('mykbc')}
             onBack={meta.back && (() => actions.navigate(meta.back(state.active)))} />}
-          footer={<TabBar active={meta.tab} onSelect={(id) => actions.navigate(id)} />}
+          footer={<Fab />}
           overlay={state.kateOpen && <KateSheet {...shared} />}
         >
           {screen()}
