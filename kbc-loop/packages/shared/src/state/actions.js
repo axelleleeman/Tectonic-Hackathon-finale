@@ -23,5 +23,11 @@ export function bindActions(dispatch) {
     startCampaign: (segmentId, { audience, budget, message } = {}) =>
       dispatch({ type: 'START_CAMPAIGN', segmentId, audience, budget, message }),
     stopCampaign: (segmentId) => dispatch({ type: 'STOP_CAMPAIGN', segmentId }),
+    redeemReward: (rewardId) => dispatch({ type: 'REDEEM_REWARD', rewardId }),
+    // ids: up to 100 notification ids (see notificationsFor in state/derive.js)
+    markNotificationsRead: (ids) => dispatch({ type: 'MARK_NOTIFICATIONS_READ', ids }),
+    // status: 'scheduled' | 'on-the-way' | 'in-progress' | 'repaired'; customerId defaults to the active customer
+    partnerUpdateRepair: (itemKey, status, customerId) =>
+      dispatch({ type: 'PARTNER_UPDATE_REPAIR', itemKey, status, ...(customerId ? { customerId } : {}) }),
   }
 }

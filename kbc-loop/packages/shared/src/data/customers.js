@@ -8,6 +8,7 @@ export const customers = [
     persona: 'already borrows Philips lights · phone just repaired',
     accountName: 'Current account', iban: 'BE12 3456 7890 1234', balance: 2483.17,
     phoneAgeMonths: 34,
+    coins: 350, // Kate Coins balance at the start of the demo (others start at 0)
     // A full home on KBC LOOP. The lamp comes first (lotte-0): it is used in the repair demo.
     // No phone on purpose: Kate suggests borrowing one after the repair transaction.
     borrowed: [

@@ -3,14 +3,18 @@ import { rules as defaultRules } from './rules.js'
 
 /**
  * @param {object} customer
- * @param {{ consent: boolean, dismissed: string[], items: object[], telemetry?: boolean }} state
+ * @param {{ consent: boolean, dismissed: string[], items: object[], telemetry?: boolean, campaigns?: string[], campaignDetails?: object }} state
+ *   campaigns/campaignDetails: running Kate campaigns from KBC Loop Insights (state.campaigns, state.campaignDetails)
  * @returns {Array<{ id, source, triggeredBy, headline, reasons, productId?, itemKey? }>}
  */
-export function detectSignals(customer, { consent, dismissed, items, telemetry = false }, rules = defaultRules) {
+export function detectSignals(customer, { consent, dismissed, items, telemetry = false, campaigns = [], campaignDetails = {} }, rules = defaultRules) {
   const ctx = {
     customer,
     items,
     telemetry,
+    dismissed,
+    campaigns: Array.isArray(campaigns) ? campaigns : [],
+    campaignDetails: campaignDetails ?? {},
     borrowedIds: items.filter((i) => !i.returned).map((i) => i.productId),
   }
   return rules
