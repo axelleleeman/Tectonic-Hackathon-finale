@@ -1,4 +1,4 @@
-import { Icon } from '../ui/Icon.jsx'
+import { Icon } from '../../components/ui/Icon.jsx'
 
 export function StatusBar() {
   return (

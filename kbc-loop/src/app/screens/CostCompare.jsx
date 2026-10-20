@@ -1,5 +1,5 @@
-import { costs } from '../engine/pricing.js'
-import { euro } from '../engine/format.js'
+import { costs } from '../../engine/pricing.js'
+import { euro } from '../../engine/format.js'
 
 export function CostCompare({ product }) {
   const { months, buy, borrow, saving } = costs(product)

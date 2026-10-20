@@ -1,6 +1,6 @@
 // Draaiboek voor de automatische presentatiemodus (± 45 seconden).
 // Elke stap is een gewone reducer-actie, dus dezelfde logica als bij klikken.
-import { PREVENTIVE_ISSUE } from '../data/index.js'
+import { PREVENTIVE_ISSUE } from '../../data/index.js'
 
 export const demoScript = [
   { caption: 'Lotte opent KBC Mobile. Kate merkt de gsm-herstelling op.', wait: 3500, action: { type: 'RESET' } },

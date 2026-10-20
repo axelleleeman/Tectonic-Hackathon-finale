@@ -1,7 +1,7 @@
-import { Icon } from '../components/ui/Icon.jsx'
-import { KateAvatar } from '../components/ui/KateAvatar.jsx'
-import { euro, formatDate } from '../engine/format.js'
-import { PREVENTIVE_ISSUE } from '../data/index.js'
+import { Icon } from '../../components/ui/Icon.jsx'
+import { KateAvatar } from '../../components/ui/KateAvatar.jsx'
+import { euro, formatDate } from '../../engine/format.js'
+import { PREVENTIVE_ISSUE } from '../../data/index.js'
 
 const EXTRA_SERVICES = [['Parkeren', 'parking'], ['Treintickets', 'train'], ['Bioscoop', 'ticket']]
 
@@ -30,7 +30,7 @@ export function Home({ customer, signals, consent, items, actions }) {
             </li>
           ))}
         </ul>
-        <div className="acc-more">Alle verrichtingen <Icon name="chevron" size={16} /></div>
+        <div className="acc-more off" aria-disabled="true">Alle verrichtingen <Icon name="chevron" size={16} /></div>
       </section>
 
       <h4>Kate inzichten</h4>
@@ -59,7 +59,7 @@ export function Home({ customer, signals, consent, items, actions }) {
           <span className="svc-icon loop"><Icon name="loop" /></span><b>KBC Loop</b><em>Nieuw</em>
         </button>
         {EXTRA_SERVICES.map(([label, icon]) => (
-          <div key={label} className="service"><span className="svc-icon"><Icon name={icon} /></span><b>{label}</b></div>
+          <div key={label} className="service off" aria-disabled="true"><span className="svc-icon"><Icon name={icon} /></span><b>{label}</b></div>
         ))}
       </div>
       {activeCount > 0 && <p className="fine center">Je leent {activeCount} product{activeCount > 1 ? 'en' : ''} via KBC Loop · bekijk in Mijn KBC</p>}

@@ -1,6 +1,6 @@
-import { productById, partnerOf } from '../engine/catalog.js'
-import { euro, formatDate } from '../engine/format.js'
-import { COINS } from '../config/index.js'
+import { productById, partnerOf } from '../../engine/catalog.js'
+import { euro, formatDate } from '../../engine/format.js'
+import { COINS } from '../../config/index.js'
 
 const STAGES = ['Geleverd', 'In gebruik', 'Herstel', 'Terugname', 'Nieuw leven']
 

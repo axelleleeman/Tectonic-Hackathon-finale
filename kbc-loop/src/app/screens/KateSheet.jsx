@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { KateAvatar } from '../components/ui/KateAvatar.jsx'
-import { Icon } from '../components/ui/Icon.jsx'
-import { matchIntent } from '../engine/kateIntents.js'
+import { KateAvatar } from '../../components/ui/KateAvatar.jsx'
+import { Icon } from '../../components/ui/Icon.jsx'
+import { matchIntent } from '../../engine/kateIntents.js'
 
 export function KateSheet({ customer, items, signals, actions }) {
   const [text, setText] = useState('')

@@ -1,12 +1,9 @@
 import { useMemo } from 'react'
-import { useLoop } from './state/useLoop.js'
-import { bindActions } from './state/actions.js'
-import { useAutoplay } from './hooks/useAutoplay.js'
-import { demoScript } from './presenter/demoScript.js'
-import { PresenterPanel } from './presenter/PresenterPanel.jsx'
-import { PhoneFrame } from './components/phone/PhoneFrame.jsx'
-import { AppBar } from './components/phone/AppBar.jsx'
-import { TabBar } from './components/phone/TabBar.jsx'
+import { useLoop } from '../state/useLoop.js'
+import { bindActions } from '../state/actions.js'
+import { PhoneFrame } from './phone/PhoneFrame.jsx'
+import { AppBar } from './phone/AppBar.jsx'
+import { TabBar } from './phone/TabBar.jsx'
 import { Home } from './screens/Home.jsx'
 import { MyKbc } from './screens/MyKbc.jsx'
 import { Shop } from './screens/Shop.jsx'
@@ -15,8 +12,6 @@ import { Product } from './screens/Product.jsx'
 import { Done } from './screens/Done.jsx'
 import { Repair } from './screens/Repair.jsx'
 import { KateSheet } from './screens/KateSheet.jsx'
-import { PartnerDashboard } from './dashboards/PartnerDashboard.jsx'
-import { KbcDashboard } from './dashboards/KbcDashboard.jsx'
 
 // Per scherm: titel in de appbar, terug-bestemming en actief tabblad.
 const SCREENS = {
@@ -29,11 +24,11 @@ const SCREENS = {
   repair: { title: 'Herstelling', tab: 'mykbc', back: () => 'mykbc' },
 }
 
-export default function App() {
+// De klantenapp (KBC Mobile). Deelt state met de webweergave via useLoop.
+export default function MobileApp() {
   const loop = useLoop()
   const { state, dispatch, customer, items, signals, coins, activeSignal, activeItem } = loop
   const actions = useMemo(() => bindActions(dispatch), [dispatch])
-  const autoplay = useAutoplay(dispatch, demoScript)
 
   const meta = SCREENS[state.screen]
   const shared = { customer, items, signals, actions }
@@ -49,21 +44,15 @@ export default function App() {
   }[state.screen]
 
   return (
-    <div className="stage">
-      <PresenterPanel state={state} items={items} actions={actions} autoplay={autoplay} />
-
-      {state.view === 'partner' && <PartnerDashboard state={state} />}
-      {state.view === 'kbc' && <KbcDashboard state={state} />}
-      {state.view === 'klant' && (
-        <PhoneFrame
-          header={<AppBar title={meta.title} avatar={customer.avatar} onKate={actions.openKate}
-            onBack={meta.back && (() => actions.navigate(meta.back(state.active)))} />}
-          footer={<TabBar active={meta.tab} onSelect={(id) => actions.navigate(id)} />}
-          overlay={state.kateOpen && <KateSheet {...shared} />}
-        >
-          {screen()}
-        </PhoneFrame>
-      )}
+    <div className="app-stage">
+      <PhoneFrame
+        header={<AppBar title={meta.title} avatar={customer.avatar} onKate={actions.openKate}
+          onBack={meta.back && (() => actions.navigate(meta.back(state.active)))} />}
+        footer={<TabBar active={meta.tab} onSelect={(id) => actions.navigate(id)} />}
+        overlay={state.kateOpen && <KateSheet {...shared} />}
+      >
+        {screen()}
+      </PhoneFrame>
     </div>
   )
 }

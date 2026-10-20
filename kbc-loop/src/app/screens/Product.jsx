@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { Photo } from '../components/ui/Photo.jsx'
+import { Photo } from '../../components/ui/Photo.jsx'
 import { CostCompare } from './CostCompare.jsx'
-import { ServiceChips } from '../components/ui/ServiceChips.jsx'
-import { productServices, servicesForSignal } from '../engine/integrations.js'
-import { productById, partnerNames, categoryOf } from '../engine/catalog.js'
-import { carKmEquivalent } from '../engine/impact.js'
-import { categoryPhoto } from '../data/index.js'
-import { euro, num } from '../engine/format.js'
+import { ServiceChips } from '../../components/ui/ServiceChips.jsx'
+import { productServices, servicesForSignal } from '../../engine/integrations.js'
+import { productById, partnerNames, categoryOf } from '../../engine/catalog.js'
+import { carKmEquivalent } from '../../engine/impact.js'
+import { categoryPhoto } from '../../data/index.js'
+import { euro, num } from '../../engine/format.js'
 
 export function Product({ customer, productId, signal, actions }) {
   const [why, setWhy] = useState(false)

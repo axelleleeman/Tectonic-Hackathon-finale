@@ -1,6 +1,6 @@
-import { productById, partnerOf } from '../engine/catalog.js'
-import { issuesFor } from '../data/index.js'
-import { COINS, TECHNICIAN_SLOT } from '../config/index.js'
+import { productById, partnerOf } from '../../engine/catalog.js'
+import { issuesFor } from '../../data/index.js'
+import { COINS, TECHNICIAN_SLOT } from '../../config/index.js'
 
 export function Repair({ item, actions }) {
   const p = productById(item.productId)

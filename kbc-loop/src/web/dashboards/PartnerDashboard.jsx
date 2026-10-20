@@ -1,9 +1,9 @@
 import { DashboardShell } from './DashboardShell.jsx'
-import { Stat } from '../components/ui/Stat.jsx'
-import { partnerStats } from '../engine/dashboards.js'
-import { euro, num } from '../engine/format.js'
-import { ServiceChips } from '../components/ui/ServiceChips.jsx'
-import { serviceById } from '../engine/integrations.js'
+import { Stat } from '../../components/ui/Stat.jsx'
+import { partnerStats } from '../../engine/dashboards.js'
+import { euro, num } from '../../engine/format.js'
+import { ServiceChips } from '../../components/ui/ServiceChips.jsx'
+import { serviceById } from '../../engine/integrations.js'
 
 const CONNECTED_VIA = ['partnerHub', 'devPortal', 'webhooks', 'b2bAssetHub', 'm2m'].map(serviceById)
 

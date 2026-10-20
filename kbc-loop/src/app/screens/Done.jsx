@@ -1,4 +1,4 @@
-import { productById, partnerNames } from '../engine/catalog.js'
+import { productById, partnerNames } from '../../engine/catalog.js'
 
 export function Done({ productId, actions }) {
   const p = productById(productId)

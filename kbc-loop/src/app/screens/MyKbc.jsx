@@ -1,9 +1,9 @@
-import { Icon } from '../components/ui/Icon.jsx'
-import { Stat } from '../components/ui/Stat.jsx'
+import { Icon } from '../../components/ui/Icon.jsx'
+import { Stat } from '../../components/ui/Stat.jsx'
 import { LoopItemCard } from './LoopItemCard.jsx'
-import { loopTotals } from '../engine/impact.js'
-import { euro, num } from '../engine/format.js'
-import { serviceById } from '../engine/integrations.js'
+import { loopTotals } from '../../engine/impact.js'
+import { euro, num } from '../../engine/format.js'
+import { serviceById } from '../../engine/integrations.js'
 
 function groupBySection(rows) {
   return rows.reduce((acc, r) => ({ ...acc, [r.section]: [...(acc[r.section] ?? []), r] }), {})
@@ -24,7 +24,7 @@ export function MyKbc({ customer, items, coins, actions }) {
           <h4>{title}</h4>
           <div className="list-card">
             {rows.map((r) => (
-              <div key={r.name} className="row">
+              <div key={r.name} className="row off">
                 <div><b>{r.name}</b><small>{r.sub}</small></div>
                 {r.value !== undefined ? <span>{euro(r.value, 2)}</span> : <Icon name="chevron" size={18} />}
               </div>

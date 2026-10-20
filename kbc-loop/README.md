@@ -43,15 +43,30 @@ product, *Ook bij KBC* per categorie, ecoWise/Kube ESG in Mijn KBC, en een volle
 
 ```bash
 npm install
-npm run dev      # http://localhost:5173
+npm run dev      # web: http://localhost:5173 · app: http://localhost:5173/app.html
 npm test         # 22 tests op signalen, prijzen, impact en state (Node 22+, geen extra pakketten)
 npm run build    # productiebuild in dist/
 ```
+
+## Web en app
+
+De demo bestaat uit twee aparte interfaces op dezelfde backend (`data/`, `engine/`, `state/`):
+
+- **App** (`app.html`, code in `src/app/`): de klantenapp KBC Mobile. Op een gsm schermvullend.
+  Enkel KBC Loop is klikbaar (tab *KBC Loop* onderaan, Start en Mijn KBC); de rest van KBC Mobile
+  staat lichtgrijs.
+- **Web** (`index.html`, code in `src/web/`): presentatiepaneel en de Philips- en KBC-dashboards.
+  In het perspectief *Klant* toont de web de app in een iframe.
+
+Beide delen dezelfde state via `localStorage`: wat je in de app doet, verschijnt meteen in de
+dashboards (in dezelfde browser, ook in een ander tabblad).
 
 ## Opbouw (modulair)
 
 ```
 src/
+  app/           klantenapp: MobileApp.jsx, main.jsx, phone/ (PhoneFrame, AppBar, TabBar), screens/
+  web/           webweergave: WebApp.jsx, main.jsx, dashboards/, presenter/
   config/        demo-instellingen (datum, CO₂-factor, Kate Coins, bundelkorting, KBC-marge)
   data/          enkel data: categories, partners, products (+ bundels), customers, repairIssues, pilotStats
   engine/        pure logica zonder React, getest in tests/
@@ -62,12 +77,9 @@ src/
     impact.js      CO₂, km-equivalent, herstellingen
     dashboards.js  cijfers voor partner- en KBC-weergave (pilotbasis + live demo)
     kateIntents.js eenvoudige herkenning van vragen aan Kate
-  state/         loopReducer.js (alle acties, puur en getest), useLoop.js (hook), actions.js
+  state/         loopReducer.js (alle acties, puur en getest), useLoop.js (hook + sync), actions.js
   hooks/         useAutoplay.js (presentatiemodus)
-  components/    ui/ (Icon, Photo, Stat, KateAvatar) en phone/ (PhoneFrame, AppBar, TabBar, StatusBar)
-  screens/       één bestand per scherm in de app
-  dashboards/    PartnerDashboard, KbcDashboard
-  presenter/     PresenterPanel en demoScript (draaiboek autoplay)
+  components/ui/ gedeelde UI (Icon, Photo, Stat, KateAvatar)
   styles/        tokens, layout, phone, screens, dashboard
 ```
 

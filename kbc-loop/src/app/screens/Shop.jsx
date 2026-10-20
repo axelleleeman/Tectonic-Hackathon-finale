@@ -1,6 +1,6 @@
-import { Photo } from '../components/ui/Photo.jsx'
-import { categoriesFor } from '../engine/catalog.js'
-import { categoryPhoto } from '../data/index.js'
+import { Photo } from '../../components/ui/Photo.jsx'
+import { categoriesFor } from '../../engine/catalog.js'
+import { categoryPhoto } from '../../data/index.js'
 
 export function Shop({ customer, actions }) {
   const cats = categoriesFor(customer.type)

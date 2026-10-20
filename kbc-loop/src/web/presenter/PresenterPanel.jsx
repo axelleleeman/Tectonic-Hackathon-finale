@@ -1,5 +1,5 @@
-import { Icon } from '../components/ui/Icon.jsx'
-import { customers } from '../data/index.js'
+import { Icon } from '../../components/ui/Icon.jsx'
+import { customers } from '../../data/index.js'
 
 const VIEWS = [['klant', 'Klant'], ['partner', 'Philips'], ['kbc', 'KBC']]
 const FLOW = [
@@ -24,6 +24,8 @@ export function PresenterPanel({ state, items, actions, autoplay }) {
           {autoplay.caption}
         </div>
       )}
+
+      <a className="ghost wide" href="app.html" target="_blank" rel="noreferrer">Open de klantenapp apart (gsm) ↗</a>
 
       <h3>Perspectief</h3>
       <div className="seg three">

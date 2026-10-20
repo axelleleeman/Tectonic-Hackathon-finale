@@ -1,0 +1,8 @@
+/* Webweergave; zie src/styles/ */
+@import '../styles/tokens.css';
+@import '../styles/layout.css';
+@import '../styles/phone.css';
+@import '../styles/dashboard.css';
+
+.phone[hidden] { display: none; }
+.app-frame { display: block; width: 100%; border: 0; }

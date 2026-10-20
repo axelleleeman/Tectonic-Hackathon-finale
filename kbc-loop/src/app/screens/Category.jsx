@@ -1,9 +1,9 @@
-import { Photo } from '../components/ui/Photo.jsx'
-import { categoriesFor } from '../engine/catalog.js'
-import { categoryPhoto } from '../data/index.js'
-import { euro } from '../engine/format.js'
-import { ServiceChips } from '../components/ui/ServiceChips.jsx'
-import { servicesForCategory } from '../engine/integrations.js'
+import { Photo } from '../../components/ui/Photo.jsx'
+import { categoriesFor } from '../../engine/catalog.js'
+import { categoryPhoto } from '../../data/index.js'
+import { euro } from '../../engine/format.js'
+import { ServiceChips } from '../../components/ui/ServiceChips.jsx'
+import { servicesForCategory } from '../../engine/integrations.js'
 
 export function Category({ customer, categoryId, items, actions }) {
   const cat = categoriesFor(customer.type).find((c) => c.id === categoryId)

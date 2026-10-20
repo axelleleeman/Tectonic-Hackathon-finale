@@ -1,8 +1,8 @@
 import { DashboardShell } from './DashboardShell.jsx'
-import { Stat } from '../components/ui/Stat.jsx'
-import { kbcStats } from '../engine/dashboards.js'
-import { euro, num } from '../engine/format.js'
-import { integrationMap } from '../engine/integrations.js'
+import { Stat } from '../../components/ui/Stat.jsx'
+import { kbcStats } from '../../engine/dashboards.js'
+import { euro, num } from '../../engine/format.js'
+import { integrationMap } from '../../engine/integrations.js'
 
 export function KbcDashboard({ state }) {
   const s = kbcStats(state.items)
