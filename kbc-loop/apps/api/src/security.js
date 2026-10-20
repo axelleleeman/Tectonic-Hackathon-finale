@@ -1,4 +1,4 @@
-// Beveiliging van de api: toegelaten origins, optionele api-sleutel, rate limiting en headers.
+// API security: allowed origins, optional API key, rate limiting and headers.
 import { timingSafeEqual } from 'node:crypto'
 
 export const SECURITY_HEADERS = {
@@ -13,8 +13,8 @@ export const CONTENT_SECURITY_POLICY = "default-src 'self'; img-src 'self' data:
 
 export const HSTS = { 'Strict-Transport-Security': 'max-age=31536000; includeSubDomains' }
 
-// De eigen origin (zelfde adres als de api) is altijd toegelaten; andere enkel uit de lijst.
-// Verzoeken zonder Origin (de iOS/Android-app, servers) worden toegelaten, maar wel aan de api-sleutel getoetst.
+// The API's own origin (same address) is always allowed; others only when they are on the list.
+// Requests without an Origin (the iOS/Android app, servers) are allowed, but still checked against the API key.
 export function originCheck(config) {
   return (req) => {
     const origin = req.headers.origin
@@ -32,7 +32,7 @@ function safeEqual(a, b) {
   return x.length === y.length && timingSafeEqual(x, y)
 }
 
-// Sleutel via "Authorization: Bearer <sleutel>" (http) of subprotocol "key.<sleutel>" (WebSocket).
+// Key via "Authorization: Bearer <key>" (HTTP) or the subprotocol "key.<key>" (WebSocket).
 export function keyCheck(config) {
   return (req) => {
     if (!config.apiKey) return true
@@ -43,7 +43,7 @@ export function keyCheck(config) {
   }
 }
 
-// Eenvoudige rate limiter per ip-adres (vast tijdvenster, in geheugen).
+// Simple rate limiter per IP address (fixed window, in memory).
 export function rateLimiter({ limit, windowMs }) {
   const hits = new Map()
   const timer = setInterval(() => {
@@ -60,8 +60,8 @@ export function rateLimiter({ limit, windowMs }) {
   }
 }
 
-// Achter een proxy: neem het adres dat de vertrouwde proxy zelf toevoegde (van rechts geteld),
-// niet het eerste, want dat kan de client vervalsen. proxyHops = aantal vertrouwde proxy's (Cloud Run: 1).
+// Behind a proxy: take the address that the trusted proxy itself added (counted from the right),
+// not the first one, because the client can spoof that. proxyHops = number of trusted proxies (Cloud Run: 1).
 export function clientIp(req, trustProxy, proxyHops = 1) {
   if (trustProxy) {
     const chain = String(req.headers['x-forwarded-for'] ?? '').split(',').map((s) => s.trim()).filter(Boolean)

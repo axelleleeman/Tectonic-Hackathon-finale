@@ -1,4 +1,4 @@
-// Serveert in productie de gebouwde web, KBC Loop Insights onder /kbc/ en de web-versie van de app onder /app/.
+// In production, serves the built web, KBC Loop Insights under /kbc/ and the web version of the app under /app/.
 import { readFile, stat } from 'node:fs/promises'
 import { extname, join, normalize, resolve, sep } from 'node:path'
 import { CONTENT_SECURITY_POLICY, SECURITY_HEADERS } from './security.js'
@@ -25,7 +25,7 @@ export function staticFiles(dir, extraHeaders = {}) {
       if ((await stat(file)).isDirectory()) file = join(file, 'index.html')
       await stat(file)
     } catch {
-      // Onbekend pad: toon de index van de juiste app (/app/ = klantenapp, /kbc/ = KBC Loop Insights, anders de web)
+      // Unknown path: serve the index of the matching app (/app/ = customer app, /kbc/ = KBC Loop Insights, otherwise the web)
       const sub = SUB_APPS.find((name) => rel === `/${name}` || rel.startsWith(`/${name}/`))
       file = join(root, sub ? `${sub}/index.html` : 'index.html')
     }

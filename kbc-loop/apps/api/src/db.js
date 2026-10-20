@@ -73,6 +73,11 @@ export function openDb(path) {
       return recent.all(limit).map((r) => ({ ...r, payload: JSON.parse(r.payload) }))
     },
 
+    // Readiness probe: true when the database answers a trivial query.
+    ping() {
+      try { return db.prepare('SELECT 1 AS ok').get().ok === 1 } catch { return false }
+    },
+
     close: () => db.close(),
   }
 }
