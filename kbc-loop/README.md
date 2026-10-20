@@ -43,14 +43,14 @@ product, *Ook bij KBC* per categorie, ecoWise/Kube ESG in Mijn KBC, en een volle
 
 ```bash
 npm install
-npm run dev      # web: http://localhost:5173 · app: http://localhost:5173/app.html
-npm test         # 22 tests op signalen, prijzen, impact en state (Node 22+, geen extra pakketten)
+npm run dev      # web: http://localhost:5173 · app: /app.html · intern: /kbc.html
+npm test         # 27 tests op signalen, prijzen, impact en state (Node 22+, geen extra pakketten)
 npm run build    # productiebuild in dist/
 ```
 
-## Web en app
+## Web, app en interne KBC-weergave
 
-De demo bestaat uit twee aparte interfaces op dezelfde backend (`data/`, `engine/`, `state/`):
+De demo bestaat uit drie aparte interfaces op dezelfde backend (`data/`, `engine/`, `state/`):
 
 - **App** (`app.html`, code in `src/app/`): de klantenapp KBC Mobile. Op een gsm schermvullend.
   Enkel KBC Loop is klikbaar (tab *KBC Loop* onderaan, Start en Mijn KBC); de rest van KBC Mobile
@@ -60,7 +60,13 @@ De demo bestaat uit twee aparte interfaces op dezelfde backend (`data/`, `engine
   nieuwe tabblad *KBC Loop* (of `/#loop`). Daar staan het presentatiepaneel, de dashboards en, in het
   perspectief *Klant*, de app in een iframe.
 
-Beide delen dezelfde state via `localStorage`: wat je in de app doet, verschijnt meteen in de
+- **KBC Loop Insights** (`kbc.html`, code in `src/kbc/`): interne tool voor KBC-medewerkers. Toont
+  geanonimiseerd welke producten klanten vaak kopen of laten herstellen (bv. betalingen aan
+  fietsenmakers of gsm-herstellers), wat dat per jaar kost en welk huurproduct je die groep kan
+  aanbieden. Groepen onder 100 klanten worden niet getoond. Met *Start campagne via Kate* verschijnt
+  de campagne live in het KBC-dashboard van de web. Data: `data/spendSegments.js`, logica: `engine/insights.js`.
+
+Alle drie delen dezelfde state via `localStorage`: wat je in de app doet, verschijnt meteen in de
 dashboards (in dezelfde browser, ook in een ander tabblad).
 
 ## Opbouw (modulair)
@@ -68,7 +74,8 @@ dashboards (in dezelfde browser, ook in een ander tabblad).
 ```
 src/
   app/           klantenapp: MobileApp.jsx, main.jsx, phone/ (PhoneFrame, AppBar, TabBar), screens/
-  web/           webweergave: WebApp.jsx, main.jsx, dashboards/, presenter/
+  web/           webweergave: WebApp.jsx, main.jsx, site/, dashboards/, presenter/
+  kbc/           interne KBC-weergave: InsightsApp.jsx (KBC Loop Insights)
   config/        demo-instellingen (datum, CO₂-factor, Kate Coins, bundelkorting, KBC-marge)
   data/          enkel data: categories, partners, products (+ bundels), customers, repairIssues, pilotStats
   engine/        pure logica zonder React, getest in tests/

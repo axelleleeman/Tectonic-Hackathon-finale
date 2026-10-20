@@ -12,7 +12,7 @@ const SYNC = '__SYNC'
 function loadState() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
-    if (saved?.items) return saved
+    if (saved?.items) return { ...createInitialState(), ...saved }
   } catch { /* geen of ongeldige opslag */ }
   return createInitialState()
 }

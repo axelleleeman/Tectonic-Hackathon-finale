@@ -79,9 +79,6 @@
 .whybox p { color: var(--muted); }
 .bar { background: #fff; border-radius: 14px; padding: 12px 14px; margin: 8px 0; }
 .barhead { display: flex; justify-content: space-between; }
-.track { height: 10px; background: var(--line); border-radius: 6px; margin: 8px 0 6px; overflow: hidden; }
-.fill { height: 100%; background: #9aa6b4; border-radius: 6px; transition: width .6s; }
-.fill.loop { background: var(--blue); }
 .bar small { color: var(--muted); font-size: 12px; }
 .saving { background: #e8f7f0; color: #0f6e4a; border-radius: 12px; padding: 10px 14px; margin: 8px 0; font-size: 14px; line-height: 1.4; }
 .note { background: #fff7e6; border: 1px solid #f5dfae; padding: 12px; border-radius: 12px; font-size: 14px; margin: 8px 0; }
@@ -96,10 +93,6 @@ button.note { width: 100%; text-align: left; }
 .list-card .row:last-child { border-bottom: 0; }
 .list-card small { display: block; color: var(--muted); font-size: 12px; }
 .tiles { display: flex; gap: 8px; margin: 10px 0; }
-.stat { flex: 1; background: #fff; border-radius: 14px; padding: 12px; }
-.stat strong { display: block; color: var(--green); font-size: 18px; }
-.stat small { color: var(--muted); font-size: 12px; line-height: 1.3; display: block; }
-.stat em { display: block; font-style: normal; font-size: 11px; color: var(--navy); margin-top: 4px; }
 .coins { background: #fff8e1; border-radius: 12px; padding: 10px 14px; font-size: 14px; margin-bottom: 10px; }
 .sub { background: #fff; border-radius: 14px; padding: 12px 14px; margin: 10px 0; }
 .sub.returned { opacity: .85; }
@@ -129,10 +122,4 @@ button.note { width: 100%; text-align: left; }
 /* Bestaande KBC-diensten */
 .kbc-box { background: #fff; border: 1px solid #cfe0ee; border-radius: 14px; padding: 12px 14px; margin: 12px 0; }
 .kbc-box > b { display: block; color: var(--navy); font-size: 14px; margin-bottom: 8px; }
-.svc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.svc-chip { display: inline-flex; align-items: center; gap: 5px; background: #eef4f9; color: var(--navy); border-radius: 99px; padding: 4px 10px 4px 4px; font-size: 12px; line-height: 1.3; }
-.svc-chip em { font-style: normal; font-size: 9px; font-weight: 800; background: var(--navy); color: #fff; border-radius: 99px; padding: 2px 6px; }
-.svc-chip b { font-weight: 700; }
 .based-on { margin: 8px 0 6px; color: var(--navy) !important; font-weight: 600; }
-.svc-chips.rows { flex-direction: column; }
-.svc-chips.rows .svc-chip { border-radius: 10px; padding: 6px 10px 6px 6px; }

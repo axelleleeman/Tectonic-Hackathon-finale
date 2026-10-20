@@ -26,6 +26,7 @@ export function PresenterPanel({ state, items, actions, autoplay }) {
       )}
 
       <a className="ghost wide" href="app.html" target="_blank" rel="noreferrer">Open de klantenapp apart (gsm) ↗</a>
+      <a className="ghost wide" href="kbc.html" target="_blank" rel="noreferrer">Open KBC Loop Insights (intern) ↗</a>
 
       <h3>Perspectief</h3>
       <div className="seg three">

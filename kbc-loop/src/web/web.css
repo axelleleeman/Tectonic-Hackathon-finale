@@ -1,5 +1,6 @@
 /* Webweergave; zie src/styles/ */
 @import '../styles/tokens.css';
+@import '../styles/components.css';
 @import '../styles/layout.css';
 @import '../styles/phone.css';
 @import '../styles/dashboard.css';

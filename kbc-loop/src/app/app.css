@@ -1,5 +1,6 @@
 /* Klantenapp; zie src/styles/ */
 @import '../styles/tokens.css';
+@import '../styles/components.css';
 @import '../styles/phone.css';
 @import '../styles/screens.css';
 

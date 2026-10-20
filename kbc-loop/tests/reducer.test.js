@@ -48,3 +48,9 @@ test('acties raken enkel de actieve klant', () => {
   assert.equal(s.items.lotte.length, 1)
   assert.equal(s.items.peeters.length, 1)
 })
+
+test('campagne aan- en uitzetten vanuit KBC Loop Insights', () => {
+  const on = run({ type: 'TOGGLE_CAMPAIGN', segmentId: 'seg-phone-repair' })
+  assert.deepEqual(on.campaigns, ['seg-phone-repair'])
+  assert.deepEqual(loopReducer(on, { type: 'TOGGLE_CAMPAIGN', segmentId: 'seg-phone-repair' }).campaigns, [])
+})

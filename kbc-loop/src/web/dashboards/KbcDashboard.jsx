@@ -3,10 +3,12 @@ import { Stat } from '../../components/ui/Stat.jsx'
 import { kbcStats } from '../../engine/dashboards.js'
 import { euro, num } from '../../engine/format.js'
 import { integrationMap } from '../../engine/integrations.js'
+import { insights } from '../../engine/insights.js'
 
 export function KbcDashboard({ state }) {
   const s = kbcStats(state.items)
   const map = integrationMap()
+  const campaigns = insights().segments.filter((seg) => state.campaigns.includes(seg.id))
   return (
     <DashboardShell eyebrow="Interne weergave · KBC" title="KBC Loop-portefeuille" note="Pilotscenario met fictieve cijfers · live bijgewerkt door de demo">
       <div className="dash-grid">
@@ -17,6 +19,13 @@ export function KbcDashboard({ state }) {
         <Stat value={`${s.conversionPct}%`} label="Kate-inzicht → contract" />
         <Stat value={`${s.insuredPct}%`} label="sluit ook KBC-verzekering af" />
       </div>
+
+      <h3 className="dash-sub">Kate-campagnes vanuit KBC Loop Insights</h3>
+      {campaigns.length === 0
+        ? <p className="fine">Nog geen campagnes. Start er een in KBC Loop Insights (interne tool).</p>
+        : campaigns.map((c) => (
+          <div key={c.id} className="int-row"><b>{c.label}</b><div>{c.product.icon} {c.product.name} · {num(c.reachable)} klanten met toestemming · verwacht {euro(c.monthlyRevenue)}/maand <span className="live-tag">LIVE</span></div></div>
+        ))}
 
       <h3 className="dash-sub">Contracten per categorie</h3>
       {s.byCategory.map((c) => (
