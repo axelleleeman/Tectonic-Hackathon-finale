@@ -17,3 +17,9 @@ export const KBC_MARGIN_RATE = 0.12
 
 // Een energiefactuur geldt als "fors gestegen" boven dit veelvoud van het gemiddelde.
 export const ENERGY_SPIKE_FACTOR = 1.5
+
+// KBC Loop Insights: groepen kleiner dan dit aantal klanten worden niet getoond (anonimiteit).
+export const MIN_GROUP_SIZE = 100
+
+// Verwachte omzetting van een Kate-inzicht naar een contract (zie pilotcijfers).
+export const EXPECTED_CONVERSION = 0.18

@@ -18,6 +18,7 @@ export function createInitialState() {
     dismissed: perCustomer(() => []),
     coins: perCustomer(() => 0),
     telemetry: perCustomer(() => false),
+    campaigns: [], // groepen uit KBC Loop Insights waarvoor een Kate-campagne loopt
   }
 }
 
@@ -88,6 +89,11 @@ export function loopReducer(state, action) {
 
     case 'TRIGGER_TELEMETRY':
       return { ...forCustomer(state, 'telemetry', () => true), ...home, view: 'klant' }
+
+    case 'TOGGLE_CAMPAIGN': {
+      const on = state.campaigns.includes(action.segmentId)
+      return { ...state, campaigns: on ? state.campaigns.filter((id) => id !== action.segmentId) : [...state.campaigns, action.segmentId] }
+    }
 
     default:
       return state

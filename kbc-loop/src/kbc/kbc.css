@@ -1,0 +1,6 @@
+/* KBC Loop Insights (interne weergave); zie src/styles/ */
+@import '../styles/tokens.css';
+@import '../styles/components.css';
+@import '../styles/layout.css';
+@import '../styles/dashboard.css';
+@import '../styles/insights.css';

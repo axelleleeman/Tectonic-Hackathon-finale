@@ -1,0 +1,15 @@
+/* Klantenapp; zie src/styles/ */
+@import '../styles/tokens.css';
+@import '../styles/components.css';
+@import '../styles/phone.css';
+@import '../styles/screens.css';
+
+.app-stage { min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; }
+
+/* Op een echte gsm (of in de iframe van de webweergave): schermvullend, zonder toestelrand */
+@media (max-width: 500px) {
+  .app-stage { padding: 0; }
+  .app-stage .phone { width: 100vw; max-width: none; height: 100dvh; border-radius: 0; padding: 0; box-shadow: none; }
+  .app-stage .notch { display: none; }
+  .app-stage .screen { border-radius: 0; }
+}

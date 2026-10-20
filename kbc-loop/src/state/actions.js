@@ -15,5 +15,6 @@ export function bindActions(dispatch) {
     closeRepair: (itemKey) => dispatch({ type: 'CLOSE_REPAIR', itemKey }),
     returnItem: (itemKey) => dispatch({ type: 'RETURN_ITEM', itemKey }),
     triggerTelemetry: () => dispatch({ type: 'TRIGGER_TELEMETRY' }),
+    toggleCampaign: (segmentId) => dispatch({ type: 'TOGGLE_CAMPAIGN', segmentId }),
   }
 }

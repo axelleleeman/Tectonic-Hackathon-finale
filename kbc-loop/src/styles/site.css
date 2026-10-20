@@ -1,0 +1,56 @@
+/* Websitepagina in de stijl van "Alle apps van KBC". Alles behalve KBC Loop is lichtgrijs. */
+.site { background: #fff; min-height: 100vh; }
+.off-link, .off-btn { color: #b8c0c9 !important; cursor: default; user-select: none; display: inline-flex; align-items: center; gap: 4px; }
+
+.site-head { max-width: 1400px; margin: 0 auto; padding: 0 32px; }
+.site-top { display: flex; align-items: center; gap: 24px; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.site-segments { display: flex; gap: 24px; flex: 1; flex-wrap: wrap; }
+.site-segments .current { border-bottom: 2px solid #d5dbe2; padding-bottom: 2px; }
+.site-search { width: 300px; justify-content: space-between; border: 1px solid #e3e7ec; border-radius: 6px; padding: 8px 12px; }
+.site-main { display: flex; align-items: center; gap: 28px; padding: 18px 0; }
+.site-brand { display: flex; align-items: center; gap: 10px; font-size: 26px; font-weight: 900; color: var(--navy); letter-spacing: .02em; }
+.site-menu { display: flex; gap: 26px; flex: 1; font-weight: 700; font-size: 17px; flex-wrap: wrap; }
+.site-btn { padding: 12px 22px; border-radius: 99px; background: #f0f2f5; font-size: 16px; }
+
+.site-hero { padding: 110px 32px; background-color: #f1f4f7;
+  background-image: linear-gradient(90deg, #f1f4f7 0%, #f1f4f7 30%, rgba(241, 244, 247, 0) 48%), url('/img/site/hero-apps.jpg');
+  background-size: auto, auto 100%; background-position: left, right center; background-repeat: no-repeat; }
+.site-hero h1 { max-width: 1336px; margin: 0 auto; color: var(--navy); font-size: 40px; }
+
+.site-body { max-width: 1400px; margin: 0 auto; padding: 0 32px 40px; }
+.crumbs { padding: 20px 0 40px; font-size: 14px; color: var(--ink); }
+.crumbs .off-link { text-decoration: underline; }
+.site-tabs { display: flex; gap: 32px; border-bottom: 1px solid var(--line); margin-bottom: 48px; font-size: 20px; flex-wrap: wrap; }
+.site-tabs > * { padding: 10px 0 12px; border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.site-tabs button { color: var(--navy); }
+.site-tabs button.on { border-bottom-color: var(--navy); }
+.loop-tab { display: inline-flex; align-items: center; gap: 8px; color: var(--blue) !important; font-weight: 700; }
+.loop-tab.on { border-bottom-color: var(--blue) !important; }
+.loop-tab em, .app-card em { font-style: normal; font-size: 11px; font-weight: 700; background: var(--red); color: #fff; padding: 2px 8px; border-radius: 99px; }
+
+.apps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 32px; max-width: 1300px; margin: 0 auto; }
+.app-card { text-align: left; display: flex; flex-direction: column; gap: 14px; font-size: 18px; line-height: 1.5; border-radius: 16px; padding: 16px; }
+.app-card p { margin: 0; }
+.app-card-head { display: flex; align-items: center; gap: 12px; font-size: 22px; line-height: 1.15; }
+.app-card-head em { margin-left: auto; }
+.app-icon { width: 64px; height: 64px; border-radius: 12px; display: grid; place-items: center; flex: none; }
+.off-card { color: #b8c0c9; }
+.off-card .app-icon { background: #eef1f4; color: #c5ccd4; }
+.off-card .off-link { text-decoration: underline; }
+.loop-card { box-shadow: 0 0 0 2px var(--blue) inset; color: var(--ink); }
+.loop-card b { color: var(--blue); }
+.app-icon.loop { background: var(--blue); color: #fff; }
+.loop-link { color: var(--blue); font-weight: 700; }
+.loop-card:hover { background: #f2fbfe; }
+
+.site .stage { min-height: auto; padding: 0 0 32px; }
+.site .stage[hidden] { display: none; }
+.site-disclaimer { text-align: center; padding: 0 16px 24px; }
+
+@media (max-width: 900px) {
+  .site-head, .site-body { padding-left: 16px; padding-right: 16px; }
+  .site-top, .site-menu, .site-btn { display: none; }
+  .site-hero { padding: 56px 16px; background-image: linear-gradient(90deg, rgba(241, 244, 247, .95) 0%, rgba(241, 244, 247, .7) 100%), url('/img/site/hero-apps.jpg'); background-size: auto, cover; }
+  .site-hero h1 { font-size: 28px; }
+  .site-tabs { gap: 20px; font-size: 17px; }
+}
