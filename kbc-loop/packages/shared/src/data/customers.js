@@ -8,6 +8,9 @@ export const customers = [
     persona: 'already borrows Philips lights · phone just repaired',
     accountName: 'Current account', iban: 'BE12 3456 7890 1234', balance: 2483.17,
     phoneAgeMonths: 34,
+    avgEnergyBill: 142, // average monthly energy bill over the last year (demo)
+    // Appliances Lotte still owns herself (not on KBC LOOP); used to explain the energy tip.
+    ownedAppliances: [{ type: 'dryer', label: 'condenser dryer', ageYears: 12 }],
     coins: 350, // Kate Coins balance at the start of the demo (others start at 0)
     // A full home on KBC LOOP. The lamp comes first (lotte-0): it is used in the repair demo.
     // No phone on purpose: Kate suggests borrowing one after the repair transaction.
@@ -31,8 +34,12 @@ export const customers = [
       { id: 't1', date: '2026-10-19', merchant: 'Delhaize Gent', category: 'boodschappen', amount: -42.6 },
       { id: 't2', date: '2026-10-18', merchant: 'GSM Fix Gent', category: 'gsm-herstelling', amount: -179.0 },
       { id: 't3', date: '2026-10-17', merchant: 'NMBS', category: 'mobiliteit', amount: -18.4 },
+      { id: 't6', date: '2026-10-16', merchant: 'Energy supplier', category: 'energie', amount: -228.0 },
       { id: 't4', date: '2026-10-15', merchant: 'Employer NV', category: 'loon', amount: 2310.0 },
       { id: 't5', date: '2026-10-05', merchant: 'KBC Loop · Philips', category: 'loop-abonnement', amount: -6.0 },
+      { id: 't7', date: '2026-09-16', merchant: 'Energy supplier', category: 'energie', amount: -171.0 },
+      { id: 't8', date: '2026-08-16', merchant: 'Energy supplier', category: 'energie', amount: -149.0 },
+      { id: 't9', date: '2026-07-16', merchant: 'Energy supplier', category: 'energie', amount: -131.0 },
     ],
   },
   {

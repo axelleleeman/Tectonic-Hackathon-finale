@@ -104,8 +104,8 @@ function insightOf(signal, customer, trigger, product) {
   const id = signal.id ?? ''
   if (id === 'phone-repair' && customer?.phoneAgeMonths) return `Phone repaired at ${customer.phoneAgeMonths} months`
   if (id === 'repeat-repair' && signal.pattern) return `${signal.pattern.steps.length} repairs this year`
-  if (id === 'energy-spike' && trigger && customer?.avgEnergyBill) {
-    return `Energy bill +${Math.round((Math.abs(trigger.amount) / customer.avgEnergyBill - 1) * 100)}% vs your average`
+  if ((id === 'energy-spike' || id === 'energy-appliance') && trigger && customer?.avgEnergyBill) {
+    return `Energy bill +${Math.round((Math.abs(trigger.amount) / customer.avgEnergyBill - 1) * 100)}%`
   }
   if (id === 'new-home') return 'A new home this month'
   if (id === 'device-wear') return 'Light output −18% in 30 days'
@@ -122,6 +122,7 @@ function lineOf(signal, product) {
   if (id === 'phone-repair') return 'Borrow a phone with free repairs included.'
   if (id === 'repeat-repair') return `Rent a ${thing} that is always fixed for you.`
   if (id === 'energy-spike') return 'Borrow efficient LED lighting, with no upfront cost.'
+  if (id === 'energy-appliance') return 'Rent an efficient heat-pump dryer and cut your energy bill.'
   if (id === 'new-home') return 'Furnish your new home the circular way.'
   return `Borrow a ${thing}, with repairs included.`
 }

@@ -170,6 +170,31 @@ export const rules = [
     }),
   },
   {
+    // Households: a high energy bill plus an old, energy-hungry appliance the customer still owns → rent an efficient one.
+    id: 'energy-appliance',
+    source: 'transacties',
+    services: ['kateInsights'],
+    applies: ({ customer, borrowedIds }) => customer.type === 'particulier' && Boolean(customer.avgEnergyBill)
+      && (customer.ownedAppliances ?? []).some((a) => a.type === 'dryer') && !borrowedIds.includes('dryer'),
+    match: ({ customer }) => {
+      const latest = findTx(customer, 'energie')
+      return latest && Math.abs(latest.amount) > ENERGY_SPIKE_FACTOR * customer.avgEnergyBill ? latest : null
+    },
+    build: ({ customer }, tx) => {
+      const old = customer.ownedAppliances.find((a) => a.type === 'dryer')
+      const pct = Math.round((Math.abs(tx.amount) / customer.avgEnergyBill - 1) * 100)
+      return {
+        productId: 'dryer',
+        headline: `Your energy bill is ${pct}% above your average. Rent an efficient heat-pump dryer instead of your old one.`,
+        reasons: [
+          `Latest energy bill: ${euro(Math.abs(tx.amount))}, against an average of ${euro(customer.avgEnergyBill)}.`,
+          `Your ${old.label} is ${old.ageYears} years old; a heat-pump dryer typically uses about half the energy.`,
+          'You agreed that your spending may be used for suggestions.',
+        ],
+      }
+    },
+  },
+  {
     id: 'new-home',
     source: 'transacties',
     services: ['homeLoan', 'kateInsights'],

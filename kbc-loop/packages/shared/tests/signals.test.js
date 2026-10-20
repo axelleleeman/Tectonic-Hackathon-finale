@@ -31,7 +31,7 @@ test('no device alert for a light that is already being repaired', () => {
 })
 
 test('a dismissed suggestion does not come back', () => {
-  assert.deepEqual(detectSignals(lotte, { ...base, dismissed: ['phone-repair'] }), [])
+  assert.ok(!detectSignals(lotte, { ...base, dismissed: ['phone-repair'] }).some((s) => s.id === 'phone-repair'))
 })
 
 test('no phone suggestion if the customer already borrows a phone', () => {
@@ -69,4 +69,13 @@ test('two repairs are not yet a pattern', () => {
 test('no repair suggestion if the customer already borrows the device', () => {
   const washer = { key: 'x', productId: 'washer', repairs: 0, repair: null, returned: false }
   assert.ok(!detectSignals(sarah, { ...base, items: [washer] }).some((s) => s.id === 'repeat-repair'))
+})
+
+test('a high energy bill plus an old dryer suggests renting an efficient heat-pump dryer', () => {
+  const s = detectSignals(lotte, base).find((x) => x.id === 'energy-appliance')
+  assert.ok(s)
+  assert.equal(s.productId, 'dryer')
+  assert.equal(s.triggeredBy.amount, -228)
+  const borrowing = { key: 'd', productId: 'dryer', repairs: 0, repair: null, returned: false }
+  assert.ok(!detectSignals(lotte, { ...base, items: [borrowing] }).some((x) => x.id === 'energy-appliance'))
 })
