@@ -5,23 +5,69 @@
 
 ## ▶️ How to open the demo (read this first)
 
-Open the three parts **in this order**. Everything shares one live state, so what you do in one shows up in the others.
+### Start (once)
 
-| Step | Open | Where | What it is |
+```bash
+cd kbc-loop
+npm install          # first time only
+npm run demo:reset   # fresh demo: Lotte with 10 products and 350 Kate Coins
+npm run dev          # starts api, website, dashboard and app bundler – keep this terminal open
+```
+
+### Open in this order
+
+| # | What | Link / command | Who it is for |
 |---|---|---|---|
-| 0 | Start everything | Terminal: `cd kbc-loop` → `npm install` (first time) → `npm run demo:reset` → `npm run dev` | Starts the api, website, dashboard and app bundler. Keep this terminal open. |
-| **1** | **The website** | **http://localhost:5173/#loop** | KBC LOOP for the customer (Lotte): home, impact, rewards, catalogue, product pages, Kate tips |
-| **2** | **The app in the iPhone simulator** | Second terminal: `cd kbc-loop` → `npm run open:app` | The KBC Mobile app with KBC Loop (opens Expo Go in the iOS Simulator). Also clickable inside the website under **Explore the app** → **Open the app large** |
-| **3** | **The management dashboard** | **http://localhost:5174** | KBC Loop Insights for KBC staff: opportunities, partners, campaigns |
+| **1** | **Website – KBC LOOP** | **http://localhost:5173/#loop** | The customer (Lotte) on the web |
+| **2** | **App in the iPhone simulator** | second terminal: `cd kbc-loop` → **`npm run open:app`** | The customer in KBC Mobile |
+| **3** | **Management dashboard – KBC Loop Insights** | **http://localhost:5174** | KBC staff (marketing / management) |
+| 4 | Partner portal | http://localhost:5173/#partner | A repair partner (e.g. WashCycle) |
 
-Also useful during the pitch:
+No simulator? The same app also runs inside the website: scroll to **Explore the app** → **Open the app large**.
 
-- Partner portal (repair partner view): http://localhost:5173/#partner
-- One-slide explainer "expenditure pattern → data insight → Kate": http://localhost:5173/kate-flow.html
-- Step-by-step pitch script: [kbc-loop/docs/DEMO.md](kbc-loop/docs/DEMO.md)
+### Every page
 
-**Do not open** `http://localhost:4000` (that is the api, it has no page) or `http://localhost:8081` in a browser (that is the app bundler; use the simulator or **Explore the app** instead).
-Before every demo run `npm run demo:reset` so Lotte starts with 10 products and 350 Kate Coins. Requirements: Node 24+, and for step 2 a Mac with Xcode's iOS Simulator and Expo Go installed in it (if Expo Go is missing, run `npm run dev:app` once and press `i`).
+**Website (customer) – http://localhost:5173**
+
+| Page | Link | What you see |
+|---|---|---|
+| KBC apps overview | http://localhost:5173 | Start of the story: the KBC "All apps" page, click **KBC LOOP** |
+| KBC LOOP start screen | http://localhost:5173/#loop | Hero animation, the story (problem → solution → triple win → you stay in control), then **Home · Impact · Rewards**, Kate tips, Explore the app, Questions |
+| Rewards tab | http://localhost:5173/#loop/rewards | Redeem Kate Coins |
+| Product catalogue | http://localhost:5173/#loop/catalog | How borrowing works, all partners, all products per category |
+| One catalogue product | http://localhost:5173/#loop/catalog/product/washer | Photo, price, buy vs. borrow, what's included, related products |
+| Partner page | http://localhost:5173/#loop/partner/washcycle | About the partner, key facts, all its products |
+| A product you have | http://localhost:5173/#loop/product/lotte-0 | Your Philips lamp: report a problem, upgrade, return, costs & contract |
+| Cost overview | http://localhost:5173/#loop/costs | Monthly total, per category, upcoming payments |
+| Your data (consent) | http://localhost:5173/#loop/consent | Kate level (Basic · Proactive · Ecosystem) and data choices |
+
+**Dashboards (KBC and partners)**
+
+| Page | Link | What you see |
+|---|---|---|
+| Insights – overview | http://localhost:5174/#/overview | KPIs, portfolio, 12-month trend, categories, top opportunities, partners |
+| Insights – campaigns | http://localhost:5174/#/campaigns | Running campaigns with results; **Plan** starts the 4-step Kate campaign wizard |
+| Insights – groups | http://localhost:5174/#/groups | All anonymised spending groups (sortable) |
+| Partner portal | http://localhost:5173/#partner | Live repair tickets: Schedule → On the way → In progress → Repaired |
+
+**Pitch extras**
+
+| Page | Link | What it is |
+|---|---|---|
+| Slide "from data to Kate" | http://localhost:5173/kate-flow.html | One animated 16:9 slide: expenditure pattern → data insight → Kate recommendation |
+| Demo script | [kbc-loop/docs/DEMO.md](kbc-loop/docs/DEMO.md) | The 4-minute demo, click by click |
+
+### Do not open
+
+- `http://localhost:4000` – that is the **api** (no page). Health check only: http://localhost:4000/api/health
+- `http://localhost:8081` in a browser – that is the **app bundler**. Use `npm run open:app` or **Explore the app** instead.
+
+### Good to know
+
+- Everything shares **one live state**: an action in the app shows up on the website and in the dashboards immediately.
+- Before every demo: `npm run demo:reset`. Seeing an old version? Hard refresh with **Cmd+Shift+R**.
+- The Insights campaign only reaches Lotte as a Kate tip when her Kate level is **Ecosystem** (set it on the website under *You stay in control*).
+- Requirements: Node 24+; for step 2 a Mac with Xcode's iOS Simulator and Expo Go (if Expo Go is missing: `npm run dev:app` once and press `i`).
 
 ---
 
