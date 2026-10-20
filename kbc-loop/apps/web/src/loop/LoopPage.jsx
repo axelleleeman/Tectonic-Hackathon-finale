@@ -109,7 +109,7 @@ export function LoopPage({ route, param, go, loop }) {
 
       {route === 'home' && (
         <div className="lp-ui">
-          <StartScreen customer={customer} totals={totals} coins={coins} sections={sections} signals={signals} onHeroOver={setOverHero}
+          <StartScreen customer={customer} items={items} totals={totals} coins={coins} sections={sections} signals={signals} onHeroOver={setOverHero}
             flashKey={flashKey} onOpen={openProduct} onBrowse={openCatalog} onAdd={() => openCatalog()} onCosts={openCosts}
             tips={{
               onOffer: (productId) => openModal({ kind: 'add', productId }),

@@ -1,11 +1,10 @@
-// "Impact" of the Loop tab: CO₂ saved and Kate Coins as two big figures, then a compact row
-// (Per month → cost overview, Products in use, Repairs). All figures come from the shared loopTotals.
+// "Impact" of the Loop tab: CO₂ saved and Kate Coins as two big figures, then
+// a compact cost card (→ cost overview) and a row with Products in use and Repairs.
 import { StyleSheet, View } from 'react-native'
 import { loopTotals } from '@kbc-loop/shared/engine/impact.js'
-import { euro, num } from '@kbc-loop/shared/engine/format.js'
-import { Icon } from '../../ui/Icon.js'
-import { Press } from '../../ui/Press.js'
+import { num } from '@kbc-loop/shared/engine/format.js'
 import { T } from '../../ui/T.js'
+import { CostSnapshot } from './CostSnapshot.js'
 import { cardShadow, colors } from '../../theme.js'
 
 const ECO = '#0f6e4a'
@@ -22,19 +21,13 @@ function Big({ label, value, unit, note, color }) {
   )
 }
 
-function Small({ label, value, onPress }) {
-  const body = (
-    <>
+function Small({ label, value }) {
+  return (
+    <View style={styles.small} accessible accessibilityLabel={`${label}: ${value}`}>
       <T style={styles.smallLabel} numberOfLines={1}>{label}</T>
-      <View style={styles.smallRow}>
-        <T style={styles.smallValue} numberOfLines={1} adjustsFontSizeToFit>{value}</T>
-        {onPress ? <Icon name="chevron" size={14} color={colors.kmGrey} strokeWidth={2.2} /> : null}
-      </View>
-    </>
+      <T style={styles.smallValue} numberOfLines={1} adjustsFontSizeToFit>{value}</T>
+    </View>
   )
-  return onPress
-    ? <Press onPress={onPress} style={styles.small} label={`${label}: ${value}. View cost overview`}>{body}</Press>
-    : <View style={styles.small} accessible accessibilityLabel={`${label}: ${value}`}>{body}</View>
 }
 
 export function LoopImpact({ items, coins, actions }) {
@@ -43,9 +36,9 @@ export function LoopImpact({ items, coins, actions }) {
     <View style={styles.wrap}>
       <Big label="CO₂ saved" value={num(t.co2Kg)} unit="kg" color={ECO} note={`≈ ${num(t.carKm)} km less by car`} />
       <Big label="Kate Coins" value={num(coins)} color={colors.kmBlue} note="Earned with every repair and return" />
+      <CostSnapshot items={items} onViewAll={() => actions.navigate('costs')} />
       <View style={styles.row}>
-        <Small label="Per month" value={euro(t.monthly)} onPress={() => actions.navigate('costs')} />
-        <Small label="In use" value={num(t.active)} />
+        <Small label="Products in use" value={num(t.active)} />
         <Small label="Repairs" value={num(t.repairs)} />
       </View>
     </View>
@@ -62,6 +55,5 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: 10 },
   small: { flex: 1, backgroundColor: '#fff', borderRadius: 14, paddingVertical: 12, paddingHorizontal: 12, ...cardShadow },
   smallLabel: { fontSize: 12, color: colors.kmSub },
-  smallRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 4, gap: 4 },
-  smallValue: { fontSize: 20, fontWeight: '700', color: colors.kmNavy, flexShrink: 1 },
+  smallValue: { fontSize: 20, fontWeight: '700', color: colors.kmNavy, marginTop: 4 },
 })

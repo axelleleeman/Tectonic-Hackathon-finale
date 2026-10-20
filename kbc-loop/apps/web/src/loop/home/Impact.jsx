@@ -1,6 +1,7 @@
-import { euro, num } from '@kbc-loop/shared/engine/format.js'
+import { num } from '@kbc-loop/shared/engine/format.js'
 import { LoopIcon } from '../LoopIcon.jsx'
 import { useCountUp, useReveal } from '../useReveal.js'
+import { CostSnapshot } from './CostSnapshot.jsx'
 
 /** A big counted-up figure; the final value is always available to screen readers. */
 function Count({ n, format, run }) {
@@ -41,11 +42,11 @@ function Small({ label, n, format, link, run, i }) {
 }
 
 /**
- * "Your impact": CO₂ saved and Kate Coins as two big figures, then a compact row of secondary figures.
+ * "Your impact": CO₂ saved and Kate Coins as two big figures, then a compact cost card and a row of secondary figures.
  * Figures come only from the shared calculations (loopTotals) and `coins` from the state,
  * so web and app always show the same numbers.
  */
-export function Impact({ totals, coins, onCosts }) {
+export function Impact({ items, totals, coins, onCosts }) {
   const [ref, run] = useReveal({ threshold: 0.15 })
   return (
     <section ref={ref} className="lp-impact" aria-label="Your impact">
@@ -55,9 +56,8 @@ export function Impact({ totals, coins, onCosts }) {
         <Hero i={1} run={run} label="Kate Coins" n={coins}
           note="Earned every time you repair or return a product" />
       </div>
+      <CostSnapshot i={2} items={items} onCosts={onCosts} />
       <div className="lp-imp-row">
-        <Small i={2} run={run} label="Per month" n={totals.monthly} format={euro}
-          link={{ href: '#loop/costs', label: 'View cost overview', onClick: onCosts }} />
         <Small i={3} run={run} label="Products in use" n={totals.active} format={num} />
         <Small i={4} run={run} label="Repairs" n={totals.repairs} format={num} />
       </div>

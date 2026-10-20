@@ -9,7 +9,7 @@ import { Statements } from './Statements.jsx'
 import { YourHome } from './YourHome.jsx'
 
 /** Start screen (#loop): navy hero with the 3D loop → scroll statements → two modules ("Your home" / "Your impact") → Kate tips → FAQ. */
-export function StartScreen({ customer, totals, coins, sections, signals, flashKey, onOpen, onBrowse, onAdd, onCosts, tips, onHeroOver }) {
+export function StartScreen({ customer, items, totals, coins, sections, signals, flashKey, onOpen, onBrowse, onAdd, onCosts, tips, onHeroOver }) {
   return (
     <>
     <Hero targetId="lp-statements" onOver={onHeroOver} />
@@ -18,7 +18,7 @@ export function StartScreen({ customer, totals, coins, sections, signals, flashK
       <div className="lp-eyebrow lp-hello">{greeting()}, {customer.name}</div>
       <HomeTabs panels={{
         home: <YourHome sections={sections} flashKey={flashKey} onOpen={onOpen} onBrowse={onBrowse} onAdd={onAdd} />,
-        impact: <Impact totals={totals} coins={coins} onCosts={onCosts} />,
+        impact: <Impact items={items} totals={totals} coins={coins} onCosts={onCosts} />,
       }} />
       <KateTips signals={signals} {...tips} />
       <Faq />
