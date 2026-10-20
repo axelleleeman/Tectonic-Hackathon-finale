@@ -22,7 +22,7 @@ const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)'
 
 /**
  * KBC LOOP on top of the shared state (useLoop). Views (see hooks/useHashRoute.js):
- *   home         = metrics, "Your home" (every category with the customer's products), Kate tips and FAQ
+ *   home         = full-viewport hero with the 3D loop, metrics, "Your home" (every category with the customer's products), Kate tips and FAQ
  *   catalog      = the product catalogue behind "Add a product" (optionally opened on one category)
  *   product      = detail page of one product the customer has (product/ProductPage.jsx)
  *   costs        = cost overview (costs/CostsPage.jsx)
@@ -38,6 +38,7 @@ export function LoopPage({ route, param, go, loop }) {
   const [modal, setModal] = useState(null) // { kind: 'defect' | 'add', itemKey?, productId? }
   const [toast, setToast] = useState(null)
   const [flashKey, setFlashKey] = useState(null)
+  const [overHero, setOverHero] = useState(false) // header sits transparently over the start-screen hero
   const searchRef = useRef(null)
   const restoreFocus = useRef([])
 
@@ -96,9 +97,9 @@ export function LoopPage({ route, param, go, loop }) {
   }
 
   return (
-    <div className="lp" data-theme={theme}>
+    <div className={`lp ${overHero && route === 'home' ? 'lp-at-hero' : ''}`} data-theme={theme}>
       <LoopHeader onBack={() => go(null)} onHome={goHome} coins={coins} avatar={customer.avatar}
-        theme={theme} onToggleTheme={toggleTheme}
+        theme={theme} overHero={overHero && route === 'home'} onToggleTheme={toggleTheme}
         kate={{
           loop,
           onRepair: (itemKey) => openModal({ kind: 'defect', itemKey }),
@@ -108,7 +109,7 @@ export function LoopPage({ route, param, go, loop }) {
 
       {route === 'home' && (
         <div className="lp-ui">
-          <StartScreen customer={customer} totals={totals} coins={coins} theme={theme} sections={sections} signals={signals}
+          <StartScreen customer={customer} totals={totals} coins={coins} sections={sections} signals={signals} onHeroOver={setOverHero}
             flashKey={flashKey} onOpen={openProduct} onBrowse={openCatalog} onAdd={() => openCatalog()} onCosts={openCosts}
             tips={{
               onOffer: (productId) => openModal({ kind: 'add', productId }),

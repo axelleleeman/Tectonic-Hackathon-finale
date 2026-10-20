@@ -1,51 +1,45 @@
-import { carKmEquivalent } from '@kbc-loop/shared/engine/impact.js'
 import { euro, num } from '@kbc-loop/shared/engine/format.js'
 import { LoopIcon } from '../LoopIcon.jsx'
 import { greeting } from '../model.js'
-import { LoopOrnament } from './LoopOrnament.jsx'
 
-function Tile({ label, value, caption, icon, tone, size = 'sm', link }) {
+/** One key figure: a short label and a big number. With `link` the whole tile opens a detail page. */
+function Tile({ label, value, tone, link }) {
+  const body = (
+    <>
+      <span className="lp-tile-label">{label}</span>
+      <b className={`lp-tile-num lp-num ${tone === 'eco' ? 'lp-eco' : ''}`}>{value}</b>
+    </>
+  )
+  if (!link) return <div className="lp-tile">{body}</div>
   return (
-    <div className={`lp-tile lp-tile-${size}`}>
-      {icon && <span className={`lp-tile-ic lp-tone-${tone}`} aria-hidden="true">{icon}</span>}
-      <div className="lp-min0">
-        <div className="lp-tile-label">{label}</div>
-        <b className={`lp-tile-num lp-num ${tone === 'eco' ? 'lp-eco' : ''}`}>{value}</b>
-        {caption && <div className="lp-tile-cap">{caption}</div>}
-        {link && (
-          <a className="lp-tile-link" href={link.href} onClick={(e) => { e.preventDefault(); link.onClick() }}>
-            {link.label}<LoopIcon name="arrow" size={14} />
-          </a>
-        )}
-      </div>
-    </div>
+    <a className="lp-tile lp-tile-link" href={link.href} aria-label={`${label}: ${value}. ${link.label}`}
+      onClick={(e) => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return; e.preventDefault(); link.onClick() }}>
+      {body}
+      <LoopIcon name="arrow" size={16} className="lp-tile-arrow" />
+    </a>
   )
 }
 
 /**
- * Start-screen metrics. Figures come only from the shared calculations (loopTotals, carKmEquivalent)
- * and `coins` from the state, so web and app always show the same numbers.
+ * Start-screen metrics: four equal tiles with a big number and a short label.
+ * Figures come only from the shared calculations (loopTotals) and `coins` from the state,
+ * so web and app always show the same numbers.
  */
-export function Metrics({ customer, totals, coins, theme, onCosts }) {
+export function Metrics({ customer, totals, coins, onCosts }) {
   return (
     <section className="lp-metrics" aria-labelledby="lp-metrics-title">
       <div className="lp-metrics-head">
         <div className="lp-min0">
           <div className="lp-eyebrow">{greeting()}, {customer.name}</div>
-          <h1 id="lp-metrics-title">Your impact with KBC LOOP</h1>
-          <p>Use instead of own: repairs, upgrades and recycling are taken care of.</p>
+          <h2 id="lp-metrics-title">Your impact</h2>
         </div>
-        <LoopOrnament theme={theme} />
       </div>
       <div className="lp-tiles">
-        <Tile size="lg" label="Kate Coins" value={num(coins)} caption="earned by repairing and returning"
-          tone="accent" icon={<span className="lp-coin" />} />
-        <Tile size="lg" label="CO₂ saved" value={`${num(totals.co2Kg)} kg`} caption={`≈ ${num(carKmEquivalent(totals.co2Kg))} km by car`}
-          tone="eco" icon={<LoopIcon name="leaf" size={22} />} />
-        <Tile label="Monthly total" value={euro(totals.monthly)} caption="for products in use"
+        <Tile label="Per month" value={euro(totals.monthly)}
           link={{ href: '#loop/costs', label: 'View cost overview', onClick: onCosts }} />
-        <Tile label="Products in use" value={num(totals.active)} />
-        <Tile label="Repairs instead of replacements" value={num(totals.repairs)} />
+        <Tile label="CO₂ saved" value={`${num(totals.co2Kg)} kg`} tone="eco" />
+        <Tile label="Repairs" value={num(totals.repairs)} />
+        <Tile label="Kate Coins" value={num(coins)} />
       </div>
     </section>
   )

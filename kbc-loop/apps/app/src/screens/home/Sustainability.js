@@ -40,11 +40,10 @@ function LoopImpact({ co2Kg, carKm, onImpact, onStart }) {
       <Glyph name="loop" size={20} color={colors.kmBlue} strokeWidth={2} />
       <View style={styles.loopText}>
         {has ? (
-          <T style={styles.loopLine}>With KBC Loop you already saved <T style={styles.bold}>{num(co2Kg)} kg CO₂</T>, about {num(carKm)} km by car.</T>
+          <T style={styles.loopLine}>KBC Loop · <T style={styles.bold}>{num(co2Kg)} kg CO₂</T> saved</T>
         ) : (
-          <T style={styles.loopLine}>Borrow instead of buying with <T style={styles.bold}>KBC Loop</T> and save CO₂ with every product.</T>
+          <T style={styles.loopLine}><T style={styles.bold}>KBC Loop</T> · use instead of own</T>
         )}
-        <T style={styles.loopLink}>{has ? 'View your impact' : 'Discover KBC Loop'}</T>
       </View>
       <Glyph name="chevron" size={18} color={colors.kmBlue} strokeWidth={2} />
     </Press>
@@ -85,5 +84,4 @@ const styles = StyleSheet.create({
   loopText: { flex: 1 },
   loopLine: { fontSize: 14, lineHeight: 20 },
   bold: { fontWeight: '700', fontSize: 14 },
-  loopLink: { marginTop: 4, fontSize: 14, fontWeight: '700', color: colors.kmBlue },
 })

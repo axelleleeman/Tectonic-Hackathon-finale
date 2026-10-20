@@ -1,22 +1,20 @@
 import { euro } from '@kbc-loop/shared/engine/format.js'
 import { LoopIcon } from '../LoopIcon.jsx'
-import { productIcon } from '../model.js'
+import { ProductThumb } from '../product/ProductThumb.jsx'
 
-/** One catalogue product with its monthly price and an "Add" button (opens the borrow dialog). */
-export function CatalogCard({ product, categoryId, owned, onAdd }) {
+/** One catalogue product: name, partner, monthly price and "Add" (opens the borrow dialog with the full details). */
+export function CatalogCard({ product, partnerName, owned, onAdd }) {
   return (
-    <article className="lp-card lp-item">
-      <div className="lp-head">
-        <div className="lp-ic"><LoopIcon name={productIcon(product.id, categoryId)} /></div>
-        <h4 className="lp-min0">{product.name}</h4>
+    <article className="lp-card lp-item" title={product.detail}>
+      <ProductThumb product={product} />
+      <div className="lp-min0 lp-item-text">
+        <h4>{product.name}</h4>
+        <span className="lp-sub">{partnerName}{owned ? ' · In your home' : ''}</span>
       </div>
-      {owned && <span className="lp-owned">In your home</span>}
-      <p className="lp-desc">{product.detail}</p>
-      <p className="lp-incl"><LoopIcon name="check" /><span>Maintenance, repairs and insurance included · {product.termMonths}-month term</span></p>
-      <div className="lp-foot">
-        <div className="lp-price"><b>{euro(product.monthly)}</b> <small>/ month</small></div>
-        <button type="button" className="lp-btn lp-sm lp-primary" onClick={() => onAdd(product.id)} aria-label={`Add ${product.name}`}>
-          <LoopIcon name="plus" size={16} />Add
+      <div className="lp-item-end">
+        <span className="lp-price lp-num"><b>{euro(product.monthly)}</b><small> / mo</small></span>
+        <button type="button" className="lp-btn lp-sm" onClick={() => onAdd(product.id)} aria-label={`Add ${product.name}, ${euro(product.monthly)} per month`}>
+          <LoopIcon name="plus" size={14} />Add
         </button>
       </div>
     </article>

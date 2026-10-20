@@ -12,10 +12,10 @@ const SOURCE = { transacties: 'Based on your transactions', toestel: 'Reported b
 export function KateTips({ signals, onOffer, onPreventive, onDismiss }) {
   return (
     <section className="lp-section" aria-labelledby="lp-tips-title">
-      <h2 className="lp-h2" id="lp-tips-title">Kate tips</h2>
+      <h2 className="lp-h2" id="lp-tips-title">Tips from Kate</h2>
       {signals.length === 0 ? (
         <div className="lp-card lp-empty">
-          <p>No tips right now. Kate lets you know when borrowing instead of buying could help you.</p>
+          <p>No tips right now.</p>
         </div>
       ) : (
         <div className="lp-tips">
@@ -25,25 +25,27 @@ export function KateTips({ signals, onOffer, onPreventive, onDismiss }) {
               <article key={s.id} className="lp-card lp-tip">
                 <div className="lp-tip-head">
                   <span className="lp-kate" aria-hidden="true">K</span>
-                  <span className="lp-eyebrow">Kate · {SOURCE[s.source] ?? 'Tip'}</span>
+                  <h3>{s.headline}</h3>
                 </div>
-                <h3>{s.headline}</h3>
                 <details className="lp-why">
-                  <summary>Why am I seeing this?</summary>
-                  <ul>{s.reasons.map((r) => <li key={r}>{r}</li>)}</ul>
+                  <summary>Why?</summary>
+                  <ul>
+                    <li>{SOURCE[s.source] ?? 'Tip from Kate'}</li>
+                    {s.reasons.map((r) => <li key={r}>{r}</li>)}
+                  </ul>
                 </details>
                 <div className="lp-tip-actions">
                   {product && (
                     <button type="button" className="lp-btn lp-primary lp-sm" onClick={() => onOffer(product.id)}>
-                      View offer · {euro(product.monthly)} / month
+                      View · {euro(product.monthly)}/mo
                     </button>
                   )}
                   {s.itemKey && (
                     <button type="button" className="lp-btn lp-primary lp-sm" onClick={() => onPreventive(s.itemKey)}>
-                      <LoopIcon name="wrench" size={16} />Schedule free replacement
+                      <LoopIcon name="wrench" size={16} />Free replacement
                     </button>
                   )}
-                  <button type="button" className="lp-btn lp-sm lp-ghost" onClick={() => onDismiss(s.id)}>Not interested</button>
+                  <button type="button" className="lp-btn lp-sm lp-ghost" onClick={() => onDismiss(s.id)} aria-label="Not interested, dismiss tip">Dismiss</button>
                 </div>
               </article>
             )

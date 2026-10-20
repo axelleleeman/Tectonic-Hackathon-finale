@@ -10,10 +10,7 @@ const QA = [
 export function Faq() {
   return (
     <section className="lp-faq" aria-labelledby="lp-faq-title">
-      <div>
-        <h2 id="lp-faq-title">Questions about KBC LOOP</h2>
-        <p>Using instead of owning, explained briefly.</p>
-      </div>
+      <h2 id="lp-faq-title">Questions</h2>
       <div>
         {QA.map(([q, a]) => (
           <details key={q}>

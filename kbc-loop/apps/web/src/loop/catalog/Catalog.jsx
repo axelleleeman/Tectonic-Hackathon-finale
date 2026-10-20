@@ -21,12 +21,11 @@ export function Catalog({ customerType, initialCategory, ownedIds, searchRef, on
 
   return (
     <main className="lp-wrap lp-main lp-market">
-      <button type="button" className="lp-backlink" onClick={onBack}><LoopIcon name="back" size={16} />Back to your home</button>
+      <button type="button" className="lp-backlink" onClick={onBack}><LoopIcon name="back" size={16} />Your home</button>
       <section className="lp-mkhead">
         <div className="lp-min0">
-          <div className="lp-eyebrow">KBC LOOP · Product catalogue</div>
           <h1>{selected ? selected.name : 'Add a product'}</h1>
-          <p>{selected?.blurb ?? 'One monthly price per product. Delivery, maintenance, repairs and KBC Insurance cover are always included.'}</p>
+          <p>One monthly price. Repairs and insurance included.</p>
         </div>
         <label className="lp-search">
           <LoopIcon name="search" />
@@ -50,7 +49,7 @@ export function Catalog({ customerType, initialCategory, ownedIds, searchRef, on
             <section key={c.id} className="lp-section lp-catblock" aria-labelledby={`lp-sec-${c.id}`}>
               <h2 className="lp-sechead" id={`lp-sec-${c.id}`}>
                 {c.name}
-                <span className="lp-n lp-num">{c.partners.length} {c.partners.length === 1 ? 'partner' : 'partners'} · {c.count} {c.count === 1 ? 'product' : 'products'}</span>
+                <span className="lp-n lp-num">{c.count}</span>
               </h2>
               {c.partners.map((pa) => <PartnerGroup key={pa.id} partner={pa} categoryId={c.id} ownedIds={ownedIds} onAdd={onAdd} />)}
             </section>

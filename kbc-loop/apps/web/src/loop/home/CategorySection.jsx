@@ -3,7 +3,7 @@ import { LoopIcon } from '../LoopIcon.jsx'
 import { categoryIcon } from '../model.js'
 import { ProductCard } from './ProductCard.jsx'
 
-/** One category of "Your home": the customer's products, or an empty state that links to the catalogue. */
+/** One category of "Your home": the customer's products, or a quiet chip that opens the catalogue on it. */
 export function CategorySection({ category, rows, flashKey, onOpen, onBrowse }) {
   const { name } = category
   const id = `lp-cat-${category.id}`
@@ -11,23 +11,16 @@ export function CategorySection({ category, rows, flashKey, onOpen, onBrowse }) 
 
   if (!rows.length) {
     return (
-      <section className="lp-catsec lp-catsec-empty" aria-labelledby={id}>
-        <span className="lp-ic" aria-hidden="true"><LoopIcon name={categoryIcon(category.id)} /></span>
-        <div className="lp-min0">
-          <h3 id={id}>{name}</h3>
-          <p>Nothing here yet.</p>
-        </div>
-        <button type="button" className="lp-btn lp-sm" onClick={() => onBrowse(category.id)}>
-          Browse {name}<LoopIcon name="arrow" size={16} />
-        </button>
-      </section>
+      <button type="button" className="lp-chip" onClick={() => onBrowse(category.id)} aria-label={`Browse ${name}`}>
+        <LoopIcon name={categoryIcon(category.id)} size={16} />{name}
+      </button>
     )
   }
 
   return (
     <section className="lp-catsec" aria-labelledby={id}>
       <div className="lp-catsec-head">
-        <h3 id={id}><LoopIcon name={categoryIcon(category.id)} size={18} />{name}</h3>
+        <h3 id={id}>{name}</h3>
         <span className="lp-num">{euro(monthly)} / month</span>
       </div>
       <div className="lp-pgrid">

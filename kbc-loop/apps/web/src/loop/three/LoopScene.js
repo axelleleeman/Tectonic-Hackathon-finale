@@ -41,7 +41,7 @@ export function useLoopScene(canvasRef, circular, theme, { compact = false } = {
       ro.observe(canvas)
       const onVis = () => (document.hidden ? stop() : start())
       document.addEventListener('visibilitychange', onVis)
-      const onMove = (e) => { s.state.mx = e.clientX / window.innerWidth - 0.5 }
+      const onMove = (e) => { s.state.mx = e.clientX / window.innerWidth - 0.5; s.state.my = e.clientY / window.innerHeight - 0.5 }
       if (!reduce) window.addEventListener('pointermove', onMove, { passive: true })
 
       s.state.target = target.current
