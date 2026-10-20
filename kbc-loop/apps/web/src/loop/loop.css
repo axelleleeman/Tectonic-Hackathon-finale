@@ -500,3 +500,8 @@ a.lp-tile:hover .lp-tile-arrow { color: var(--lp-accent); transform: translateX(
 @media (prefers-reduced-motion: reduce) {
   .lp *, .lp *::before, .lp *::after { animation: none !important; transition: none !important; }
 }
+
+/* Catalogue cards are clickable as a whole */
+.lp-item-click { cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease, translate .15s ease; }
+.lp-item-click:hover { border-color: var(--lp-accent); box-shadow: 0 6px 18px rgba(2, 49, 127, .08); }
+@media (prefers-reduced-motion: no-preference) { .lp-item-click:hover { translate: 0 -1px; } }

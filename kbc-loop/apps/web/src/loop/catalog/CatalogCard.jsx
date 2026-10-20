@@ -4,11 +4,14 @@ import { ProductThumb } from '../product/ProductThumb.jsx'
 import { secondLifeMonthly } from './secondLife.js'
 import '../modals/borrow.css'
 
-/** One catalogue product: name, partner, monthly price and "Add" (opens the borrow dialog with the full details). */
+/**
+ * One catalogue product: name, partner, monthly price and "Add". The whole card opens the borrow dialog
+ * with the full details; the Add button stays the keyboard and screen-reader target.
+ */
 export function CatalogCard({ product, partnerName, owned, onAdd }) {
   const refurb = secondLifeMonthly(product)
   return (
-    <article className="lp-card lp-item" title={product.detail}>
+    <article className="lp-card lp-item lp-item-click" title={product.detail} onClick={(e) => { if (!e.target.closest('button')) onAdd(product.id) }}>
       <ProductThumb product={product} />
       <div className="lp-min0 lp-item-text">
         <h4>{product.name}</h4>
