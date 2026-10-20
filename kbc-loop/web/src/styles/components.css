@@ -1,0 +1,17 @@
+/* Gedeelde UI-onderdelen (components/ui) voor app, web en interne KBC-weergave */
+.track { height: 10px; background: var(--line); border-radius: 6px; margin: 8px 0 6px; overflow: hidden; }
+.fill { height: 100%; background: #9aa6b4; border-radius: 6px; transition: width .6s; }
+.fill.loop { background: var(--blue); }
+.stat { flex: 1; background: #fff; border-radius: 14px; padding: 12px; }
+.stat strong { display: block; color: var(--green); font-size: 18px; }
+.stat small { color: var(--muted); font-size: 12px; line-height: 1.3; display: block; }
+.stat em { display: block; font-style: normal; font-size: 11px; color: var(--navy); margin-top: 4px; }
+.svc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.svc-chip { display: inline-flex; align-items: center; gap: 5px; background: #eef4f9; color: var(--navy); border-radius: 99px; padding: 4px 10px 4px 4px; font-size: 12px; line-height: 1.3; }
+.svc-chip em { font-style: normal; font-size: 9px; font-weight: 800; background: var(--navy); color: #fff; border-radius: 99px; padding: 2px 6px; }
+.svc-chip b { font-weight: 700; }
+.svc-chips.rows { flex-direction: column; }
+.svc-chips.rows .svc-chip { border-radius: 10px; padding: 6px 10px 6px 6px; }
+.connecting { max-width: 420px; margin: 40px auto; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; color: var(--navy); }
+.connecting small { display: block; margin-top: 6px; color: var(--muted); line-height: 1.5; }
+.offline-badge { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #fff7e6; border: 1px solid #f5dfae; border-radius: 99px; padding: 6px 14px; font-size: 13px; z-index: 50; }

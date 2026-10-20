@@ -1,0 +1,13 @@
+{
+  "name": "@kbc-loop/shared",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Gedeelde data, logica en api-client voor KBC Loop (web, app en api)",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "scripts": {
+    "test": "node --test \"tests/*.test.js\""
+  }
+}

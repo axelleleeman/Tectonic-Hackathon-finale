@@ -1,5 +1,31 @@
-node_modules
-dist
+# Afhankelijkheden en builds worden in de container opnieuw gemaakt
+**/node_modules
+**/dist
+**/dist-ssr
+**/.expo
+**/.expo-shared
+**/web-build
+**/ios
+**/android
+**/coverage
+
+# Geheimen en lokale data nooit meesturen
+**/.env
+**/.env.*
+**/*.db
+**/*.db-*
+**/*.sqlite
+api/data
+**/*.pem
+**/*.key
+
+# Niet nodig om te bouwen of te draaien
 .git
+.gitignore
+**/tests
+**/*.log
+**/.DS_Store
+.vscode
 .idea
-.env*
+Dockerfile
+.dockerignore

@@ -26,3 +26,15 @@ dist-ssr
 # Secrets
 .env
 .env.*
+!.env.example
+
+# Database (lokaal, nooit in git)
+*.db
+*.db-wal
+*.db-shm
+api/data/
+
+# Expo / native
+.expo/
+ios/
+android/

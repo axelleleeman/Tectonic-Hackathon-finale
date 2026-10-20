@@ -1,0 +1,31 @@
+.dashboard { width: 640px; max-width: 100%; background: #fff; border-radius: 24px; padding: 28px; box-shadow: 0 30px 60px rgba(0, 54, 101, .15); animation: pop .3s ease; }
+.dash-eyebrow { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--blue); }
+.dash-head h2 { font-size: 26px; margin: 4px 0; }
+.dash-head small { color: var(--muted); }
+.dash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
+.dash-grid .stat { background: var(--bg-app); }
+.dash-grid .stat strong { color: var(--navy); font-size: 22px; }
+.dash-grid .stat.good strong { color: var(--green); }
+.dash-sub { font-size: 15px; color: var(--navy); margin: 24px 0 10px; }
+.dash-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.dash-table th { text-align: left; color: var(--muted); font-weight: 600; font-size: 12px; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+.dash-table td { padding: 10px 8px; border-bottom: 1px solid var(--line); }
+.dash-table tr.live { background: #e6f7fd; animation: pop .4s ease; }
+.live-tag { margin-left: 6px; font-size: 10px; font-weight: 800; color: #fff; background: var(--red); padding: 2px 6px; border-radius: 99px; }
+.dash-why { margin-top: 20px; background: #e8f7f0; border-radius: 14px; padding: 12px 16px; font-size: 14px; }
+.dash-why p { margin: 4px 0 0; line-height: 1.45; }
+.hbar { display: grid; grid-template-columns: 110px 1fr 44px; gap: 10px; align-items: center; font-size: 14px; }
+.hbar .track { margin: 6px 0; }
+.triple { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 22px; }
+.triple div { background: var(--bg-app); border-radius: 14px; padding: 12px; }
+.triple b { color: var(--navy); }
+.triple p { margin: 4px 0 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
+@media (max-width: 760px) { .dash-grid, .triple { grid-template-columns: 1fr 1fr; } }
+
+.integration { display: grid; gap: 6px; }
+.int-row { display: grid; grid-template-columns: 150px 1fr; gap: 10px; align-items: start; font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.int-row b { color: var(--navy); }
+.int-chip { display: inline-block; background: #eef4f9; color: var(--navy); border-radius: 6px; padding: 3px 8px; margin: 0 4px 4px 0; font-size: 12px; }
+.dashboard .svc-chips { margin-bottom: 4px; }
+.dash-head { position: relative; }
+.dash-logo { position: absolute; top: 0; right: 0; }

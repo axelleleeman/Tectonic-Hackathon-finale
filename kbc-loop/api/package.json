@@ -1,0 +1,17 @@
+{
+  "name": "@kbc-loop/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "KBC Loop-backend: REST + WebSocket op één SQLite-database",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "test": "node --test \"tests/*.test.js\""
+  },
+  "dependencies": {
+    "@kbc-loop/shared": "*",
+    "ws": "^8.18.0"
+  }
+}
