@@ -10,7 +10,7 @@ export function Connecting() {
     <View style={styles.center}>
       <KbcLogo height={48} />
       <ActivityIndicator size="large" color={colors.kmBlue} style={styles.spinner} />
-      <T style={styles.title}>Verbinden met de KBC Loop-server…</T>
+      <T style={styles.title}>Connecting to the KBC Loop server…</T>
     </View>
   )
 }
@@ -20,15 +20,15 @@ export function ConnectionError({ error, fatal }) {
   return (
     <View style={styles.center}>
       <KbcLogo height={48} />
-      <T style={[styles.title, styles.space]}>Geen verbinding met de KBC Loop-server</T>
+      <T style={[styles.title, styles.space]}>No connection to the KBC Loop server</T>
       <T style={styles.text}>{error?.message}</T>
       {fatal ? null : (
         <>
-          <T style={styles.text}>Start de api op je computer met <T style={styles.code}>npm run dev:api</T> (in de map kbc-loop).</T>
+          <T style={styles.text}>Start the API on your computer with <T style={styles.code}>npm run dev:api</T> (in the kbc-loop folder).</T>
           {phone ? (
-            <T style={styles.text}>Op een echte gsm (of als Expo Go het netwerkadres van je computer gebruikt): start de api met <T style={styles.code}>HOST=0.0.0.0 npm run dev:api</T> en zorg dat gsm en computer op hetzelfde wifi zitten.</T>
+            <T style={styles.text}>On a real phone (or if Expo Go uses your computer's network address): start the API with <T style={styles.code}>HOST=0.0.0.0 npm run dev:api</T> and make sure the phone and computer are on the same Wi-Fi.</T>
           ) : null}
-          <T style={styles.retry}>De app probeert automatisch opnieuw…</T>
+          <T style={styles.retry}>The app will retry automatically…</T>
         </>
       )}
     </View>

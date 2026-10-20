@@ -10,24 +10,24 @@ export function KbcDashboard({ state }) {
   const map = integrationMap()
   const campaigns = insights().segments.filter((seg) => state.campaigns.includes(seg.id))
   return (
-    <DashboardShell eyebrow="Interne weergave · KBC" title="KBC Loop-portefeuille" note="Pilotscenario met fictieve cijfers · live bijgewerkt door de demo">
+    <DashboardShell eyebrow="Internal view · KBC" title="KBC Loop portfolio" note="Pilot scenario with fictional figures · updated live by the demo">
       <div className="dash-grid">
-        <Stat value={num(s.customers)} label="Loop-klanten" hint={s.newContracts ? `+${s.newContracts} contract(en) in deze demo` : null} />
-        <Stat value={euro(s.financedVolume)} label="gefinancierd volume" />
-        <Stat value={euro(s.monthlyMargin)} label="terugkerende marge / maand" tone="good" hint="financiering + verzekering + commissie" />
-        <Stat value={`${num(s.co2Tons, 1)} t`} label="CO₂ vermeden" tone="good" />
-        <Stat value={`${s.conversionPct}%`} label="Kate-inzicht → contract" />
-        <Stat value={`${s.insuredPct}%`} label="sluit ook KBC-verzekering af" />
+        <Stat value={num(s.customers)} label="Loop customers" hint={s.newContracts ? `+${s.newContracts} contract(s) in this demo` : null} />
+        <Stat value={euro(s.financedVolume)} label="financed volume" />
+        <Stat value={euro(s.monthlyMargin)} label="recurring margin / month" tone="good" hint="financing + insurance + commission" />
+        <Stat value={`${num(s.co2Tons, 1)} t`} label="CO₂ avoided" tone="good" />
+        <Stat value={`${s.conversionPct}%`} label="Kate insight → contract" />
+        <Stat value={`${s.insuredPct}%`} label="also take out KBC insurance" />
       </div>
 
-      <h3 className="dash-sub">Kate-campagnes vanuit KBC Loop Insights</h3>
+      <h3 className="dash-sub">Kate campaigns from KBC Loop Insights</h3>
       {campaigns.length === 0
-        ? <p className="fine">Nog geen campagnes. Start er een in KBC Loop Insights (interne tool).</p>
+        ? <p className="fine">No campaigns yet. Start one in KBC Loop Insights (internal tool).</p>
         : campaigns.map((c) => (
-          <div key={c.id} className="int-row"><b>{c.label}</b><div>{c.product.icon} {c.product.name} · {num(c.reachable)} klanten met toestemming · verwacht {euro(c.monthlyRevenue)}/maand <span className="live-tag">LIVE</span></div></div>
+          <div key={c.id} className="int-row"><b>{c.label}</b><div>{c.product.icon} {c.product.name} · {num(c.reachable)} customers with consent · expected {euro(c.monthlyRevenue)}/month <span className="live-tag">LIVE</span></div></div>
         ))}
 
-      <h3 className="dash-sub">Contracten per categorie</h3>
+      <h3 className="dash-sub">Contracts per category</h3>
       {s.byCategory.map((c) => (
         <div key={c.label} className="hbar">
           <span>{c.label}</span>
@@ -36,7 +36,7 @@ export function KbcDashboard({ state }) {
         </div>
       ))}
 
-      <h3 className="dash-sub">Gebouwd op {map.reusedCount} bestaande KBC-diensten</h3>
+      <h3 className="dash-sub">Built on {map.reusedCount} existing KBC services</h3>
       <div className="integration">
         {map.steps.map((st) => (
           <div key={st.step} className="int-row">
@@ -45,12 +45,12 @@ export function KbcDashboard({ state }) {
           </div>
         ))}
       </div>
-      <p className="fine">Nieuw is enkel de Loop-laag die signalen, financiering, verzekering en circulaire partners samenbrengt.</p>
+      <p className="fine">The only new part is the Loop layer that brings together signals, financing, insurance and circular partners.</p>
 
       <div className="triple">
-        <div><b>Klant</b><p>Geen grote aankopen, altijd een werkend product, herstel inbegrepen.</p></div>
-        <div><b>Partner</b><p>Kanaal naar miljoenen klanten, voorspelbare omzet, producten komen terug.</p></div>
-        <div><b>KBC</b><p>Terugkerende inkomsten, sterkere klantrelatie, meetbare duurzame impact.</p></div>
+        <div><b>Customer</b><p>No large purchases, always a working product, repairs included.</p></div>
+        <div><b>Partner</b><p>A channel to millions of customers, predictable revenue, products come back.</p></div>
+        <div><b>KBC</b><p>Recurring income, a stronger customer relationship, measurable sustainable impact.</p></div>
       </div>
     </DashboardShell>
   )

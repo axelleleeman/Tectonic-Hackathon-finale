@@ -27,7 +27,7 @@ export function Product({ customer, productId, signal, actions }) {
       <View style={styles.pill}><T style={styles.pillText}>{partner}</T></View>
       <T style={type.h2} role="heading">{p.icon} {p.name}</T>
       <T style={styles.detail}>{p.detail}</T>
-      <T style={styles.price}><T style={styles.priceBig}>{euro(p.monthly)}</T> / maand · {p.termMonths / 12} jaar</T>
+      <T style={styles.price}><T style={styles.priceBig}>{euro(p.monthly)}</T> / month · {p.termMonths / 12} years</T>
 
       <View style={styles.checks}>
         {p.includes.map((i) => (
@@ -40,16 +40,16 @@ export function Product({ customer, productId, signal, actions }) {
       {signal ? (
         <>
           <Press style={styles.why} onPress={() => setWhy(!why)} aria-expanded={why}>
-            <T style={styles.whyText}>ⓘ Waarom zie ik dit? {why ? '▴' : '▾'}</T>
+            <T style={styles.whyText}>ⓘ Why am I seeing this? {why ? '▴' : '▾'}</T>
           </Press>
           {why ? (
             <View style={styles.whybox}>
               {signal.reasons.map((r) => (
                 <View key={r} style={styles.bullet}><T style={styles.whyItem}>•</T><T style={[styles.whyItem, styles.flex]}>{r}</T></View>
               ))}
-              <T style={styles.basedOn}>Gebaseerd op:</T>
+              <T style={styles.basedOn}>Based on:</T>
               <ServiceChips services={servicesForSignal(signal)} />
-              <T style={styles.whyNote}>We delen geen gegevens met {partner} tot jij beslist.</T>
+              <T style={styles.whyNote}>We share no data with {partner} until you decide.</T>
             </View>
           ) : null}
         </>
@@ -57,19 +57,19 @@ export function Product({ customer, productId, signal, actions }) {
 
       <CostCompare product={p} />
       <View style={boxes.saving}>
-        <T style={boxes.savingText}>♻ ± <T style={[boxes.savingText, type.bold]}>{num(p.co2Kg)} kg CO₂</T> vermeden (≈ {num(carKmEquivalent(p.co2Kg))} km met de auto) doordat het product hersteld en hergebruikt wordt.</T>
+        <T style={boxes.savingText}>♻ ± <T style={[boxes.savingText, type.bold]}>{num(p.co2Kg)} kg CO₂</T> avoided (≈ {num(carKmEquivalent(p.co2Kg))} km by car) because the product is repaired and reused.</T>
       </View>
 
       <View style={boxes.kbcBox}>
-        <T style={boxes.kbcBoxTitle}>Achter de schermen geregeld door KBC</T>
+        <T style={boxes.kbcBoxTitle}>Arranged behind the scenes by KBC</T>
         <ServiceChips services={productServices(p, customer.type)} withRole />
       </View>
 
-      <PrimaryButton onPress={() => actions.borrow(p.id)}>Leen via KBC Loop</PrimaryButton>
+      <PrimaryButton onPress={() => actions.borrow(p.id)}>Borrow via KBC Loop</PrimaryButton>
       {signal ? (
-        <LinkButton onPress={() => { actions.dismissSignal(signal.id); actions.navigate('home') }}>Niet geïnteresseerd, toon dit niet meer</LinkButton>
+        <LinkButton onPress={() => { actions.dismissSignal(signal.id); actions.navigate('home') }}>Not interested, don't show this again</LinkButton>
       ) : null}
-      <T style={type.fine}>Indicatieve bedragen. Opzegbaar na 12 maanden; je kan het product ook overnemen.</T>
+      <T style={type.fine}>Indicative amounts. Cancellable after 12 months; you can also take over the product.</T>
     </>
   )
 }

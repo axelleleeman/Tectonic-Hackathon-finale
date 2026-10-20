@@ -12,7 +12,7 @@ export function checkApiUrl(baseUrl, { allowInsecure = false } = {}) {
   const url = new URL(baseUrl)
   if (url.protocol === 'https:') return url
   if (url.protocol === 'http:' && (LOCAL_HOSTS.includes(url.hostname) || allowInsecure)) return url
-  throw new Error(`Onveilige verbinding geweigerd: ${url.origin}. Gebruik https.`)
+  throw new Error(`Insecure connection refused: ${url.origin}. Use https.`)
 }
 
 export function createLoopClient(baseUrl, { apiKey = null, allowInsecure = false } = {}) {
@@ -45,7 +45,7 @@ export function createLoopClient(baseUrl, { apiKey = null, allowInsecure = false
   async function request(path, options = {}) {
     const res = await fetch(`${api}${path}`, { ...options, headers: { 'content-type': 'application/json', ...authHeaders, ...options.headers } })
     const body = await res.json().catch(() => ({}))
-    if (!res.ok) throw new Error(body.error ?? `KBC Loop-api antwoordde ${res.status}`)
+    if (!res.ok) throw new Error(body.error ?? `KBC Loop API responded with ${res.status}`)
     return body
   }
 

@@ -9,12 +9,12 @@ export function CostCompare({ product }) {
   const { months, buy, borrow, saving } = costs(product)
   const max = Math.max(buy, borrow)
   const rows = [
-    { label: 'Kopen', value: buy, note: product.insuranceMonthly ? 'Aankoop + verwachte herstellingen + losse verzekering' : 'Aankoop + verwachte herstellingen' },
-    { label: 'Lenen via KBC Loop', value: borrow, note: 'Herstellingen en terugname inbegrepen', loop: true },
+    { label: 'Buying', value: buy, note: product.insuranceMonthly ? 'Purchase + expected repairs + separate insurance' : 'Purchase + expected repairs' },
+    { label: 'Borrowing via KBC Loop', value: borrow, note: 'Repairs and take-back included', loop: true },
   ]
   return (
     <>
-      <T style={type.h4}>Over {months / 12} jaar</T>
+      <T style={type.h4}>Over {months / 12} years</T>
       {rows.map((r) => (
         <View key={r.label} style={styles.bar}>
           <View style={styles.head}><T style={styles.label}>{r.label}</T><T style={styles.value}>{euro(r.value)}</T></View>
@@ -23,12 +23,12 @@ export function CostCompare({ product }) {
         </View>
       ))}
       {saving > 0 ? (
-        <View style={boxes.saving}><T style={boxes.savingText}>Je bespaart ± <T style={[boxes.savingText, type.bold]}>{euro(saving)}</T> en hoeft nooit zelf een herstelling te betalen.</T></View>
+        <View style={boxes.saving}><T style={boxes.savingText}>You save ± <T style={[boxes.savingText, type.bold]}>{euro(saving)}</T> and never have to pay for a repair yourself.</T></View>
       ) : (
-        <View style={boxes.note}><T style={boxes.noteText}>Lenen kost hier ± {euro(-saving)} meer, maar je hebt altijd een werkend toestel zonder grote uitgave ineens.</T></View>
+        <View style={boxes.note}><T style={boxes.noteText}>Borrowing costs ± {euro(-saving)} more here, but you always have a working device without a large one-off expense.</T></View>
       )}
       {product.energySavingMonthly ? (
-        <View style={boxes.saving}><T style={boxes.savingText}>Plus ± <T style={[boxes.savingText, type.bold]}>{euro(product.energySavingMonthly)}/maand</T> lagere energiefactuur.</T></View>
+        <View style={boxes.saving}><T style={boxes.savingText}>Plus ± <T style={[boxes.savingText, type.bold]}>{euro(product.energySavingMonthly)}/month</T> lower energy bill.</T></View>
       ) : null}
     </>
   )

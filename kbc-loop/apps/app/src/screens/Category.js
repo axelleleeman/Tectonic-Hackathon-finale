@@ -38,7 +38,7 @@ export function Category({ customer, categoryId, items, actions }) {
                 <T style={styles.icon}>{p.icon}</T>
                 <T style={styles.name}>{p.name}</T>
                 <T style={styles.small}>{p.detail}</T>
-                <T style={styles.from}>{inUse(p.id) ? '✓ in gebruik' : `${euro(p.monthly)}/maand`}</T>
+                <T style={styles.from}>{inUse(p.id) ? '✓ in use' : `${euro(p.monthly)}/month`}</T>
               </Press>
             ))}
           </ScrollView>
@@ -47,7 +47,7 @@ export function Category({ customer, categoryId, items, actions }) {
 
       {services.length > 0 ? (
         <View style={boxes.kbcBox}>
-          <T style={boxes.kbcBoxTitle}>Ook bij KBC</T>
+          <T style={boxes.kbcBoxTitle}>Also at KBC</T>
           <ServiceChips services={services} />
         </View>
       ) : null}

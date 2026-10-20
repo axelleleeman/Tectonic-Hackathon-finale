@@ -1,259 +1,260 @@
-# KBC Loop – Tectonic Hackathon (KBC-challenge)
+# KBC Loop – Tectonic Hackathon (KBC challenge)
 
-**Lenen in plaats van kopen, in KBC Mobile.** KBC Loop is een marktplaats van circulaire partners
-in de KBC-app. Klanten lenen producten (verlichting, toestellen, elektronica, fietsen, babyspullen …)
-tegen een maandbedrag. De partner blijft eigenaar, **herstelt** het product als het kapot gaat en neemt
-het op het einde terug voor hergebruik. Daardoor hebben producenten er zelf belang bij om producten te
-maken die lang meegaan. KBC herkent het juiste moment, brengt klant en partner samen en regelt
-financiering en verzekering.
+**Borrow instead of buy, in KBC Mobile.** KBC Loop is a marketplace of circular partners inside the KBC
+app. Customers borrow products (lighting, appliances, electronics, bikes, baby gear …) for a monthly fee.
+The partner stays the owner, **repairs** the product when it breaks and takes it back at the end for reuse.
+That gives manufacturers a direct interest in making products that last. KBC spots the right moment, brings
+customer and partner together and arranges financing and insurance.
 
-## Wat de demo toont
+## What the demo shows
 
-| Perspectief | Wat je ziet |
+| Perspective | What you see |
 |---|---|
-| **Klant** (KBC Mobile) | App nagebouwd op een opname van de echte KBC Mobile: Kate-zoekbalk bovenaan (Kate schuift van boven open; sluiten met ×, tikken ernaast, omhoog vegen of de terugknop op Android), zwevende menubalk Start · Mijn KBC · Aanbod en een knop voor overschrijvingen. Start met rekeningkaarten, betalingen, Kate-tips in "Voor jou" op basis van verrichtingen, Kate Wallet, Zicht op je geldzaken, KBC Loop bij Extra diensten, nieuws en Samen duurzamer. Mijn KBC met een KBC Loop-blok, Aanbod met een KBC Loop-banner en categorieën. KBC Loop zelf (MyLoop, categorieën en partners, kopen vs. lenen, levenscyclus, defect melden → herstel, inleveren → nieuw leven, Kate Coins) is het enige interactieve deel |
-| **Philips** (partnerweergave) | Actieve contracten, terugkerende omzet, voorspelde defecten via sensoren, live herstelaanvragen |
-| **KBC** (interne weergave) | Loop-klanten, gefinancierd volume, terugkerende marge, CO₂-impact, triple win |
-| **KBC Loop Insights** (intern, aparte app) | Geanonimiseerde uitgavengroepen, aanbevolen huurproducten, campagne starten via Kate |
+| **Customer** (KBC Mobile) | App rebuilt from a recording of the real KBC Mobile: Kate search bar at the top (Kate slides open from the top; close with ×, tapping outside, swiping up or the Android back button), floating menu bar Home · My KBC · Offers and a transfers button. Home with account cards, payments, Kate tips in "For you" based on transactions, Kate Wallet, insight into your finances, KBC Loop under Extra services, news and Sustainable together. My KBC with a KBC Loop block, Offers with a KBC Loop banner and categories. KBC Loop itself (MyLoop, categories and partners, buying vs. borrowing, life cycle, report a defect → repair, return → new life, Kate Coins) is the only interactive part |
+| **Philips** (partner view) | Active contracts, recurring revenue, defects predicted by sensors, live repair requests |
+| **KBC** (internal view) | Loop customers, financed volume, recurring margin, CO₂ impact, triple win |
+| **KBC Loop Insights** (internal, separate app) | Anonymised spending groups, recommended rental products, launching a campaign via Kate |
 
-Persona's: **Lotte** (leent al Philips-lampen, gsm net hersteld), **Jonas** (nieuw huis met KBC-woonkrediet
-→ startpakket), **Bakkerij Peeters** (kmo, energiefactuur verdubbeld → Light as a Service).
+Personas: **Lotte** (already borrows Philips lights, phone just repaired), **Jonas** (new house with a KBC home
+loan → starter package), **Bakkerij Peeters** (SME, energy bill doubled → Light as a Service), **Sarah** (third
+washing machine repair this year).
 
-Presentatiepaneel: knop **"Speel demo af"** speelt de volledige flow automatisch af (± 45 s, ideaal om op
-te nemen voor de slides). **"Lamp meldt slijtage"** simuleert een IoT-melding: Philips vervangt de lamp
-voor ze uitvalt. De **privacytoggle** toont dat er zonder toestemming geen voorstellen op basis van
-verrichtingen komen.
+Presenter panel: the **"Play demo"** button plays the full flow automatically (± 45 s, ideal for recording
+for the slides). **"Light reports wear"** simulates an IoT alert: Philips replaces the light before it fails.
+The **privacy toggle** shows that without consent there are no suggestions based on transactions.
 
-## Gebouwd op bestaande KBC-diensten
+## Built on existing KBC services
 
-KBC Loop hergebruikt 23 diensten uit de KBC-ecosysteemlijst (`packages/shared/src/data/kbcServices.js`), zichtbaar in de demo:
+KBC Loop reuses 23 services from the KBC ecosystem list (`packages/shared/src/data/kbcServices.js`), visible in the demo:
 
-- **Signaal**: Query income and expenses via Kate, PSD2 Account Information Services, Home loan, Business CO2 insights
-- **Voorstel**: Kate, KBC Mobile, KBC Business app
-- **Financiering**: B2B Asset Financing (+ Partner Hub), Instalment Loan – Partner Hub (overnemen)
-- **Betalen per gebruik**: Machine-to-machine payment solutions (Philips Light as a Service)
-- **Verzekering**: Home insurance, Office and building insurance, Bicycle insurance, Online fraud insurance
-- **Beloning**: Kate Coins, Joyn loyalty points
+- **Signal**: Query income and expenses via Kate, PSD2 Account Information Services, Home loan, Business CO2 insights
+- **Proposal**: Kate, KBC Mobile, KBC Business app
+- **Financing**: B2B Asset Financing (+ Partner Hub), Instalment Loan – Partner Hub (take-over)
+- **Pay per use**: Machine-to-machine payment solutions (Philips Light as a Service)
+- **Insurance**: Home insurance, Office and building insurance, Bicycle insurance, Online fraud insurance
+- **Rewards**: Kate Coins, Joyn loyalty points
 - **Impact**: ecoWise, Kube ESG, Energy consumption and saving tips
-- **Partners aansluiten**: KBC Partner Hub, KBC Developer Portal, Application status webhooks
+- **Partner onboarding**: KBC Partner Hub, KBC Developer Portal, Application status webhooks
 
-In de app: "Gebaseerd op" bij *Waarom zie ik dit?*, het blok *Achter de schermen geregeld door KBC* bij elk
-product, *Ook bij KBC* per categorie, ecoWise/Kube ESG in Mijn KBC, en een volledig overzicht in de KBC-weergave.
+In the app: "Based on" under *Why am I seeing this?*, the *Arranged behind the scenes by KBC* block on every
+product, *Also at KBC* per category, ecoWise/Kube ESG in My KBC, and a full overview in the KBC view.
 
-## Architectuur
+## Architecture
 
-Drie interfaces (web, Insights en app), één api en één database. Wat je in de app doet, verschijnt meteen (via WebSocket) in de
-dashboards op de web en in Insights, en omgekeerd: ook tussen verschillende toestellen.
+Three interfaces (web, Insights and app), one API and one database. What you do in the app appears immediately (via
+WebSocket) in the dashboards on the web and in Insights, and vice versa, also across different devices.
 
 ```
   ┌────────────────────────┐ ┌────────────────────────┐ ┌──────────────────────────────┐
   │ apps/web (Vite+React)  │ │ apps/insights          │ │ apps/app (Expo/React Native) │
-  │  KBC-appspagina,       │ │  (Vite + React)        │ │  iOS + Android (Expo Go /    │
-  │  presentatiepaneel,    │ │  KBC Loop Insights,    │ │  build), web-versie onder    │
-  │  Philips- en KBC-      │ │  intern, onder /kbc/   │ │  /app/ (ook als iframe in de │
-  │  dashboards            │ │                        │ │  web, perspectief Klant)     │
+  │  KBC apps page,        │ │  (Vite + React)        │ │  iOS + Android (Expo Go /    │
+  │  presenter panel,      │ │  KBC Loop Insights,    │ │  build), web version under   │
+  │  Philips and KBC       │ │  internal, under /kbc/ │ │  /app/ (also as an iframe in │
+  │  dashboards            │ │                        │ │  the web, Customer view)     │
   └───────────┬────────────┘ └───────────┬────────────┘ └──────────────┬───────────────┘
               │                          │                             │
               └──────────────────────────┼─────────────────────────────┘
-                                         │  REST (GET state, POST acties)
+                                         │  REST (GET state, POST actions)
                                          │  WebSocket /api/live (live state)
                                          ▼
                      ┌──────────────────────────────────────┐
                      │ apps/api  (Node, http + ws)          │
-                     │  reducer uit shared → past acties toe│
-                     │  serveert in productie ook web (/),  │
-                     │  insights (/kbc/) en app (/app/)     │
+                     │  reducer from shared applies actions │
+                     │  in production also serves web (/),  │
+                     │  insights (/kbc/) and app (/app/)    │
                      └─────────────────┬────────────────────┘
                                        ▼
                             SQLite (node:sqlite)
                        loop_state  +  action_log
 
-  packages/shared: data, engine, reducer en api-client: gebruikt door web, insights, app én api
-  packages/web-ui: gedeelde React-bouwstenen (api-adres, useLoop, componenten, stijl) voor web + insights
+  packages/shared: data, engine, reducer and API client: used by web, insights, app and api
+  packages/web-ui: shared React building blocks (API address, useLoop, components, styles) for web + insights
 ```
 
-## Opbouw
+## Structure
 
-npm-workspaces-monorepo: gedeelde code in `packages/`, alles wat draait in `apps/`.
+npm workspaces monorepo: shared code in `packages/`, everything that runs in `apps/`.
 
 ```
 kbc-loop/
-  package.json       npm-workspaces (packages/*, apps/*) + scripts dev/test/build/lint
-  Dockerfile         productie-image: bouwt web + insights + app, draait de api (Cloud Run)
+  package.json       npm workspaces (packages/*, apps/*) + scripts dev/test/build/lint
+  Dockerfile         production image: builds web + insights + app, runs the api (Cloud Run)
   packages/
-    shared/          @kbc-loop/shared: pure JavaScript, zonder React
-      src/config/      demo-instellingen (datum, CO₂-factor, Kate Coins, bundelkorting, KBC-marge)
-      src/data/        enkel data: categories, partners, products (+ bundels), customers, repairIssues,
+    shared/          @kbc-loop/shared: plain JavaScript, no React
+      src/config/      demo settings (date, CO₂ factor, Kate Coins, bundle discount, KBC margin, technician slot)
+      src/data/        data only: categories, partners, products (+ bundles), customers, repairIssues,
                        pilotStats, spendSegments, kbcServices
-      src/engine/      logica: rules, signals, catalog, pricing, impact, dashboards, insights, kateIntents …
+      src/engine/      logic: rules, signals, catalog, pricing, impact, dashboards, insights, kateIntents …
                        costs.js: cost overview per item and customer (paid, remaining, split, upcoming payments)
                        upgrades.js: upgrade options and quote for a borrowed product
-      src/state/       loopReducer.js (alle acties, met invoercontrole, puur en getest), actions.js, derive.js
+                       campaigns.js: Kate campaign forecasts and results for KBC Loop Insights
+      src/state/       loopReducer.js (all actions, with input validation, pure and tested), actions.js, derive.js
       src/kate/        Kate's conversation engine (greeting, suggestions, intents, replies as action descriptors),
                        shared by the app's Kate screen and the web's Kate panel
       src/navigation/  tabs.js: the five KBC Mobile tabs (Home, My KBC, Invest, Business, Loop), shared by app and web
-      src/ui/          iconPaths.js: SVG path data for line icons, shared by app and web
-      src/client.js    api-client (fetch + WebSocket) voor web, insights en app; enkel https buiten localhost
+      src/ui/          iconPaths.js: SVG path data for line icons, shared by app and web; illustrations/
+      src/client.js    API client (fetch + WebSocket) for web, insights and app; https only outside localhost
       tests/
-    web-ui/          @kbc-loop/web-ui: gedeelde web-bouwstenen voor apps/web en apps/insights
-      src/api.js       API_URL, APP_URL, INSIGHTS_URL en de client
-      src/useLoop.js   React-hook: live state + acties
+    web-ui/          @kbc-loop/web-ui: shared web building blocks for apps/web and apps/insights
+      src/api.js       API_URL, APP_URL, INSIGHTS_URL and the client
+      src/useLoop.js   React hook: live state + actions
       src/components/  Connecting, Icon, icons, KbcLogo, ServiceChips, Stat
       src/kate/        Kate for the web: KateLauncher (header button), KatePanel (chat drawer), Kate, useKateConversation
-      src/styles/      tokens, components, layout, dashboard
-      src/assets/      KBC-logo
+      src/styles/      tokens, components, layout, dashboard, loop-theme
+      src/assets/      KBC logo
   apps/
-    api/             @kbc-loop/api: REST + WebSocket op SQLite
+    api/             @kbc-loop/api: REST + WebSocket on SQLite
       src/             index.js (start), server.js (routes), db.js, live.js, security.js, static.js, config.js,
                        catalog.js (partner catalogue tables partners + products, seeded from shared data),
                        partnerFeed.js (strict validation of a partner product feed)
       data-examples/   partner-feed.example.json: example feed of a fictional partner (GreenSpin)
       tests/
-    web/             @kbc-loop/web: Vite + React, dev op http://localhost:5173
-      index.html       KBC-appspagina (pixel-exacte screenshot + KBC Loop-tab en -kaart), presentatiepaneel,
-                       Philips- en KBC-dashboards, de app in een iframe
-      src/demo/        WebApp, presenter/ (presentatiepaneel), dashboards/, site/ (KBC-appspagina)
+    web/             @kbc-loop/web: Vite + React, dev on http://localhost:5173
+      index.html       KBC apps page (pixel-exact screenshot + KBC Loop tab and card), presenter panel,
+                       Philips and KBC dashboards, the app in an iframe
+      src/demo/        WebApp, presenter/ (presenter panel), dashboards/, site/ (KBC apps page)
       src/loop/        the KBC LOOP page: #loop (metrics with a small three.js loop from three/, "Your home" per
                        category, Kate tips, FAQ), #loop/catalog[/<category>] (alias #loop/marketplace: catalogue per
                        category and partner), #loop/product/<itemKey>, #loop/costs and #loop/presentation (URL only);
                        header without tabs, dialogs, light and dark theme
-      src/hooks/       useAutoplay (demo automatisch afspelen), useHashRoute (KBC apps page ↔ KBC LOOP)
-      src/styles/      opmaak van de site en het telefoonkader
-      src/assets/      screenshot-onderdelen van de KBC-appspagina
-    insights/        @kbc-loop/insights: KBC Loop Insights, intern dashboard voor KBC-medewerkers
-      src/             InsightsApp.jsx, main.jsx, insights.css, insights-page.css
-                       dev op http://localhost:5174, in productie onder /kbc/
-    app/             @kbc-loop/app: Expo SDK 58-app (iPhone, Android en web)
-      App.js           start van de app
-      src/phone/       KBC Mobile-kader: AppBar (Kate-zoekbalk), TabBar (zwevende menubalk), Fab
-      src/kate/        Kate als volledig chatscherm (KateScreen, header, berichten, chips, invoerveld)
-      src/screens/     schermen: home/ (Start), mykbc/ (Mijn KBC), aanbod/ (Aanbod) en de KBC Loop-
-                       schermen (categorie, product, kopen vs. lenen, herstel …)
-      src/ui/          gedeelde bouwstenen: Icon, Button, Stat, Photo, KateAvatar, KbcLogo …
-      src/             api.js (api-adres + client), useLoop.js, navigation.js, theme.js
-      app.json         Expo-config (web onder basis-pad /app)
-  scripts/           check-readme.mjs: controleert of deze README de echte opbouw beschrijft
+      src/hooks/       useAutoplay (plays the demo automatically), useHashRoute (KBC apps page ↔ KBC LOOP)
+      src/styles/      styling of the site and the phone frame
+      src/assets/      screenshot parts of the KBC apps page
+    insights/        @kbc-loop/insights: KBC Loop Insights, internal dashboard for KBC staff
+      src/             InsightsApp.jsx, main.jsx, model.js, useInsights.js, useRoute.js,
+                       pages/, campaign/, components/, styles/
+                       dev on http://localhost:5174, in production under /kbc/
+    app/             @kbc-loop/app: Expo SDK 58 app (iPhone, Android and web)
+      App.js           app entry point
+      src/phone/       KBC Mobile frame: AppBar (Kate search bar), TabBar (floating menu bar), Fab
+      src/kate/        Kate as a full chat screen (KateScreen, header, messages, chips, input field)
+      src/screens/     screens: home/ (Home), mykbc/ (My KBC), aanbod/ (Offers), item/, costs/ and the KBC Loop
+                       screens (category, product, buying vs. borrowing, repair …)
+      src/ui/          shared building blocks: Icon, Button, Stat, Photo, KateAvatar, KbcLogo …
+      src/             api.js (API address + client), useLoop.js, navigation.js, theme.js
+      app.json         Expo config (web under base path /app)
+  scripts/           check-readme.mjs: checks that this README describes the actual structure
                      import-partner-feed.mjs: imports a partner product feed into the database (npm run import:feed)
 ```
 
-**Uitbreiden:** een partner toevoegen = `packages/shared/src/data/partners.js` + producten in
-`packages/shared/src/data/products.js`. Een categorie = `packages/shared/src/data/categories.js`. Een signaal
-= een regel in `packages/shared/src/engine/rules.js`.
+**Extending:** adding a partner = `packages/shared/src/data/partners.js` + products in
+`packages/shared/src/data/products.js`. A category = `packages/shared/src/data/categories.js`. A signal
+= a rule in `packages/shared/src/engine/rules.js`.
 
-**KBC Loop Insights** (`apps/insights`, in productie op `/kbc/`): interne tool voor KBC-medewerkers. Toont
-geanonimiseerd welke producten klanten vaak kopen of laten herstellen (bv. betalingen aan fietsenmakers of
-gsm-herstellers), wat dat per jaar kost en welk huurproduct je die groep kan aanbieden (data uit
-`GET /api/insights`). Groepen onder 100 klanten worden niet getoond. Met *Start campagne via Kate* verschijnt
-de campagne live in het KBC-dashboard van de web.
+**KBC Loop Insights** (`apps/insights`, in production at `/kbc/`): internal tool for KBC staff. Shows, anonymised,
+which products customers often buy or have repaired (e.g. payments to bike shops or phone repairers), what that
+costs per year and which rental product you could offer that group (data from `GET /api/insights`). Groups
+under 100 customers are never shown. With *Start campaign via Kate* the campaign appears live in the KBC
+dashboard on the web.
 
-## Starten (ontwikkeling)
+## Getting started (development)
 
-Vereist Node 22.13 of nieuwer (voor de ingebouwde `node:sqlite`).
+Requires Node 22.13 or newer (for the built-in `node:sqlite`).
 
 ```bash
 cd kbc-loop
-npm install          # alle workspaces in één keer
-npm run dev          # api + web + insights + app samen (concurrently)
+npm install          # all workspaces at once
+npm run dev          # api + web + insights + app together (concurrently)
 ```
 
-Of apart, elk in een eigen terminal:
+Or separately, each in its own terminal:
 
 ```bash
-npm run dev:api      # api op http://127.0.0.1:4000 (database: apps/api/data/kbc-loop.db)
-npm run dev:web      # web op http://localhost:5173
-npm run dev:insights # KBC Loop Insights (intern) op http://localhost:5174
-npm run dev:app      # Expo-devserver op poort 8081 (QR-code voor Expo Go, w = web, i = iOS, a = Android)
+npm run dev:api      # api on http://127.0.0.1:4000 (database: apps/api/data/kbc-loop.db)
+npm run dev:web      # web on http://localhost:5173
+npm run dev:insights # KBC Loop Insights (internal) on http://localhost:5174
+npm run dev:app      # Expo dev server on port 8081 (QR code for Expo Go, w = web, i = iOS, a = Android)
 ```
 
-Web en Insights zoeken de api in ontwikkeling op poort 4000 van dezelfde computer, de app (voor de iframe in
-het perspectief *Klant*) op poort 8081 en Insights op poort 5174. Andere adressen: `VITE_API_URL`,
-`VITE_APP_URL` en `VITE_INSIGHTS_URL`.
+In development, web and Insights look for the API on port 4000 of the same computer, the app (for the iframe in
+the *Customer* view) on port 8081 and Insights on port 5174. Other addresses: `VITE_API_URL`,
+`VITE_APP_URL` and `VITE_INSIGHTS_URL`.
 
-### De app op een iPhone of Android-gsm (Expo Go)
+### The app on an iPhone or Android phone (Expo Go)
 
-1. Installeer **Expo Go** op de gsm. Gsm en computer moeten op **hetzelfde wifi** zitten.
-2. Laat de api luisteren op het netwerk, met een sleutel:
+1. Install **Expo Go** on the phone. Phone and computer must be on the **same Wi-Fi**.
+2. Let the API listen on the network, with a key:
    ```bash
-   HOST=0.0.0.0 API_KEY=kies-een-lange-willekeurige-sleutel npm run dev:api
+   HOST=0.0.0.0 API_KEY=choose-a-long-random-key npm run dev:api
    ```
-3. Start de app met dezelfde sleutel en scan de QR-code met de camera (iPhone) of in Expo Go (Android):
+3. Start the app with the same key and scan the QR code with the camera (iPhone) or in Expo Go (Android):
    ```bash
-   EXPO_PUBLIC_API_KEY=kies-een-lange-willekeurige-sleutel npm run dev:app
+   EXPO_PUBLIC_API_KEY=choose-a-long-random-key npm run dev:app
    ```
-   De app vindt het api-adres zelf: hetzelfde ip-adres als de Expo-devserver, poort 4000. Lukt dat niet
-   (bv. via `--tunnel`), zet dan `EXPO_PUBLIC_API_URL=http://<ip-van-je-computer>:4000`.
-4. Gebruik je de sleutel ook voor web en Insights, zet dan `VITE_API_KEY` op dezelfde waarde voor
-   `npm run dev:web` en `npm run dev:insights`.
+   The app finds the API address itself: the same IP address as the Expo dev server, port 4000. If that fails
+   (e.g. with `--tunnel`), set `EXPO_PUBLIC_API_URL=http://<your-computer-ip>:4000`.
+4. If you also use the key for web and Insights, set `VITE_API_KEY` to the same value for
+   `npm run dev:web` and `npm run dev:insights`.
 
-Onversleutelde `http` naar je laptop wordt enkel in ontwikkelmodus toegelaten; een productiebuild van web, Insights of
-app weigert alles behalve `https`/`wss` (behalve `localhost`).
+Unencrypted `http` to your laptop is only allowed in development mode; a production build of web, Insights or
+app refuses everything except `https`/`wss` (except `localhost`).
 
 ### Simulators
 
-- **iOS-simulator** (macOS met Xcode): `npm run dev:app` en druk `i`. De simulator bereikt de api via `localhost:4000`.
-- **Android-emulator** (Android Studio): `npm run dev:app` en druk `a`. De app gebruikt het adres van de
-  devserver, of `10.0.2.2:4000` (de computer achter de emulator).
-- **Web**: druk `w`, of open http://localhost:8081.
+- **iOS simulator** (macOS with Xcode): `npm run dev:app` and press `i`. The simulator reaches the API via `localhost:4000`.
+- **Android emulator** (Android Studio): `npm run dev:app` and press `a`. The app uses the dev server's address,
+  or `10.0.2.2:4000` (the computer behind the emulator).
+- **Web**: press `w`, or open http://localhost:8081.
 
 ## Tests
 
 ```bash
-npm test             # shared (signalen, catalogus, prijzen, impact, reducer, insights) + api (routes, beveiliging) + README-check
+npm test             # shared (signals, catalogue, pricing, impact, reducer, insights) + api (routes, security) + README check
 ```
 
-Gebruikt de ingebouwde testrunner van Node (`node --test`), zonder extra pakketten. `npm run lint` controleert
-de code van web en Insights (ESLint). `npm run build` maakt de productiebuild in `apps/web/dist/`: eerst de web,
-dan Insights (in `apps/web/dist/kbc`) en tot slot de web-export van de app (in `apps/web/dist/app`).
+Uses Node's built-in test runner (`node --test`), without extra packages. `npm run lint` checks the code of
+web and Insights (ESLint). `npm run build` creates the production build in `apps/web/dist/`: first the web,
+then Insights (in `apps/web/dist/kbc`) and finally the web export of the app (in `apps/web/dist/app`).
 
-## Documentatie up-to-date houden
+## Keeping the documentation up to date
 
 ```bash
-npm run check:readme # draait ook automatisch als laatste stap van npm test
+npm run check:readme # also runs automatically as the last step of npm test
 ```
 
-`scripts/check-readme.mjs` controleert of deze README nog klopt met de code: elke app (`apps/*`) en elk
-pakket (`packages/*`), hun submappen in `src/`, elk bestand in `apps/api/src`, elk npm-script uit
-`package.json` en elk api-pad uit `apps/api/src/server.js` en `apps/api/src/live.js` moet hier vermeld staan. Ontbreekt
-er iets, dan toont het script een lijst en faalt `npm test`. Voeg je een app, pakket, map, script of api-pad toe, vul dan
-het blok *Opbouw*, de scripts of de api-tabel hierboven aan.
+`scripts/check-readme.mjs` checks that this README still matches the code: every app (`apps/*`) and every
+package (`packages/*`), their subfolders in `src/`, every file in `apps/api/src`, every npm script in
+`package.json` and every API path in `apps/api/src/server.js` and `apps/api/src/live.js` must be mentioned here. If
+anything is missing, the script prints a list and `npm test` fails. When you add an app, package, folder, script or
+API path, update the *Structure* block, the scripts or the API table above.
 
 ## API
 
-| Methode | Pad | Wat |
+| Method | Path | What |
 |---|---|---|
-| `GET` | `/api/health` | Status `{ ok: true }` (zonder sleutel, voor healthchecks) |
-| `GET` | `/api/state` | Volledige demo-state `{ version, state }` |
-| `POST` | `/api/actions` | Actie `{ type, ... }` toepassen (enkel gekende actietypes), geeft de nieuwe state terug |
-| `GET` | `/api/actions/recent?limit=20` | Laatste acties uit het logboek (max. 100) |
-| `GET` | `/api/insights?kind=&customerType=` | Geanonimiseerde groepen + aanbevelingen voor KBC Loop Insights (`kind`: alle/herstelling/herhaalaankoop, `customerType`: alle/particulier/kmo) |
+| `GET` | `/api/health` | Status `{ ok: true }` (no key needed, for health checks) |
+| `GET` | `/api/state` | Full demo state `{ version, state }` |
+| `POST` | `/api/actions` | Apply an action `{ type, ... }` (known action types only), returns the new state |
+| `GET` | `/api/actions/recent?limit=20` | Latest actions from the log (max. 100) |
+| `GET` | `/api/insights?kind=&customerType=` | Anonymised groups + recommendations for KBC Loop Insights (`kind`: alle/herstelling/herhaalaankoop, `customerType`: alle/particulier/kmo) |
 | `GET` | `/api/catalog` | Partner catalogue from the database: `{ categories, partners, products }`, same shapes as `packages/shared/src/data` |
 | `GET` | `/api/catalog/partners/:id` | One partner with its `products` (`id` must match `^[a-z0-9-]{1,64}$`: otherwise `400`; unknown partner: `404`) |
-| `WS` | `/api/live` | Subprotocol `kbc-loop`; stuurt `{ type: 'state', version, state }` bij verbinden en bij elke wijziging. Enkel lezen. |
+| `WS` | `/api/live` | Subprotocol `kbc-loop`; sends `{ type: 'state', version, state }` on connect and on every change. Read only. |
 
-Instellingen van de api (omgevingsvariabelen, zie `apps/api/src/config.js`):
+API settings (environment variables, see `apps/api/src/config.js`):
 
-| Variabele | Standaard | Betekenis |
+| Variable | Default | Meaning |
 |---|---|---|
-| `PORT` | `4000` | Poort |
-| `HOST` | `127.0.0.1` | `0.0.0.0` om een gsm op hetzelfde wifi toe te laten |
-| `DB_PATH` | `apps/api/data/kbc-loop.db` | SQLite-bestand |
-| `STATIC_DIR` | – | Map met de gebouwde web (+ `kbc/` en `app/`) om mee te serveren (productie) |
-| `ALLOWED_ORIGINS` | lokale dev-servers (5173, 5174, 8081) | Komma-lijst van websites die de api mogen aanspreken |
-| `API_KEY` | – | Optionele sleutel, verplicht op alle api-verzoeken behalve `/api/health` |
-| `TRUST_PROXY` | – | `true` achter een HTTPS-proxy (Cloud Run) |
-| `PROXY_HOPS` | `1` | aantal vertrouwde proxy's vóór de api; bepaalt welk `x-forwarded-for`-adres telt voor rate limiting |
-| `NODE_ENV` | – | `production` zet HSTS aan |
+| `PORT` | `4000` | Port |
+| `HOST` | `127.0.0.1` | `0.0.0.0` to allow a phone on the same Wi-Fi |
+| `DB_PATH` | `apps/api/data/kbc-loop.db` | SQLite file |
+| `STATIC_DIR` | – | Folder with the built web (+ `kbc/` and `app/`) to serve as well (production) |
+| `ALLOWED_ORIGINS` | local dev servers (5173, 5174, 8081) | Comma-separated list of websites allowed to call the API |
+| `API_KEY` | – | Optional key, required on all API requests except `/api/health` |
+| `TRUST_PROXY` | – | `true` behind an HTTPS proxy (Cloud Run) |
+| `PROXY_HOPS` | `1` | number of trusted proxies in front of the API; determines which `x-forwarded-for` address counts for rate limiting |
+| `NODE_ENV` | – | `production` enables HSTS |
 
-Instellingen van de front-ends (bij het bouwen ingebakken, dus **geen geheimen**):
+Front-end settings (baked in at build time, so **no secrets**):
 
-| Variabele | Voor | Betekenis |
+| Variable | For | Meaning |
 |---|---|---|
-| `VITE_API_URL` | web, insights | Adres van de api (standaard poort 4000 in dev, zelfde adres in productie) |
-| `VITE_APP_URL` | web | Adres van de app voor de iframe (standaard poort 8081 in dev, `/app/` in productie) |
-| `VITE_INSIGHTS_URL` | web | Adres van KBC Loop Insights (standaard poort 5174 in dev, `/kbc/` in productie) |
-| `VITE_API_KEY` | web, insights | Zelfde waarde als `API_KEY`, als die gezet is |
-| `EXPO_PUBLIC_API_URL` | app | Adres van de api (standaard zelf gevonden via de Expo-devserver) |
-| `EXPO_PUBLIC_API_KEY` | app | Zelfde waarde als `API_KEY`, als die gezet is |
+| `VITE_API_URL` | web, insights | API address (default port 4000 in dev, same address in production) |
+| `VITE_APP_URL` | web | App address for the iframe (default port 8081 in dev, `/app/` in production) |
+| `VITE_INSIGHTS_URL` | web | KBC Loop Insights address (default port 5174 in dev, `/kbc/` in production) |
+| `VITE_API_KEY` | web, insights | Same value as `API_KEY`, if set |
+| `EXPO_PUBLIC_API_URL` | app | API address (by default discovered via the Expo dev server) |
+| `EXPO_PUBLIC_API_KEY` | app | Same value as `API_KEY`, if set |
 
 ## Partner catalogue and product feeds
 
@@ -276,68 +277,68 @@ out-of-range or non-finite numbers, too-long strings, duplicate ids and files ov
 is written. A valid feed is upserted in one transaction and replaces that partner's previous products; product ids
 that belong to another partner are refused. A running api picks up the import on the next request.
 
-## Beveiliging
+## Security
 
-- **Geen `*` in CORS**: enkel de eigen origin en de websites in `ALLOWED_ORIGINS` mogen de api aanspreken
-  (ook voor de WebSocket). Andere origins krijgen `403`. Open je web of Insights via het ip-adres van je laptop, voeg
-  dat adres dan toe aan `ALLOWED_ORIGINS`.
-- **Optionele api-sleutel** (`API_KEY`): via de header `Authorization: Bearer <sleutel>`, of voor de
-  WebSocket als subprotocol `key.<sleutel>`. Vergelijking in constante tijd. Aanbevolen zodra de api op een
-  netwerk staat; de api waarschuwt bij het starten als dat niet zo is.
-- **Rate limiting** per ip-adres: 60 schrijfacties en 600 leesverzoeken per minuut.
-- **Invoercontrole en limieten**: enkel gekende actietypes, enkel `application/json`, body max. 16 kB,
-  filters tegen een vaste lijst, WebSocket-berichten max. 1 kB (en clients mogen niet schrijven via de
-  socket), time-outs op verzoeken. Interne fouten tonen geen details.
-- **Beveiligingsheaders** op elke pagina: Content-Security-Policy (`script-src 'self'`, `frame-ancestors 'self'`,
+- **No `*` in CORS**: only the own origin and the websites in `ALLOWED_ORIGINS` may call the API (also for the
+  WebSocket). Other origins get `403`. If you open web or Insights via your laptop's IP address, add that address
+  to `ALLOWED_ORIGINS`.
+- **Optional API key** (`API_KEY`): via the header `Authorization: Bearer <key>`, or for the WebSocket as
+  subprotocol `key.<key>`. Constant-time comparison. Recommended as soon as the API is on a network; the API
+  warns at startup when it is not set.
+- **Rate limiting** per IP address: 60 write actions and 600 read requests per minute.
+- **Input validation and limits**: known action types only, `application/json` only, body max. 16 kB, filters
+  against a fixed list, WebSocket messages max. 1 kB (and clients may not write via the socket), request
+  time-outs. Internal errors reveal no details.
+- **Security headers** on every page: Content-Security-Policy (`script-src 'self'`, `frame-ancestors 'self'`,
   `object-src 'none'` …), `X-Content-Type-Options: nosniff`, `X-Frame-Options: SAMEORIGIN`,
-  `Referrer-Policy: no-referrer`, Permissions-Policy, Cross-Origin-Opener-Policy en, in productie, **HSTS**.
-  De statische server laat geen bestanden buiten `STATIC_DIR` toe.
-- **Enkel https buiten localhost**: de gedeelde api-client weigert `http`/`ws` naar andere adressen, behalve in
-  ontwikkelmodus.
-- **Container**: draait als niet-root gebruiker `node`, code is alleen-lezen, enkel `/data` is schrijfbaar,
-  npm zit niet in het runtime-image.
-- **Geen secrets in de repo**: `.env`-bestanden en databases staan in `.gitignore` en `.dockerignore`.
-  Let op: `EXPO_PUBLIC_*`- en `VITE_*`-variabelen komen leesbaar in de app-, web- of Insights-bundel terecht en zijn dus
-  **geen geheimen**. `EXPO_PUBLIC_API_KEY`/`VITE_API_KEY` schermen de api enkel af tegen toevallige verzoeken.
-- **npm install-scripts staan uit**: npm 12 voert standaard geen install-scripts van pakketten uit, en de
-  Dockerfile installeert met `npm ci --ignore-scripts` exact volgens `package-lock.json`.
+  `Referrer-Policy: no-referrer`, Permissions-Policy, Cross-Origin-Opener-Policy and, in production, **HSTS**.
+  The static server does not serve files outside `STATIC_DIR`.
+- **https only outside localhost**: the shared API client refuses `http`/`ws` to other addresses, except in
+  development mode.
+- **Container**: runs as the non-root user `node`, code is read-only, only `/data` is writable, npm is not in
+  the runtime image.
+- **No secrets in the repo**: `.env` files and databases are in `.gitignore` and `.dockerignore`.
+  Note: `EXPO_PUBLIC_*` and `VITE_*` variables end up readable in the app, web or Insights bundle and are therefore
+  **not secrets**. `EXPO_PUBLIC_API_KEY`/`VITE_API_KEY` only shield the API from casual requests.
+- **npm install scripts are disabled**: npm 12 does not run package install scripts by default, and the
+  Dockerfile installs with `npm ci --ignore-scripts` exactly as in `package-lock.json`.
 
-## Online zetten (Google Cloud Run)
+## Deploying (Google Cloud Run)
 
-De `Dockerfile` bouwt de web (`apps/web/dist`), KBC Loop Insights (`apps/web/dist/kbc`) en de web-versie van
-de app (`apps/web/dist/app`) en levert een klein image waarin enkel de api draait
-(`node apps/api/src/index.js`, met `STATIC_DIR` op de gebouwde bestanden). De api serveert de web op `/`,
-Insights op `/kbc/` en de app op `/app/`: alles op één HTTPS-adres, dus geen extra CORS nodig.
+The `Dockerfile` builds the web (`apps/web/dist`), KBC Loop Insights (`apps/web/dist/kbc`) and the web version of
+the app (`apps/web/dist/app`) and produces a small image that only runs the API
+(`node apps/api/src/index.js`, with `STATIC_DIR` pointing to the built files). The API serves the web at `/`,
+Insights at `/kbc/` and the app at `/app/`: everything on one HTTPS address, so no extra CORS is needed.
 
 ```bash
 cd kbc-loop
 gcloud run deploy kbc-loop --source . --region europe-west1 --max-instances 1
-# Geen API_KEY nodig: web, Insights en app draaien op hetzelfde adres. Zet je toch API_KEY, dan moeten
-# VITE_API_KEY/EXPO_PUBLIC_API_KEY bij het bouwen dezelfde waarde krijgen (de Dockerfile doet dat niet).
+# No API_KEY needed: web, Insights and app run on the same address. If you do set API_KEY,
+# VITE_API_KEY/EXPO_PUBLIC_API_KEY must get the same value at build time (the Dockerfile does not do that).
 ```
 
-Lokaal testen: `docker build -t kbc-loop . && docker run --rm -p 8080:8080 kbc-loop` en open http://localhost:8080.
+Local test: `docker build -t kbc-loop . && docker run --rm -p 8080:8080 kbc-loop` and open http://localhost:8080.
 
-- **SQLite op Cloud Run is tijdelijk**: elke instantie heeft haar eigen database, die verdwijnt bij een
-  herstart of nieuwe versie. Voor de demo volstaat `--max-instances 1` (één gedeelde state). Voor echt
-  gebruik: een gekoppeld volume voor `/data`, of een echte database (bv. Cloud SQL).
-- **Niet publiek zonder toestemming van KBC**: de webweergave bootst kbc.be na (screenshot, KBC-logo). Zet de
-  dienst niet openbaar online zonder toestemming van KBC; laat `--allow-unauthenticated` weg en gebruik
-  bv. IAM of Identity-Aware Proxy, of deel enkel met de jury.
+- **SQLite on Cloud Run is temporary**: each instance has its own database, which disappears on a restart or
+  new revision. For the demo `--max-instances 1` is enough (one shared state). For real use: a mounted volume
+  for `/data`, or a real database (e.g. Cloud SQL).
+- **Not public without KBC's permission**: the web view imitates kbc.be (screenshot, KBC logo). Do not put the
+  service online publicly without KBC's permission; leave out `--allow-unauthenticated` and use e.g. IAM or
+  Identity-Aware Proxy, or share it only with the jury.
 
-## Onaf / disclaimers
+## Limitations / disclaimers
 
-- Conceptprototype, geen officiële KBC-app of -website. De webweergave bootst de KBC-appspagina na, met het
-  KBC-logo, de hero-foto en de app-iconen uit een screenshot (`apps/web/src/assets/site/`). Het KBC-logo wordt
-  ook in de app en de presentatie gebruikt. Enkel bedoeld voor de hackathonpresentatie; niet publiek online
-  zetten zonder toestemming van KBC. De klantenapp bootst de stijl van KBC Mobile na (op basis van een
-  schermopname van de echte app) met eigen iconen; logo's van andere merken zijn niet overgenomen. Enkel
-  KBC Loop is interactief; de rest van de app is decor.
-- Klanten, rekeningen en bedragen zijn fictief en indicatief. Philips (Signify) is een voorbeeldpartner,
-  geen bestaande samenwerking; alle andere partners zijn fictief.
-- Geen echte bank-API's: data staat in `packages/shared/src/data/`. Volgende stap: PSD2/transactiedata, KBC Partner Hub,
-  B2B Asset Financing en M2M-betalingen voor pay-per-use.
-- Signaaldetectie is regelgebaseerd en uitlegbaar; Kate herkent vragen met trefwoorden.
-- Geen API-keys of secrets in deze repo.
-- **Schermopnames en video's staan in `.gitignore`**: ze kunnen persoonlijke bankgegevens bevatten. Zet ze
-  nooit in git, ook niet die van de echte KBC Mobile-app die als voorbeeld diende.
+- Concept prototype, not an official KBC app or website. The web view imitates the KBC apps page, with the
+  KBC logo, the hero photo and the app icons from a screenshot (`apps/web/src/assets/site/`). The KBC logo is
+  also used in the app and the presentation. Intended only for the hackathon presentation; do not put it online
+  publicly without KBC's permission. The customer app imitates the style of KBC Mobile (based on a screen
+  recording of the real app) with its own icons; logos of other brands are not copied. Only KBC Loop is
+  interactive; the rest of the app is scenery.
+- Customers, accounts and amounts are fictional and indicative. Philips (Signify) is an example partner, not an
+  existing collaboration; all other partners are fictional.
+- No real banking APIs: data lives in `packages/shared/src/data/`. Next step: PSD2/transaction data, KBC Partner
+  Hub, B2B Asset Financing and M2M payments for pay-per-use.
+- Signal detection is rule-based and explainable; Kate recognises questions by keywords.
+- No API keys or secrets in this repo.
+- **Screen recordings and videos are in `.gitignore`**: they may contain personal banking data. Never put them
+  in git, including those of the real KBC Mobile app that served as a reference.

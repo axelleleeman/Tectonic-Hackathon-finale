@@ -10,19 +10,19 @@ const CONNECTED_VIA = ['partnerHub', 'devPortal', 'webhooks', 'b2bAssetHub', 'm2
 export function PartnerDashboard({ state }) {
   const s = partnerStats('signify', state.items, state.telemetry)
   return (
-    <DashboardShell eyebrow="KBC Partner Hub · partnerweergave" title="Philips (Signify)" note="Pilotscenario met fictieve cijfers · live bijgewerkt door de demo">
+    <DashboardShell eyebrow="KBC Partner Hub · partner view" title="Philips (Signify)" note="Pilot scenario with fictional figures · updated live by the demo">
       <div className="dash-grid">
-        <Stat value={num(s.activeContracts)} label="actieve Loop-contracten" />
-        <Stat value={euro(s.monthlyRevenue)} label="terugkerende omzet / maand" tone="good" />
-        <Stat value={s.predictedFailures} label="defecten voorspeld via sensoren" hint="vervangen vóór uitval" />
-        <Stat value={`${num(s.lifetimeYears.service, 1)} j`} label="levensduur armatuur als dienst" hint={`vs. ${num(s.lifetimeYears.sold, 1)} j bij verkoop`} tone="good" />
-        <Stat value={`${s.reusedComponentsPct}%`} label="componenten hergebruikt" />
-        <Stat value={s.repairs.length} label="openstaande herstellingen" />
+        <Stat value={num(s.activeContracts)} label="active Loop contracts" />
+        <Stat value={euro(s.monthlyRevenue)} label="recurring revenue / month" tone="good" />
+        <Stat value={s.predictedFailures} label="defects predicted by sensors" hint="replaced before failure" />
+        <Stat value={`${num(s.lifetimeYears.service, 1)} yrs`} label="fixture lifetime as a service" hint={`vs. ${num(s.lifetimeYears.sold, 1)} yrs when sold`} tone="good" />
+        <Stat value={`${s.reusedComponentsPct}%`} label="components reused" />
+        <Stat value={s.repairs.length} label="open repairs" />
       </div>
 
-      <h3 className="dash-sub">Herstelaanvragen</h3>
+      <h3 className="dash-sub">Repair requests</h3>
       <table className="dash-table">
-        <thead><tr><th>Klant</th><th>Probleem</th><th>Status</th></tr></thead>
+        <thead><tr><th>Customer</th><th>Issue</th><th>Status</th></tr></thead>
         <tbody>
           {s.repairs.map((r) => (
             <tr key={`${r.customer}-${r.issue}`} className={r.live ? 'live' : ''}>
@@ -32,12 +32,12 @@ export function PartnerDashboard({ state }) {
         </tbody>
       </table>
 
-      <h3 className="dash-sub">Aangesloten via bestaande KBC-diensten</h3>
+      <h3 className="dash-sub">Connected via existing KBC services</h3>
       <ServiceChips services={CONNECTED_VIA} />
 
       <div className="dash-why">
-        <b>Waarom doet Philips mee?</b>
-        <p>Omdat Philips eigenaar blijft, verdient het meer aan lampen die lang meegaan en makkelijk te herstellen zijn. KBC brengt klanten aan, financiert de toestellen (B2B Asset Financing) en verzekert ze.</p>
+        <b>Why does Philips take part?</b>
+        <p>Because Philips remains the owner, it earns more from lights that last long and are easy to repair. KBC brings in customers, finances the devices (B2B Asset Financing) and insures them.</p>
       </div>
     </DashboardShell>
   )

@@ -51,7 +51,7 @@ export function useLoop() {
 
   const dispatch = useCallback((action) => {
     if (!client) return
-    client.dispatch(action).catch((err) => setActionError(err.message || 'Actie mislukt'))
+    client.dispatch(action).catch((err) => setActionError(err.message || 'Action failed'))
   }, [client])
 
   const derived = useMemo(() => (snapshot ? derive(snapshot.state) : null), [snapshot])

@@ -9,8 +9,8 @@ export const partnerPilot = {
     lifetimeYears: { service: 11.4, sold: 6.1 },
     reusedComponentsPct: 82,
     openRepairs: [
-      { customer: 'Café De Hoek', issue: 'Sensor werkt niet', status: 'Technieker onderweg' },
-      { customer: 'Fam. Wouters', issue: 'Lamp brandt niet meer', status: 'Ingepland · vr 23 okt' },
+      { customer: 'Café De Hoek', issue: 'Sensor not working', status: 'Technician on the way' },
+      { customer: 'Fam. Wouters', issue: 'Light no longer works', status: 'Scheduled · Fri 23 Oct' },
     ],
   },
 }
@@ -24,9 +24,9 @@ export const kbcPilot = {
   conversionPct: 18,
   insuredPct: 64,
   byCategory: [
-    { label: 'Verlichting', share: 41 },
+    { label: 'Lighting', share: 41 },
     { label: 'Smartphones', share: 27 },
-    { label: 'Witgoed', share: 19 },
+    { label: 'Large appliances', share: 19 },
     { label: 'Laptops', share: 13 },
   ],
 }

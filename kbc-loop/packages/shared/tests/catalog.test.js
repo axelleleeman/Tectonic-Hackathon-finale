@@ -6,18 +6,18 @@ import { loopTotals, carKmEquivalent } from '../src/engine/impact.js'
 import { matchIntent } from '../src/engine/kateIntents.js'
 import { products, partners } from '../src/data/index.js'
 
-test('elk product verwijst naar een bestaande partner', () => {
+test('every product refers to an existing partner', () => {
   for (const p of products) assert.ok(partners[p.partnerId], `${p.id} → ${p.partnerId}`)
 })
 
-test('bundel wordt opgesplitst en krijgt korting', () => {
+test('a bundle is split up and gets a discount', () => {
   const b = productById('bundle-home')
   assert.deepEqual(expandProduct('bundle-home'), ['lamp-home', 'washer', 'fridge'])
   assert.ok(b.monthly < 6 + 19.9 + 12)
   assert.equal(b.partnerIds.length, 3)
 })
 
-test('kosten: kopen telt herstellingen en losse verzekering mee', () => {
+test('costs: buying includes repairs and separate insurance', () => {
   const c = costs(productById('phone'))
   assert.equal(c.buy, 899 + 180 + 9 * 36)
   assert.equal(c.borrow, 29 * 36)
@@ -29,7 +29,7 @@ test('business customers see "For your business", personal customers do not', ()
   assert.ok(!categoriesFor('particulier').some((c) => c.id === 'zaak'))
 })
 
-test('impact telt enkel actieve producten voor het maandbedrag', () => {
+test('impact counts only active products for the monthly amount', () => {
   const items = [
     { productId: 'phone', repairs: 1, returned: false },
     { productId: 'washer', repairs: 0, returned: true },
@@ -41,13 +41,13 @@ test('impact telt enkel actieve producten voor het maandbedrag', () => {
   assert.equal(carKmEquivalent(120), 1000)
 })
 
-test('Kate herkent eenvoudige vragen', () => {
+test('Kate recognises simple questions (Dutch input too)', () => {
   assert.equal(matchIntent('Mijn lamp flikkert'), 'defect')
   assert.equal(matchIntent('Wat leen ik nu?'), 'overview')
   assert.equal(matchIntent('hallo'), null)
 })
 
-test('alle gekoppelde KBC-diensten bestaan', async () => {
+test('all linked KBC services exist', async () => {
   const { integrationMap, productServices, servicesForCategory, serviceById } = await import('../src/engine/integrations.js')
   const { categories } = await import('../src/data/index.js')
   const { rules } = await import('../src/engine/rules.js')
@@ -57,7 +57,7 @@ test('alle gekoppelde KBC-diensten bestaan', async () => {
   for (const r of rules) for (const id of r.services) assert.doesNotThrow(() => serviceById(id), id)
 })
 
-test('kmo-verlichting krijgt betalen per gebruik en kantoorverzekering', async () => {
+test('SME lighting gets pay-per-use and office insurance', async () => {
   const { productServices } = await import('../src/engine/integrations.js')
   const ids = productServices(productById('lamp-shop'), 'kmo').map((s) => s.id)
   assert.ok(ids.includes('m2m'))

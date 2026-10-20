@@ -4,7 +4,7 @@ import { categoryOf } from './catalog.js'
 
 export function serviceById(id) {
   const s = kbcServices[id]
-  if (!s) throw new Error(`Onbekende KBC-dienst: ${id}`)
+  if (!s) throw new Error(`Unknown KBC service: ${id}`)
   return { id, ...s }
 }
 

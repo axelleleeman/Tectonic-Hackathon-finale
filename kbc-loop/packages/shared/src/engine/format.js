@@ -8,5 +8,5 @@ export function num(n, digits = 0) {
 }
 
 export function formatDate(iso, { withYear = false } = {}) {
-  return new Date(`${iso}T12:00:00`).toLocaleDateString('nl-BE', { day: 'numeric', month: 'short', ...(withYear ? { year: 'numeric' } : {}) })
+  return new Date(`${iso}T12:00:00`).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', ...(withYear ? { year: 'numeric' } : {}) })
 }

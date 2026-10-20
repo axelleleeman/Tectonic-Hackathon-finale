@@ -13,9 +13,9 @@ export function Done({ productId, actions }) {
   return (
     <View style={styles.done}>
       <Animated.View style={[styles.check, pop]}><T style={styles.checkText}>✓</T></Animated.View>
-      <T style={[type.h2, type.center]} role="heading">Geleend!</T>
-      <T style={styles.text}>{partnerNames(p)} neemt contact op voor de levering. Financiering en verzekering staan klaar bij KBC. Gaat er iets kapot? Eén tik in Mijn KBC en de partner komt het herstellen.</T>
-      <PrimaryButton onPress={() => actions.navigate('mykbc')}>Naar Mijn KBC</PrimaryButton>
+      <T style={[type.h2, type.center]} role="heading">Borrowed!</T>
+      <T style={styles.text}>{partnerNames(p)} will contact you about delivery. Financing and insurance are ready at KBC. Something breaks? One tap in My KBC and the partner comes to repair it.</T>
+      <PrimaryButton onPress={() => actions.navigate('mykbc')}>Go to My KBC</PrimaryButton>
     </View>
   )
 }

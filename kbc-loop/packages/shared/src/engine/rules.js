@@ -83,11 +83,11 @@ export const rules = [
     match: ({ customer }) => findTx(customer, 'gsm-herstelling'),
     build: ({ customer }, tx) => ({
       productId: 'phone',
-      headline: 'Je gsm kreeg net een herstelling. Leen er een die altijd gratis hersteld wordt?',
+      headline: 'Your phone was just repaired. Why not borrow one that is always repaired for free?',
       reasons: [
-        `Betaling van ${euro(Math.abs(tx.amount), 2)} aan ${tx.merchant} op ${formatDate(tx.date)}.`,
-        `Je toestel is ongeveer ${customer.phoneAgeMonths} maanden oud: de kans op nieuwe defecten stijgt.`,
-        'Je gaf toestemming om je uitgaven te gebruiken voor persoonlijke voorstellen.',
+        `Payment of ${euro(Math.abs(tx.amount), 2)} to ${tx.merchant} on ${formatDate(tx.date)}.`,
+        `Your device is about ${customer.phoneAgeMonths} months old, so the risk of new defects is rising.`,
+        'You agreed that your spending may be used for personal suggestions.',
       ],
     }),
   },
@@ -102,11 +102,11 @@ export const rules = [
     },
     build: ({ customer }, tx) => ({
       productId: 'lamp-shop',
-      headline: 'Je energiefactuur is fors gestegen. Leen zuinige verlichting van Philips, zonder investering.',
+      headline: 'Your energy bill has risen sharply. Borrow energy-efficient Philips lighting, with no upfront investment.',
       reasons: [
-        `Laatste energiefactuur: ${euro(Math.abs(tx.amount))}, ruim boven je gemiddelde van ${euro(customer.avgEnergyBill)}.`,
-        'Bakkerijen hebben lange openingsuren: verlichting is een groot deel van het verbruik.',
-        'Je gaf toestemming om je zakelijke uitgaven te gebruiken voor voorstellen.',
+        `Latest energy bill: ${euro(Math.abs(tx.amount))}, well above your average of ${euro(customer.avgEnergyBill)}.`,
+        'Bakeries have long opening hours, so lighting is a large share of their consumption.',
+        'You agreed that your business spending may be used for suggestions.',
       ],
     }),
   },
@@ -118,11 +118,11 @@ export const rules = [
     match: ({ customer }) => findTx(customer, 'notaris', 'verhuis'),
     build: ({ customer }, tx) => ({
       productId: 'bundle-home',
-      headline: 'Proficiat met je nieuwe huis! Richt het circulair in: verlichting, wasmachine en koelkast in één pakket.',
+      headline: 'Congratulations on your new home! Furnish it the circular way: lighting, washing machine and fridge in one package.',
       reasons: [
-        `Je woonkrediet bij KBC startte op ${formatDate(customer.homeLoanSince)}.`,
-        `Betaling aan ${tx.merchant} op ${formatDate(tx.date)}.`,
-        'Een nieuwe woning betekent veel aankopen tegelijk: lenen spreidt de kost.',
+        `Your KBC home loan started on ${formatDate(customer.homeLoanSince)}.`,
+        `Payment to ${tx.merchant} on ${formatDate(tx.date)}.`,
+        'A new home means many purchases at once; borrowing spreads the cost.',
       ],
     }),
   },
@@ -134,11 +134,11 @@ export const rules = [
     match: ({ items }) => items.find((i) => i.productId.startsWith('lamp') && !i.returned && !i.repair) ?? null,
     build: (_ctx, item) => ({
       itemKey: item.key,
-      headline: `Je Philips-lamp in de ${item.room ?? 'winkel'} meldt slijtage. Philips vervangt ze gratis, nog voor ze uitvalt.`,
+      headline: `Your Philips light in the ${item.room ?? 'shop'} is reporting wear. Philips will replace it for free before it fails.`,
       reasons: [
-        'De lamp meldt zelf een dalende lichtopbrengst (−18% in 30 dagen).',
-        'Zo wordt ze vervangen voor je in het donker zit.',
-        'Toesteldata gaat enkel naar Philips voor onderhoud. KBC ziet alleen de status van de herstelling.',
+        'The light itself reports a falling light output (−18% in 30 days).',
+        'That way it is replaced before you are left in the dark.',
+        'Device data only goes to Philips for maintenance. KBC only sees the status of the repair.',
       ],
     }),
   },

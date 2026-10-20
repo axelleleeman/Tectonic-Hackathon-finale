@@ -16,17 +16,17 @@ const box = (h, x, y, w, hh) => ({
 export function KbcAppsTop({ onLoop, onOverview, onOpenLoop }) {
   return (
     <div className="shot">
-      <img src={pageTop} alt="KBC – Alle apps van KBC op een rijtje" draggable="false" />
+      <img src={pageTop} alt="KBC – All KBC apps at a glance" draggable="false" />
       {/* lichtgrijs waas over wat niet klikbaar is: menu bovenaan, kruimelpad en de andere tabbladen */}
       <div className="wash" style={box(TOP_H, 0, 0, W, 288)} />
       <div className="wash" style={box(TOP_H, 0, 830, W, 186)} />
       <div className="wash" style={box(TOP_H, 200, 1016, W - 200, 82)} />
 
-      <button className="shot-hit" style={box(TOP_H, 40, 1030, 160, 76)} onClick={onOverview} aria-label="Overzicht" />
+      <button className="shot-hit" style={box(TOP_H, 40, 1030, 160, 76)} onClick={onOverview} aria-label="Overview" />
       {onLoop && <div className="shot-cover" style={box(TOP_H, 44, 1102, 150, 4)} />}
 
       <button className={`shot-tab ${onLoop ? 'on' : ''}`} style={box(TOP_H, 699, 1020, 0, 86)} onClick={onOpenLoop}>
-        KBC Loop <em>Nieuw</em>
+        KBC Loop <em>New</em>
       </button>
     </div>
   )
@@ -40,10 +40,10 @@ export function KbcAppsGrid({ onOpenLoop }) {
         <span className="shot-card-head">
           <span className="shot-card-icon"><Icon name="loop" size={28} /></span>
           <b><span>KBC</span><span>Loop</span></b>
-          <em>Nieuw</em>
+          <em>New</em>
         </span>
-        <span className="shot-card-text">Lenen in plaats van kopen, met herstel inbegrepen.</span>
-        <span className="shot-card-link">Ontdek deze app</span>
+        <span className="shot-card-text">Borrow instead of buy, with repairs included.</span>
+        <span className="shot-card-link">Discover this app</span>
       </button>
     </div>
   )

@@ -4,8 +4,8 @@ import { API_URL } from '../api.js'
 export function Connecting({ error }) {
   return (
     <div className="connecting" role="status">
-      <b>{error ? 'Geen verbinding met de KBC Loop-server' : 'Verbinden met de KBC Loop-server…'}</b>
-      {error && <small>{error}. Start de api met <code>npm run dev:api</code> (verwacht op {API_URL}).</small>}
+      <b>{error ? 'No connection to the KBC Loop server' : 'Connecting to the KBC Loop server…'}</b>
+      {error && <small>{error}. Start the API with <code>npm run dev:api</code> (expected at {API_URL}).</small>}
     </div>
   )
 }

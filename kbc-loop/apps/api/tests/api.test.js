@@ -17,7 +17,7 @@ after(async () => { await app.close(); rmSync(dir, { recursive: true, force: tru
 
 const post = (body) => fetch(`${base}/api/actions`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
 
-test('state ophalen en een actie toepassen verhoogt de versie', async () => {
+test('fetching state and applying an action increments the version', async () => {
   const s1 = await (await fetch(`${base}/api/state`)).json()
   const res = await post({ type: 'BORROW', productId: 'phone' })
   assert.equal(res.status, 200)
@@ -34,13 +34,13 @@ test('onbekende of kapotte acties worden geweigerd', async () => {
   assert.equal(big.status, 413)
 })
 
-test('insights komen uit de api en respecteren de filter', async () => {
+test('insights come from the API and respect the filter', async () => {
   const r = await (await fetch(`${base}/api/insights?customerType=kmo`)).json()
   assert.ok(r.segments.length > 0 && r.segments.every((s) => s.customerType === 'kmo'))
   assert.equal((await fetch(`${base}/api/insights?kind=evil`)).status, 400)
 })
 
-test('twee clients (web en app) zien elkaars acties live via WebSocket', async () => {
+test('two clients (web and app) see each other\'s actions live via WebSocket', async () => {
   const web = createLoopClient(base)
   const app2 = createLoopClient(base)
   await Promise.all([web.start(), app2.start()])
@@ -51,7 +51,7 @@ test('twee clients (web en app) zien elkaars acties live via WebSocket', async (
   web.close(); app2.close()
 })
 
-test('state blijft bewaard in de database na herstart', async () => {
+test('state persists in the database after a restart', async () => {
   const path = join(dir, 'persist.db')
   const a = createServer({ dbPath: path })
   const { port } = await a.listen(0, '127.0.0.1')

@@ -9,7 +9,7 @@ async function start(overrides = {}) {
   return { app, base: `http://127.0.0.1:${port}` }
 }
 
-test('vreemde websites worden geweigerd, toegelaten origins krijgen CORS', async () => {
+test('foreign websites are refused, allowed origins get CORS', async () => {
   const { app, base } = await start({ allowedOrigins: ['http://localhost:5173'] })
   const evil = await fetch(`${base}/api/state`, { headers: { origin: 'https://evil.example' } })
   assert.equal(evil.status, 403)
@@ -21,7 +21,7 @@ test('vreemde websites worden geweigerd, toegelaten origins krijgen CORS', async
   await app.close()
 })
 
-test('met API_KEY is een sleutel verplicht (http en websocket)', async () => {
+test('with API_KEY a key is required (http and websocket)', async () => {
   const { app, base } = await start({ apiKey: 'geheim123' })
   assert.equal((await fetch(`${base}/api/health`)).status, 200)
   assert.equal((await fetch(`${base}/api/state`)).status, 401)
@@ -39,7 +39,7 @@ test('met API_KEY is een sleutel verplicht (http en websocket)', async () => {
   await app.close()
 })
 
-test('acties vereisen JSON en een geldig type', async () => {
+test('actions require JSON and a valid type', async () => {
   const { app, base } = await start()
   const text = await fetch(`${base}/api/actions`, { method: 'POST', body: '{"type":"RESET"}', headers: { 'content-type': 'text/plain' } })
   assert.equal(text.status, 415)
@@ -48,7 +48,7 @@ test('acties vereisen JSON en een geldig type', async () => {
   await app.close()
 })
 
-test('rate limiting op schrijfacties', async () => {
+test('rate limiting on write actions', async () => {
   const { app, base } = await start()
   const codes = []
   for (let n = 0; n < 65; n++) {
@@ -59,15 +59,15 @@ test('rate limiting op schrijfacties', async () => {
   await app.close()
 })
 
-test('client weigert onversleutelde verbindingen buiten localhost', () => {
-  assert.throws(() => checkApiUrl('http://api.example.com'), /Onveilige verbinding/)
-  assert.throws(() => checkApiUrl('ftp://localhost'), /Onveilige verbinding/)
+test('client refuses unencrypted connections outside localhost', () => {
+  assert.throws(() => checkApiUrl('http://api.example.com'), /Insecure connection/)
+  assert.throws(() => checkApiUrl('ftp://localhost'), /Insecure connection/)
   assert.ok(checkApiUrl('https://api.example.com'))
   assert.ok(checkApiUrl('http://localhost:4000'))
   assert.ok(checkApiUrl('http://192.168.1.20:4000', { allowInsecure: true }))
 })
 
-test('achter een proxy telt het adres dat de proxy toevoegde, niet een vervalst adres', async () => {
+test('behind a proxy, the address added by the proxy counts, not a spoofed one', async () => {
   const { clientIp } = await import('../src/security.js')
   const req = { headers: { 'x-forwarded-for': '6.6.6.6, 203.0.113.9' }, socket: { remoteAddress: '10.0.0.1' } }
   assert.equal(clientIp(req, true, 1), '203.0.113.9')

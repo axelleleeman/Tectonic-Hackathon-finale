@@ -1,7 +1,7 @@
 // Centrale demo-instellingen. Alle bedragen en factoren zijn indicatief.
 
 export const TODAY = '2026-10-20'
-export const TECHNICIAN_SLOT = 'do 22 okt, 9–12 u'
+export const TECHNICIAN_SLOT = 'Thu 22 Oct, 9 am – 12 pm'
 
 // Gemiddelde uitstoot van een personenwagen, om CO₂ begrijpelijk te maken.
 export const CO2_KG_PER_CAR_KM = 0.12

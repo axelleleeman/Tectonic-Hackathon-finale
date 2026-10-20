@@ -23,7 +23,7 @@ export function apiUrl() {
   if (__DEV__) return devApiUrl()
   // Productie op het web: de api serveert deze app zelf onder /app/, dus zelfde (https-)adres.
   if (Platform.OS === 'web' && typeof window !== 'undefined') return window.location.origin
-  throw new Error('Geen api-adres ingesteld. Zet EXPO_PUBLIC_API_URL op een https-adres van de KBC Loop-api voor je de app bouwt.')
+  throw new Error('No API address configured. Set EXPO_PUBLIC_API_URL to an https address of the KBC Loop API before building the app.')
 }
 
 // Optioneel. Let op: dit is GEEN geheim. EXPO_PUBLIC_-variabelen zitten leesbaar in de app-bundel;

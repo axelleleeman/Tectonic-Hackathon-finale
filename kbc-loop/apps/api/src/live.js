@@ -7,8 +7,8 @@ export function liveUpdates(server, { checkOrigin, checkKey, current }) {
     path: '/api/live',
     maxPayload: 1024,
     verifyClient: ({ req }, done) => {
-      if (!checkOrigin(req).ok) return done(false, 403, 'Origin niet toegelaten')
-      if (!checkKey(req)) return done(false, 401, 'Ongeldige sleutel')
+      if (!checkOrigin(req).ok) return done(false, 403, 'Origin not allowed')
+      if (!checkKey(req)) return done(false, 401, 'Invalid key')
       return done(true)
     },
     handleProtocols: (protocols) => (protocols.has('kbc-loop') ? 'kbc-loop' : false),
@@ -16,7 +16,7 @@ export function liveUpdates(server, { checkOrigin, checkKey, current }) {
 
   wss.on('connection', (ws) => {
     ws.send(JSON.stringify({ type: 'state', ...current() }))
-    ws.on('message', () => ws.close(1003, 'Enkel lezen')) // clients sturen acties via POST, niet via de socket
+    ws.on('message', () => ws.close(1003, 'Read only')) // clients sturen acties via POST, niet via de socket
   })
 
   return {

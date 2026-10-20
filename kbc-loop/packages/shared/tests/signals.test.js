@@ -9,49 +9,49 @@ const peeters = customers.find((c) => c.id === 'peeters')
 const lamp = { key: 'lotte-0', productId: 'lamp-home', repairs: 0, repair: null, returned: false, room: 'kitchen' }
 const base = { consent: true, dismissed: [], items: [] }
 
-test('gsm-herstelling geeft een voorstel om een gsm te lenen', () => {
+test('a phone repair leads to a suggestion to borrow a phone', () => {
   const [s] = detectSignals(lotte, { ...base, items: [lamp] })
   assert.equal(s.id, 'phone-repair')
   assert.equal(s.productId, 'phone')
   assert.equal(s.triggeredBy.category, 'gsm-herstelling')
 })
 
-test('zonder toestemming geen voorstellen op basis van transacties', () => {
+test('without consent there are no transaction-based suggestions', () => {
   assert.deepEqual(detectSignals(lotte, { ...base, consent: false }), [])
 })
 
-test('toestelmeldingen werken ook zonder transactietoestemming', () => {
+test('device alerts also work without transaction consent', () => {
   const ids = detectSignals(lotte, { ...base, consent: false, items: [lamp], telemetry: true }).map((s) => s.id)
   assert.deepEqual(ids, ['device-wear'])
 })
 
-test('geen toestelmelding voor een lamp die al in herstelling is', () => {
+test('no device alert for a light that is already being repaired', () => {
   const busy = { ...lamp, repair: { step: 2 } }
   assert.ok(!detectSignals(lotte, { ...base, items: [busy], telemetry: true }).some((s) => s.id === 'device-wear'))
 })
 
-test('weggeklikt voorstel komt niet terug', () => {
+test('a dismissed suggestion does not come back', () => {
   assert.deepEqual(detectSignals(lotte, { ...base, dismissed: ['phone-repair'] }), [])
 })
 
-test('geen gsm-voorstel als de klant al een gsm leent', () => {
+test('no phone suggestion if the customer already borrows a phone', () => {
   const phone = { key: 'x', productId: 'phone', repairs: 0, repair: null, returned: false }
   assert.ok(!detectSignals(lotte, { ...base, items: [phone] }).some((s) => s.id === 'phone-repair'))
 })
 
-test('energiepiek bij kmo stelt Light as a Service voor', () => {
+test('an energy spike at an SME suggests Light as a Service', () => {
   const [s] = detectSignals(peeters, base)
   assert.equal(s.productId, 'lamp-shop')
 })
 
-test('nieuwe woning stelt het startpakket voor', () => {
+test('a new home suggests the starter package', () => {
   const [s] = detectSignals(jonas, base)
   assert.equal(s.productId, 'bundle-home')
 })
 
 const sarah = customers.find((c) => c.id === 'sarah')
 
-test('derde herstelling van hetzelfde toestel stelt voor om het te lenen', () => {
+test('a third repair of the same device suggests borrowing it', () => {
   const [s] = detectSignals(sarah, base)
   assert.equal(s.id, 'repeat-repair')
   assert.equal(s.productId, 'washer')
@@ -61,12 +61,12 @@ test('derde herstelling van hetzelfde toestel stelt voor om het te lenen', () =>
   assert.match(s.notification.title, /^Third repair this year, Sarah\?/)
 })
 
-test('twee herstellingen is nog geen patroon', () => {
+test('two repairs are not yet a pattern', () => {
   const two = { ...sarah, transactions: sarah.transactions.filter((t) => t.id !== 's5') }
   assert.ok(!detectSignals(two, base).some((s) => s.id === 'repeat-repair'))
 })
 
-test('geen herstelvoorstel als de klant het toestel al leent', () => {
+test('no repair suggestion if the customer already borrows the device', () => {
   const washer = { key: 'x', productId: 'washer', repairs: 0, repair: null, returned: false }
   assert.ok(!detectSignals(sarah, { ...base, items: [washer] }).some((s) => s.id === 'repeat-repair'))
 })

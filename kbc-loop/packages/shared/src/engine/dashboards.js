@@ -19,7 +19,7 @@ export function partnerStats(partnerId, itemsByCustomer, telemetryByCustomer) {
   const fresh = mine.filter(isNew)
   const liveRepairs = mine
     .filter((i) => i.repair && i.repair.step < 3)
-    .map((i) => ({ customer: i.customer.fullName, issue: i.repair.issue, status: i.repair.step === 1 ? 'Nieuw · in te plannen' : 'Ingepland', live: true }))
+    .map((i) => ({ customer: i.customer.fullName, issue: i.repair.issue, status: i.repair.step === 1 ? 'New · to be scheduled' : 'Scheduled', live: true }))
   const liveAlerts = Object.values(telemetryByCustomer).filter(Boolean).length
   return {
     activeContracts: base.activeContracts + fresh.length,

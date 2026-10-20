@@ -71,7 +71,7 @@ export const customers = [
     transactions: [
       { id: 's1', date: '2026-10-19', merchant: 'Colruyt Gent', category: 'boodschappen', amount: -58.3 },
       { id: 's2', date: '2026-10-17', merchant: 'Elektro Service Gent', category: 'herstelling', appliance: 'washer', amount: -85.0 },
-      { id: 's3', date: '2026-10-15', merchant: 'Werkgever NV', category: 'loon', amount: 2450.0 },
+      { id: 's3', date: '2026-10-15', merchant: 'Employer NV', category: 'loon', amount: 2450.0 },
       { id: 's4', date: '2026-06-03', merchant: 'Elektro Service Gent', category: 'herstelling', appliance: 'washer', amount: -70.0 },
       { id: 's5', date: '2026-02-11', merchant: 'Elektro Service Gent', category: 'herstelling', appliance: 'washer', amount: -85.0 },
     ],
