@@ -4,7 +4,7 @@ html[data-theme="dark"], html[data-theme="dark"] body { background: #06182F; }
 html[data-theme="light"], html[data-theme="light"] body { background: #F3F6FA; }
 
 .ins {
-  --ins-max: 1160px; --ins-bar-h: 64px;
+  --ins-max: 1480px; --ins-bar-h: 64px;
   min-height: 100vh; display: flex; flex-direction: column;
   background: var(--lp-bg); color: var(--lp-ink);
   font-family: var(--lp-font); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased;
