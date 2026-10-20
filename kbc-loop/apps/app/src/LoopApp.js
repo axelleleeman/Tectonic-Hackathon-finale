@@ -1,6 +1,6 @@
 // De klantenapp (KBC Mobile met KBC Loop). Alle state komt live van de api via useLoop;
 // knoppen sturen acties naar de api, die de nieuwe state naar alle schermen (web en app) stuurt.
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { BackHandler, Platform, ScrollView, StyleSheet, View } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { StatusBar } from 'expo-status-bar'
@@ -10,6 +10,8 @@ import { SCREENS } from './navigation.js'
 import { AppBar } from './phone/AppBar.js'
 import { TabBar } from './phone/TabBar.js'
 import { Fab } from './phone/Fab.js'
+import { PushNotification } from './phone/PushNotification.js'
+import { PREVENTIVE_ISSUE } from '@kbc-loop/shared/data/index.js'
 import { Home } from './screens/Home.js'
 import { MyKbc } from './screens/MyKbc.js'
 import { Shop } from './screens/Shop.js'
@@ -29,6 +31,26 @@ export default function LoopApp() {
   const screenId = state?.screen
   const meta = SCREENS[screenId] ?? SCREENS.home
   const goBack = meta.back && state ? () => actions.navigate(meta.back(state.active)) : null
+
+  // Pushmelding: elk nieuw Kate-inzicht verschijnt één keer als melding bovenaan (per klant).
+  const [push, setPush] = useState(null)
+  const seen = useRef(new Set())
+  useEffect(() => {
+    if (!customer) return
+    const fresh = (signals ?? []).find((s) => !seen.current.has(`${customer.id}:${s.id}`))
+    if (!fresh) return
+    seen.current.add(`${customer.id}:${fresh.id}`)
+    setPush(fresh)
+  }, [customer, signals])
+  // Melding verdwijnt als het inzicht niet meer geldt (weggeklikt, geleend, andere klant).
+  useEffect(() => { if (push && !(signals ?? []).some((s) => s.id === push.id)) setPush(null) }, [push, signals])
+  const closePush = useCallback(() => setPush(null), [])
+  const openPush = () => {
+    const s = push
+    setPush(null)
+    if (s.itemKey) actions.reportDefect(s.itemKey, PREVENTIVE_ISSUE, true)
+    else actions.navigate('product', { productId: s.productId, signalId: s.id, categoryId: null })
+  }
 
   // Bij een ander scherm terug naar boven scrollen.
   useEffect(() => { scroll.current?.scrollTo({ y: 0, animated: false }) }, [screenId, state?.active?.categoryId, state?.active?.productId])
@@ -72,6 +94,11 @@ export default function LoopApp() {
       <Fab />
       <TabBar active={meta.tab} onSelect={(id) => actions.navigate(id)} />
       {banner ? <OfflineBanner message={banner} /> : null}
+      {push && !state.kateOpen ? (
+        <PushNotification key={`${customer.id}:${push.id}`} onOpen={openPush} onClose={closePush}
+          title={push.notification?.title ?? (push.source === 'toestel' ? 'Your lamp is letting you know' : 'Kate tip')}
+          body={push.notification?.body ?? push.headline} />
+      ) : null}
       <KateScreen open={Boolean(state.kateOpen)} {...shared} />
     </View>
   )

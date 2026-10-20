@@ -57,4 +57,23 @@ export const customers = [
       { id: 'k6', date: '2026-08-16', merchant: 'Energy supplier', category: 'energie', amount: -655.0 },
     ],
   },
+  {
+    // Pitch persona: third washing machine repair this year (€ 85 + € 70 + € 85 = € 240).
+    id: 'sarah', name: 'Sarah', fullName: 'Sarah De Smet', type: 'particulier', avatar: 'SD',
+    persona: 'third washing machine repair this year',
+    accountName: 'Current account', iban: 'BE34 5678 9012 3456', balance: 1967.45,
+    borrowed: [],
+    myKbc: [
+      { section: 'Rekeningen', name: 'Savings account', sub: 'BE76 5432 1098 7654', value: 4200 },
+      { section: 'Verzekeringen', name: 'Home insurance', sub: 'Policy active' },
+    ],
+    // `appliance` = the catalogue product the repair was paid for.
+    transactions: [
+      { id: 's1', date: '2026-10-19', merchant: 'Colruyt Gent', category: 'boodschappen', amount: -58.3 },
+      { id: 's2', date: '2026-10-17', merchant: 'Elektro Service Gent', category: 'herstelling', appliance: 'washer', amount: -85.0 },
+      { id: 's3', date: '2026-10-15', merchant: 'Werkgever NV', category: 'loon', amount: 2450.0 },
+      { id: 's4', date: '2026-06-03', merchant: 'Elektro Service Gent', category: 'herstelling', appliance: 'washer', amount: -70.0 },
+      { id: 's5', date: '2026-02-11', merchant: 'Elektro Service Gent', category: 'herstelling', appliance: 'washer', amount: -85.0 },
+    ],
+  },
 ]

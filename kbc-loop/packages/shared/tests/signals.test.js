@@ -48,3 +48,25 @@ test('nieuwe woning stelt het startpakket voor', () => {
   const [s] = detectSignals(jonas, base)
   assert.equal(s.productId, 'bundle-home')
 })
+
+const sarah = customers.find((c) => c.id === 'sarah')
+
+test('derde herstelling van hetzelfde toestel stelt voor om het te lenen', () => {
+  const [s] = detectSignals(sarah, base)
+  assert.equal(s.id, 'repeat-repair')
+  assert.equal(s.productId, 'washer')
+  assert.equal(s.pattern.total, 240)
+  assert.deepEqual(s.pattern.steps.map((x) => x.amount), [85, 70, 85])
+  assert.equal(s.triggeredBy.id, 's2')
+  assert.match(s.notification.title, /^Third repair this year, Sarah\?/)
+})
+
+test('twee herstellingen is nog geen patroon', () => {
+  const two = { ...sarah, transactions: sarah.transactions.filter((t) => t.id !== 's5') }
+  assert.ok(!detectSignals(two, base).some((s) => s.id === 'repeat-repair'))
+})
+
+test('geen herstelvoorstel als de klant het toestel al leent', () => {
+  const washer = { key: 'x', productId: 'washer', repairs: 0, repair: null, returned: false }
+  assert.ok(!detectSignals(sarah, { ...base, items: [washer] }).some((s) => s.id === 'repeat-repair'))
+})
