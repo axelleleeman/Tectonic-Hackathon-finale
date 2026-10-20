@@ -14,8 +14,10 @@ const NX = 120
 const NZ = 56
 const MORPH = 1.5 // seconds
 const PRODUCTS = 4
-const LINE_STATIONS = [['Make', 0.06], ['Use', 0.5], ['Dispose', 0.94]]
-const LOOP_STATIONS = [['Use', 0.0], ['Repair', 0.25], ['Upgrade', 0.5], ['Reuse', 0.75]]
+// Station labels and ticks are switched off: the scene stays wordless (the hero shows one caption below it).
+// Format when enabled: [label, position 0..1 along the line / loop].
+const LINE_STATIONS = []
+const LOOP_STATIONS = []
 const REPAIR_U = 0.25
 
 const clamp01 = (x) => Math.min(1, Math.max(0, x))
