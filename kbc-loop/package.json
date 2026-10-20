@@ -29,6 +29,7 @@
   },
   "overrides": {
     "uuid": "^11.1.1",
-    "zod": "^4.6.7"
+    "zod": "^4.6.7",
+    "braces@3.0.3": "https://npm.aikido.io/262abb8b42c0f7f994d95/braces@3.0.3-aikido.1"
   }
 }
