@@ -115,7 +115,8 @@ kbc-loop/
       src/config/      demo settings (date, CO₂ factor, Kate Coins, bundle discount, KBC margin, technician slot)
       src/data/        data only: categories, partners, products (+ bundles), customers, repairIssues,
                        pilotStats, spendSegments, kbcServices, rewards (Kate Coins rewards: rewards, rewardById),
-                       dataChoices (copy for the data-preferences screen on web and app)
+                       dataChoices (copy for the data-preferences screen on web and app),
+                       partnerProfiles (about, key facts, services and demo certifications per partner; illustrative)
       src/engine/      logic: rules, signals, catalog, pricing, impact, dashboards, insights, kateIntents …
                        costs.js: cost overview per item and customer (paid, remaining, split, upcoming payments)
                        upgrades.js: upgrade options and quote for a borrowed product
@@ -187,8 +188,8 @@ kbc-loop/
                      check-openapi.mjs: checks that docs/openapi.yaml covers every route and action (npm run docs:check)
 ```
 
-**Extending:** adding a partner = `packages/shared/src/data/partners.js` + products in
-`packages/shared/src/data/products.js`. A category = `packages/shared/src/data/categories.js`. A signal
+**Extending:** adding a partner = `packages/shared/src/data/partners.js` + a profile in
+`packages/shared/src/data/partnerProfiles.js` + products in `packages/shared/src/data/products.js`. A category = `packages/shared/src/data/categories.js`. A signal
 = a rule in `packages/shared/src/engine/rules.js`.
 
 **KBC Loop Insights** (`apps/insights`, in production at `/kbc/`): internal tool for KBC staff. Shows, anonymised,

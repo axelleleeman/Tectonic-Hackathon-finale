@@ -293,7 +293,7 @@ components:
         | SET_VIEW | `view`: klant / partner / kbc |
         | SWITCH_CUSTOMER | `customerId` |
         | SET_CONSENT | `value`: boolean |
-        | NAVIGATE | `screen`, `active` (`productId`, `signalId`, `itemKey`, `categoryId`) |
+        | NAVIGATE | `screen`, `active` (`productId`, `signalId`, `itemKey`, `categoryId`, `partnerId`) |
         | DISMISS_SIGNAL | `signalId` |
         | BORROW | `productId` |
         | REPORT_DEFECT | `itemKey`, `issue` (≤ 120 chars), `preventive`, `note` (≤ 200 chars), `photo` |
