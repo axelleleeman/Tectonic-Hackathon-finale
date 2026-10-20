@@ -23,7 +23,9 @@ import { ChromeContext } from './screens/item/chrome.js'
 import { CostOverview } from './screens/costs/CostOverview.js'
 import { RewardsScreen } from './screens/rewards/RewardsScreen.js'
 import { InboxScreen, inboxList } from './screens/inbox/InboxScreen.js'
+import { ConsentScreen } from './screens/consent/ConsentScreen.js'
 import { KateScreen } from './kate/KateScreen.js'
+import { PartnerScreen } from './screens/partner/PartnerScreen.js'
 import { Connecting, ConnectionError, OfflineBanner } from './ConnectionScreens.js'
 
 // Persona switch behind the header avatar: Lotte (individual) and Bakkerij Peeters (business).
@@ -54,6 +56,7 @@ export default function LoopApp() {
 
   const goBack = chrome?.back ?? (meta.back && state ? () => {
     const target = meta.back(state.active, previous())
+    history.current = history.current.slice(0, -1) // going back pops the current screen, so back never ping-pongs
     if (Array.isArray(target)) actions.navigate(...target)
     else actions.navigate(target)
   } : null)
@@ -94,7 +97,7 @@ export default function LoopApp() {
   }
 
   // Bij een ander scherm terug naar boven scrollen.
-  useEffect(() => { scroll.current?.scrollTo({ y: 0, animated: false }) }, [screenId, state?.active?.categoryId, state?.active?.productId, state?.active?.itemKey])
+  useEffect(() => { scroll.current?.scrollTo({ y: 0, animated: false }) }, [screenId, state?.active?.categoryId, state?.active?.productId, state?.active?.itemKey, state?.active?.partnerId])
 
   // Android-terugknop: eerst Kate sluiten, dan naar het vorige scherm.
   useEffect(() => {
@@ -116,7 +119,7 @@ export default function LoopApp() {
     mykbc: () => <Shop {...shared} coins={coins} />,
     shop: () => <Shop {...shared} coins={coins} />,
     category: () => <Category {...shared} categoryId={state.active.categoryId} />,
-    product: () => <Product customer={customer} productId={state.active.productId} signal={activeSignal} actions={actions} />,
+    product: () => <Product key={state.active.productId} customer={customer} productId={state.active.productId} signal={activeSignal} actions={actions} />,
     done: () => <Done productId={state.active.productId} actions={actions} />,
     repair: () => (activeItem ? <Repair item={activeItem} actions={actions} run={run} /> : null),
     item: () => (activeItem ? (
@@ -126,6 +129,8 @@ export default function LoopApp() {
     costs: () => <CostOverview items={items} actions={actions} />,
     rewards: () => <RewardsScreen state={state} customer={customer} coins={coins} actions={actions} />,
     inbox: () => <InboxScreen state={state} actions={actions} />,
+    partner: () => <PartnerScreen {...shared} partnerId={state.active.partnerId} />,
+    consent: () => <ConsentScreen preferences={loop.dataPreferences} actions={actions} />,
   }[screenId] ?? (() => null)
 
   const banner = actionError ? `Action failed: ${actionError}` : status === 'offline' ? 'Offline: reconnecting…' : null

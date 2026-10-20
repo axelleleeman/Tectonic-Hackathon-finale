@@ -5,7 +5,10 @@ import { productServices, servicesForSignal } from '@kbc-loop/shared/engine/inte
 import { productById, partnerNames, categoryOf } from '@kbc-loop/shared/engine/catalog.js'
 import { carKmEquivalent } from '@kbc-loop/shared/engine/impact.js'
 import { euro, num } from '@kbc-loop/shared/engine/format.js'
-import { Photo } from '../ui/Photo.js'
+import { products, partners } from '@kbc-loop/shared/data/index.js'
+import { partnerProfile } from '@kbc-loop/shared/data/partnerProfiles.js'
+import { ProductImage } from '../ui/ProductImage.js'
+import { Icon } from '../ui/Icon.js'
 import { ServiceChips } from '../ui/ServiceChips.js'
 import { LinkButton, PrimaryButton } from '../ui/Button.js'
 import { Press } from '../ui/Press.js'
@@ -14,7 +17,8 @@ import { CostCompare } from './CostCompare.js'
 import { ContractSummary } from './ContractSummary.js'
 import { SIGN_DELAY_MS, contractTerms, rememberContract, secondLifeMonthly } from './borrowContract.js'
 import { RepairPattern } from './RepairPattern.js'
-import { boxes, colors, type } from '../theme.js'
+import { boxes, cardShadow, colors, type } from '../theme.js'
+import { PartnerLogo, ProductRail, RailTitle, productsOfPartner } from './partner/catalogueParts.js'
 
 export function Product({ customer, productId, signal, actions }) {
   const [why, setWhy] = useState(false)
@@ -29,6 +33,14 @@ export function Product({ customer, productId, signal, actions }) {
   const partner = partnerNames(p)
   const refurbMonthly = secondLifeMonthly(p)
   const terms = contractTerms(p, { refurbished })
+  // Single-partner products link to their partner page; bundles span several partners.
+  const owner = p.partnerId ? partners[p.partnerId] : null
+  const profile = owner ? partnerProfile(owner.id) : null
+  const moreFromPartner = owner ? productsOfPartner(owner.id, customer.type).filter((x) => x.id !== p.id) : []
+  const similar = products.filter((x) => x.id !== p.id && x.partnerId !== p.partnerId && x.for.includes(customer.type)
+    && partners[x.partnerId]?.category === cat.id).slice(0, 8)
+  const openProduct = (id) => actions.navigate('product', { productId: id, signalId: null })
+  const openPartner = () => actions.navigate('partner', { partnerId: owner.id })
 
   // Simulated KBC Sign confirmation (no real authentication), then BORROW of the normal product id.
   const confirm = () => {
@@ -68,11 +80,33 @@ export function Product({ customer, productId, signal, actions }) {
 
   return (
     <>
-      <Photo photoKey={cat.id} tint={cat.tint} icon={p.icon} style={styles.hero} />
-      <View style={styles.pill}><T style={styles.pillText}>{partner}</T></View>
-      <T style={type.h2} role="heading">{p.icon} {p.name}</T>
+      <ProductImage product={p} size="hero" style={styles.hero} />
+      <T style={styles.category}>{cat.name}</T>
+      <T style={type.h2} role="heading">{p.name}</T>
       <T style={styles.detail}>{p.detail}</T>
+      {owner ? (
+        <Press style={styles.partnerRow} label={`Offered by ${owner.name}. Open the partner page`} onPress={openPartner}>
+          <PartnerLogo partner={owner} size={38} />
+          <View style={styles.flex}>
+            <T style={styles.partnerBy}>Offered by</T>
+            <T style={styles.partnerName}>{owner.name}</T>
+          </View>
+          <T style={styles.partnerLink}>View partner</T>
+          <Icon name="chevron" size={14} color={colors.kmBlue} strokeWidth={2} />
+        </Press>
+      ) : (
+        <View style={styles.pill}><T style={styles.pillText}>{partner}</T></View>
+      )}
       <T style={styles.price}><T style={styles.priceBig}>{euro(p.monthly)}</T> / month · {p.termMonths / 12} years</T>
+      <View style={styles.facts}>
+        {[
+          ['Term', `${p.termMonths} months`],
+          ['Repairs', profile ? `Within ${profile.repairSlaHours} h` : 'Included'],
+          ['CO₂ avoided', `± ${num(p.co2Kg)} kg`],
+        ].map(([label, value]) => (
+          <View key={label} style={styles.fact}><T style={styles.factLabel}>{label}</T><T style={styles.factValue}>{value}</T></View>
+        ))}
+      </View>
       {refurbMonthly ? (
         <View style={styles.variants} role="radiogroup">
           {[[false, 'New', p.monthly], [true, 'Refurbished', refurbMonthly]].map(([value, label, monthly]) => (
@@ -85,6 +119,7 @@ export function Product({ customer, productId, signal, actions }) {
         </View>
       ) : null}
 
+      <T style={type.h4} role="heading">What's included</T>
       <View style={styles.checks}>
         {p.includes.map((i) => (
           <View key={i} style={styles.check}><T style={styles.checkMark}>✓</T><T style={styles.checkText}>{i}</T></View>
@@ -126,18 +161,40 @@ export function Product({ customer, productId, signal, actions }) {
         <LinkButton onPress={() => { actions.dismissSignal(signal.id); actions.navigate('home') }}>Not interested, don't show this again</LinkButton>
       ) : null}
       <T style={type.fine}>Indicative amounts. Cancellable after 12 months; you can also take over the product.</T>
+
+      {moreFromPartner.length > 0 ? (
+        <>
+          <RailTitle>More from {owner.short ?? owner.name}</RailTitle>
+          <ProductRail list={moreFromPartner} onOpen={openProduct} />
+        </>
+      ) : null}
+      {similar.length > 0 ? (
+        <>
+          <RailTitle>Similar products</RailTitle>
+          <ProductRail list={similar} onOpen={openProduct} />
+        </>
+      ) : null}
     </>
   )
 }
 
 const styles = StyleSheet.create({
-  hero: { height: 120, borderRadius: 16, marginBottom: 12 },
+  hero: { marginBottom: 12 },
+  category: { fontSize: 12, fontWeight: '700', color: colors.kmBlue, textTransform: 'uppercase', letterSpacing: 0.6 },
+  partnerRow: { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#fff', borderRadius: 14, paddingVertical: 10, paddingHorizontal: 12, marginBottom: 14, ...cardShadow },
+  partnerBy: { fontSize: 11.5, color: colors.kmSub },
+  partnerName: { fontSize: 15, fontWeight: '700', color: colors.kmNavy },
+  partnerLink: { fontSize: 13, fontWeight: '600', color: colors.kmBlue },
+  facts: { flexDirection: 'row', gap: 8, marginTop: 12 },
+  fact: { flex: 1, backgroundColor: colors.kmSky, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 10 },
+  factLabel: { fontSize: 11.5, color: colors.kmSub },
+  factValue: { fontSize: 13.5, fontWeight: '700', color: colors.kmNavy, marginTop: 2 },
   pill: { alignSelf: 'flex-start', backgroundColor: '#fff', borderWidth: 1, borderColor: colors.boxLine, paddingVertical: 3, paddingHorizontal: 9, borderRadius: 99 },
   pillText: { fontSize: 11, fontWeight: '700', color: colors.navy },
   detail: { color: colors.muted, fontSize: 14, lineHeight: 20, marginBottom: 12 },
   price: { color: colors.muted },
   priceBig: { fontSize: 24, fontWeight: '700', color: colors.navy },
-  checks: { marginVertical: 12 },
+  checks: { marginBottom: 12 },
   check: { flexDirection: 'row', paddingVertical: 5 },
   checkMark: { width: 26, paddingLeft: 4, color: colors.green, fontWeight: '800', fontSize: 14 },
   checkText: { flex: 1, fontSize: 14, color: colors.ink },

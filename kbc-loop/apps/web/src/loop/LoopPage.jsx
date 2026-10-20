@@ -9,11 +9,14 @@ import { LoopHeader } from './LoopHeader.jsx'
 import { StartScreen } from './home/StartScreen.jsx'
 import { Catalog } from './catalog/Catalog.jsx'
 import { ProductPage } from './product/ProductPage.jsx'
+import { CatalogProductPage } from './catalogProduct/CatalogProductPage.jsx'
+import { PartnerPage } from './partner/PartnerPage.jsx'
 import { CostsPage } from './costs/CostsPage.jsx'
-import { RewardsPage } from './rewards/RewardsPage.jsx'
 import { AddModal } from './modals/AddModal.jsx'
 import { DefectModal } from './modals/DefectModal.jsx'
 import { Toast } from './Toast.jsx'
+import { ConsentPage } from './consent/ConsentPage.jsx'
+import { ConsentBanner } from './consent/ConsentBanner.jsx'
 import { Presentation } from './Presentation.jsx'
 import { homeSections, loopRows } from './model.js'
 import { useTheme } from './useTheme.js'
@@ -26,8 +29,10 @@ const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)'
  *   home         = full-viewport hero with the 3D loop, metrics, "Your home" (every category with the customer's products), Kate tips and FAQ
  *   catalog      = the product catalogue behind "Add a product" (optionally opened on one category)
  *   product      = detail page of one product the customer has (product/ProductPage.jsx)
+ *   catalogProduct = catalogue detail page of any product (catalogProduct/CatalogProductPage.jsx)
+ *   partnerPage  = partner profile, key facts and products (partner/PartnerPage.jsx)
  *   costs        = cost overview (costs/CostsPage.jsx)
- *   rewards      = Kate Coins rewards (rewards/RewardsPage.jsx)
+ *   rewards      = redirects to home with the Rewards tab of the framed module selected (rewards/RewardsPage.jsx, embedded)
  *   presentation = presenter panel, dashboards and app iframe (URL only)
  * Every action goes through the api, so it shows up live in the iOS/Android app and the dashboards.
  */
@@ -41,6 +46,8 @@ export function LoopPage({ route, param, go, loop }) {
   const [toast, setToast] = useState(null)
   const [flashKey, setFlashKey] = useState(null)
   const [overHero, setOverHero] = useState(false) // header sits transparently over the start-screen hero
+  const [homeTab, setHomeTab] = useState(route === 'rewards' ? 'rewards' : 'home') // Home / Impact / Rewards in the framed module
+  const [frameFocus, setFrameFocus] = useState(route === 'rewards') // scroll the framed module into view once home renders
   const searchRef = useRef(null)
   const restoreFocus = useRef([])
 
@@ -64,6 +71,24 @@ export function LoopPage({ route, param, go, loop }) {
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [modal, closeModal])
+
+  // #loop/rewards opens the start screen with the Rewards tab selected
+  useEffect(() => {
+    if (route !== 'rewards') return
+    setHomeTab('rewards')
+    setFrameFocus(true)
+    window.history.replaceState(null, '', '#loop') // replace, so Back does not bounce into the redirect again
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  }, [route])
+
+  useEffect(() => {
+    if (!frameFocus || route !== 'home' || !state) return undefined
+    const id = requestAnimationFrame(() => {
+      document.querySelector('.lp-frame')?.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' })
+      setFrameFocus(false)
+    })
+    return () => cancelAnimationFrame(id)
+  }, [frameFocus, route, state])
 
   // Scroll a freshly added product into view and highlight it
   useEffect(() => {
@@ -89,12 +114,16 @@ export function LoopPage({ route, param, go, loop }) {
   }
 
   const goHome = () => go('home')
+  const showRewards = () => { setHomeTab('rewards'); setFrameFocus(true); if (route !== 'home') go('home') }
   const openProduct = (itemKey) => go('product', itemKey)
   const openCosts = () => go('costs')
   const openCatalog = (categoryId = null) => {
     go('catalog', categoryId)
     requestAnimationFrame(() => searchRef.current?.focus({ preventScroll: true }))
   }
+  const borrowModal = (productId) => openModal({ kind: 'add', productId })
+  const openCatalogProduct = (productId) => go('catalogProduct', productId)
+  const openPartner = (partnerId) => go('partnerPage', partnerId)
   const onBorrowed = (productId) => {
     const added = [...rows].reverse().find((r) => r.product.id === productId && !r.item.returned)
     go('home')
@@ -114,8 +143,8 @@ export function LoopPage({ route, param, go, loop }) {
     <div className={`lp ${overHero && route === 'home' ? 'lp-at-hero' : ''}`} data-theme={theme}>
       <LoopHeader onBack={() => go(null)} onHome={goHome} coins={coins} avatar={customer.avatar}
         theme={theme} overHero={overHero && route === 'home'} onToggleTheme={toggleTheme}
-        onCoins={() => go('rewards')} inbox={{ loop, actions, go }}
-        persona={{ customer, onSwitch: (id) => { actions.switchCustomer(id); setModal(null); go('home'); notify('Customer switched') } }}
+        onCoins={showRewards} inbox={{ loop, actions, go }}
+        persona={{ customer, consentDone: Boolean(loop.dataPreferences?.completedOn), onConsent: () => go('consent'), onSwitch: (id) => { actions.switchCustomer(id); setModal(null); go('home'); notify('Customer switched') } }}
         kate={{
           loop,
           onRepair: (itemKey) => openModal({ kind: 'defect', itemKey }),
@@ -126,7 +155,9 @@ export function LoopPage({ route, param, go, loop }) {
       {route === 'home' && (
         <div className="lp-ui">
           <StartScreen customer={customer} items={items} totals={totals} coins={coins} sections={sections} signals={signals} onHeroOver={setOverHero}
-            flashKey={flashKey} onOpen={openProduct} onBrowse={openCatalog} onAdd={() => openCatalog()} onCosts={openCosts} onRewards={() => go('rewards')}
+            flashKey={flashKey} onOpen={openProduct} onBrowse={openCatalog} onAdd={() => openCatalog()} onCosts={openCosts} onRewards={showRewards}
+            tab={homeTab} onTab={setHomeTab} loop={loop} actions={actions}
+            notice={<ConsentBanner preferences={loop.dataPreferences} onReview={() => go('consent')} />}
             tips={{
               onOffer: (productId) => openModal({ kind: 'add', productId }),
               onPreventive,
@@ -138,7 +169,21 @@ export function LoopPage({ route, param, go, loop }) {
       {route === 'catalog' && (
         <div className="lp-ui">
           <Catalog key={param ?? 'all'} customerType={customer.type} initialCategory={param} ownedIds={ownedIds} searchRef={searchRef}
-            onAdd={(productId) => openModal({ kind: 'add', productId })} onBack={goHome} />
+            onAdd={borrowModal} onOpen={openCatalogProduct} onPartner={openPartner} onBack={goHome} />
+        </div>
+      )}
+
+      {route === 'catalogProduct' && (
+        <div className="lp-ui">
+          <CatalogProductPage key={param} productId={param} customerType={customer.type} rows={rows} onBack={() => go('catalog')}
+            onAdd={borrowModal} onOpen={openCatalogProduct} onPartner={openPartner} onOwned={openProduct} />
+        </div>
+      )}
+
+      {route === 'partnerPage' && (
+        <div className="lp-ui">
+          <PartnerPage key={param} partnerId={param} customerType={customer.type} state={state} rows={rows} onBack={() => go('catalog')}
+            onAdd={borrowModal} onOpen={openCatalogProduct} />
         </div>
       )}
 
@@ -149,9 +194,10 @@ export function LoopPage({ route, param, go, loop }) {
         </div>
       )}
 
-      {route === 'rewards' && (
+
+      {route === 'consent' && (
         <div className="lp-ui">
-          <RewardsPage loop={loop} actions={actions} onBack={goHome} />
+          <ConsentPage loop={loop} actions={actions} onBack={goHome} onSaved={() => { goHome(); notify('Your data choices are saved') }} />
         </div>
       )}
 

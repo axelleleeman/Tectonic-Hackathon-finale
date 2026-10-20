@@ -232,7 +232,7 @@
 /* ---------- Start screen: metrics ---------- */
 .lp-hello { margin-bottom: var(--s3); }
 /* Segmented switch: "Your home" / "Your impact" */
-.lp-seg { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s1); padding: var(--s1); margin-bottom: var(--s5); background: var(--lp-surface2); border: 1px solid var(--lp-line); border-radius: var(--r-pill); }
+.lp-seg { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: var(--s1); padding: var(--s1); margin-bottom: var(--s5); background: var(--lp-surface2); border: 1px solid var(--lp-line); border-radius: var(--r-pill); }
 .lp .lp-seg [role="tab"] { padding: var(--s4) var(--s5); border-radius: var(--r-pill); font-size: 1.125rem; font-weight: 600; color: var(--lp-muted); transition: background .2s, color .2s, box-shadow .2s; }
 .lp .lp-seg [role="tab"]:hover { color: var(--lp-ink); }
 .lp .lp-seg [role="tab"][aria-selected="true"] { background: var(--lp-surface); color: var(--lp-ink); box-shadow: 0 1px 3px rgba(12, 35, 64, .12); }
@@ -381,6 +381,69 @@ a.lp-tile:hover .lp-tile-arrow { color: var(--lp-accent); transform: translateX(
 .lp-present[hidden] { display: none; }
 .lp-present .stage { min-height: auto; padding: var(--s6) var(--s4); }
 
+/* ---------- Start screen: framed module ("Your home" / "Your impact" in one device-like panel) ---------- */
+/* No transform/filter here: the phone "Add a product" button inside must stay position: fixed to the viewport. */
+.lp-frame { scroll-margin-top: calc(var(--lp-sticky) + var(--s3)); --lp-frame-r: 28px; background: var(--lp-surface2); border: 1px solid var(--lp-line); border-radius: var(--lp-frame-r); box-shadow: var(--lp-shadow-sm); padding: var(--s3) var(--s5) var(--s6); margin-bottom: var(--s8); }
+.lp-frame .lp-seg { background: var(--lp-bg); max-width: 640px; margin: 0 auto var(--s5); }
+.lp-frame .lp-home, .lp-frame .lp-impact { margin-bottom: 0; }
+.lp-frame .rw-embedded { margin: 0 auto; padding-top: var(--s2); }
+.lp[data-theme="dark"] { --lp-shadow-sm: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px rgba(0, 0, 0, .18); }
+.lp[data-theme="light"] { --lp-shadow-sm: 0 1px 2px rgba(12, 35, 64, .04), 0 8px 24px rgba(12, 35, 64, .06); }
+
+/* ---------- Section heading row (Kate tips) ---------- */
+.lp-sec-row { display: flex; align-items: center; gap: var(--s3); margin-bottom: var(--s4); }
+.lp-ui .lp-sec-row .lp-h2 { margin: 0; font-size: 1.375rem; }
+.lp-kate-lg { width: 32px; height: 32px; font-size: .875rem; }
+.lp-count { min-width: 24px; height: 24px; padding: 0 var(--s2); border-radius: var(--r-pill); background: var(--lp-accent-soft); color: var(--lp-accent); font-size: .8125rem; font-weight: 600; display: inline-grid; place-items: center; }
+.lp-tips-sec { margin-bottom: var(--s8); }
+.lp-tips-sec .lp-tips { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: var(--s4); }
+.lp-tips-sec .lp-tip { padding: var(--s5); gap: var(--s2); border-radius: var(--r-lg); }
+.lp-ui .lp-tips-sec .lp-tip h3 { font-size: 1rem; font-weight: 600; line-height: 1.35; }
+.lp-tip-line { margin: 0; color: var(--lp-muted); font-size: .875rem; }
+.lp-tips-sec .lp-tip-actions { padding-top: var(--s3); }
+
+/* ---------- Explore the app (phone frame) ---------- */
+.lp-appx { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, auto); gap: var(--s7); align-items: center; margin-bottom: var(--s8); padding: var(--s6); background: var(--lp-surface); border: 1px solid var(--lp-line); border-radius: 28px; }
+.lp-appx-copy { max-width: 46ch; }
+.lp-ui .lp-appx .lp-h2 { font-size: 1.375rem; }
+.lp-appx-lead { color: var(--lp-muted); margin: var(--s2) 0 var(--s5); }
+.lp-appx-list { list-style: none; margin: 0 0 var(--s5); padding: 0; display: grid; gap: var(--s3); }
+.lp-appx-list li { display: flex; gap: var(--s3); align-items: flex-start; font-size: .9375rem; }
+.lp-appx-list .lp-i { color: var(--lp-accent); margin-top: 4px; stroke-width: 2.2; }
+.lp-appx-fit { width: 100%; min-width: 0; display: flex; justify-content: center; }
+.lp-phone-box { position: relative; flex: none; }
+.lp-phone { position: absolute; top: 0; left: 0; transform-origin: 0 0; width: calc(390px + 24px); height: calc(844px + 24px); padding: 12px; border-radius: 56px; background: #0A1322; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08) inset, 0 0 0 2px #26324A, 0 24px 60px rgba(6, 24, 47, .28); }
+.lp-phone iframe { display: block; width: 390px; height: 844px; border: 0; border-radius: 44px; background: #FFFFFF; }
+.lp-phone-notch { position: absolute; z-index: 2; top: 22px; left: 50%; translate: -50% 0; width: 110px; height: 30px; border-radius: var(--r-pill); background: #0A1322; pointer-events: none; }
+.lp-phone-skel { position: absolute; inset: 12px; border-radius: 44px; background: linear-gradient(100deg, var(--lp-surface2) 30%, var(--lp-surface) 50%, var(--lp-surface2) 70%) 0 0 / 300% 100%; animation: lp-shimmer 1.4s linear infinite; }
+@keyframes lp-shimmer { to { background-position: -150% 0; } }
+.lp-appx-fallback { width: 100%; max-width: 360px; text-align: center; }
+
+/* ---------- Persona menu (avatar) ---------- */
+.lp-persona { position: relative; }
+.lp .lp-persona .lp-avatar { cursor: pointer; width: 40px; height: 40px; background: var(--lp-surface2); border: 1px solid var(--lp-line-strong); color: var(--lp-muted); transition: border-color .15s, color .15s; }
+.lp .lp-persona .lp-avatar:hover, .lp .lp-persona .lp-avatar[aria-expanded="true"] { border-color: var(--lp-accent); color: var(--lp-ink); }
+.lp-pmenu { position: absolute; right: 0; top: calc(100% + var(--s2)); z-index: 70; width: 264px; padding: var(--s2); background: var(--lp-surface); color: var(--lp-ink); border: 1px solid var(--lp-line-strong); border-radius: var(--r-md); box-shadow: var(--lp-shadow); animation: lp-pop .16s ease-out; }
+/* Over the navy hero the bar uses light text tokens, so the menu takes the dark surface */
+.lp-top-over .lp-pmenu { background: #0B2140; --lp-surface2: #0F2A50; --lp-accent-soft: rgba(74, 171, 238, .16); }
+@keyframes lp-pop { from { opacity: 0; translate: 0 -4px; } }
+.lp-pmenu-head { margin: 0; padding: var(--s2) var(--s3) var(--s1); font-size: .75rem; font-weight: 600; color: var(--lp-muted); text-transform: uppercase; letter-spacing: .06em; }
+.lp .lp-pitem { width: 100%; min-height: 48px; display: flex; align-items: center; gap: var(--s3); padding: var(--s2) var(--s3); border-radius: var(--r-sm); text-align: left; }
+.lp .lp-pitem:hover { background: var(--lp-surface2); }
+.lp-pitem b { display: block; font-size: .875rem; font-weight: 600; }
+.lp-pitem small { display: block; font-size: .75rem; color: var(--lp-muted); }
+.lp-pitem-av { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--lp-accent-soft); color: var(--lp-accent); font-size: .75rem; font-weight: 600; }
+.lp-pitem .lp-i { margin-left: auto; color: var(--lp-accent); }
+
+/* Offline banner, themed like the toast */
+.lp .offline-badge { display: flex; align-items: center; gap: var(--s2); background: var(--lp-surface); color: var(--lp-ink); border: 1px solid var(--lp-warn); border-radius: var(--r-pill); padding: var(--s2) var(--s4); font-size: .8125rem; font-weight: 500; box-shadow: var(--lp-shadow); z-index: 96; bottom: calc(var(--s5) + env(safe-area-inset-bottom, 0px)); }
+.lp .offline-badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--lp-warn); flex: none; }
+
+/* ---------- Loading skeleton ---------- */
+.lp-skel { max-width: var(--lp-max); margin: 0 auto; padding: var(--s6) var(--s5); display: grid; gap: var(--s4); }
+.lp-skel i { display: block; border-radius: var(--r-md); background: linear-gradient(100deg, var(--lp-surface2) 30%, var(--lp-surface) 50%, var(--lp-surface2) 70%) 0 0 / 300% 100%; animation: lp-shimmer 1.4s linear infinite; }
+.lp-skel-bar { height: var(--lp-bar-h); border-bottom: 1px solid var(--lp-line); background: var(--lp-header-bg); }
+
 /* ---------- Responsive ---------- */
 @media (max-width: 960px) {
   .lp-coins { display: none; }
@@ -408,7 +471,7 @@ a.lp-tile:hover .lp-tile-arrow { color: var(--lp-accent); transform: translateX(
   .lp-at-hero .lp-add { opacity: 0; visibility: hidden; }
   .lp-start { padding-bottom: calc(var(--s8) + 48px + env(safe-area-inset-bottom, 0px)); }
   .lp-seg { margin-bottom: var(--s5); }
-  .lp-seg [role="tab"] { padding: var(--s3) var(--s3); font-size: 1rem; }
+  .lp .lp-seg [role="tab"] { padding: var(--s3) var(--s2); font-size: .9375rem; min-height: 44px; }
   .lp-imp-heroes { grid-template-columns: 1fr; }
   .lp-imp-hero { padding: var(--s6) var(--s5); }
   .lp-imp-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s2); }
@@ -420,6 +483,9 @@ a.lp-tile:hover .lp-tile-arrow { color: var(--lp-accent); transform: translateX(
   /* The "Add a product" button floats at the bottom right on phones */
   .lp .lp-add { position: fixed; z-index: 60; right: max(var(--s4), env(safe-area-inset-right, 0px)); bottom: calc(var(--s4) + env(safe-area-inset-bottom, 0px)); box-shadow: var(--lp-shadow); padding: 12px var(--s5); }
   .lp-toast { bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
+  .lp-frame { --lp-frame-r: 24px; padding: var(--s2) var(--s3) var(--s5); margin-inline: calc(-1 * var(--s2)); }
+  .lp-frame .lp-seg { margin-bottom: var(--s4); }
+  .lp-appx { grid-template-columns: minmax(0, 1fr); gap: var(--s5); padding: var(--s5) var(--s4); border-radius: 24px; }
 }
 @media (max-width: 560px) {
   .lp-tile-num { font-size: 1.625rem; }
@@ -434,3 +500,17 @@ a.lp-tile:hover .lp-tile-arrow { color: var(--lp-accent); transform: translateX(
 @media (prefers-reduced-motion: reduce) {
   .lp *, .lp *::before, .lp *::after { animation: none !important; transition: none !important; }
 }
+
+/* Catalogue cards are clickable as a whole */
+.lp-item-click { cursor: pointer; transition: border-color .15s ease, box-shadow .15s ease, translate .15s ease; }
+.lp-item-click:hover { border-color: var(--lp-accent); box-shadow: 0 6px 18px rgba(2, 49, 127, .08); }
+@media (prefers-reduced-motion: no-preference) { .lp-item-click:hover { translate: 0 -1px; } }
+
+/* Large app simulator overlay */
+.lp-appx-overlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 48px 16px; background: rgba(4, 14, 32, .78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+@media (prefers-reduced-motion: no-preference) { .lp-appx-overlay { animation: lp-fade-in .2s ease both; } }
+@keyframes lp-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.lp-appx-close { position: fixed; top: 16px; right: 16px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; color: #FFFFFF; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .24); cursor: pointer; }
+.lp-appx-close:hover { background: rgba(255, 255, 255, .22); }
+.lp-appx-close:focus-visible { outline: 2px solid #FFFFFF; outline-offset: 3px; }
+.lp-appx-close .lp-i { color: #FFFFFF; stroke: #FFFFFF; stroke-width: 2.2; }

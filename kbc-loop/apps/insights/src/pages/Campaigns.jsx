@@ -1,5 +1,6 @@
 import { euro, formatDate, num } from '@kbc-loop/shared/engine/format.js'
 import { campaignResults } from '@kbc-loop/shared/engine/campaigns.js'
+import { ProductImage } from '@kbc-loop/web-ui/components/ProductImage.jsx'
 import { PageHead } from '../components/PageHead.jsx'
 import { StatusPill } from '../components/StatusPill.jsx'
 import { Icon } from '../components/Icon.jsx'
@@ -22,7 +23,13 @@ export function Campaigns({ state, segments }) {
             <StatusPill status={d.status} />
             <span className="ins-muted ins-small">Since {formatDate(d.startedOn)}</span>
           </div>
-          <h3>{s.label}</h3>
+          <div className="ins-camp-title">
+            <ProductImage product={s.productId ?? s.product} style={{ width: 64, height: 48 }} className="ins-camp-img" />
+            <div className="ins-min0">
+              <h3>{s.label}</h3>
+              <p className="ins-muted ins-small">{s.product.name} from {s.partner}</p>
+            </div>
+          </div>
           <p className="ins-muted ins-small">{AUDIENCE_LABEL[d.audience]} · budget {euro(d.budget)}</p>
           <dl className="ins-camp-nums">
             <div><dt>Reached</dt><dd className="ins-num">{num(r.reached)}</dd></div>
@@ -37,6 +44,7 @@ export function Campaigns({ state, segments }) {
   return (
     <>
       <PageHead eyebrow="Campaigns" title="Kate campaigns"
+        below={<p className="ins-hero-stats"><span><b className="ins-num">{running.length}</b> running</span><span><b className="ins-num">{stopped.length}</b> stopped</span></p>}
         actions={<a className="ins-btn ins-primary" href={href.newCampaign()}><Icon name="plus" />New campaign</a>} />
 
       <section aria-labelledby="run-h" className="ins-section">

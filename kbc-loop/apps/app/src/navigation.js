@@ -15,13 +15,16 @@ export const SCREENS = {
   shop: LOOP,
   // Without a category: the service catalogue; with one: its partners. Back goes category → catalogue → Loop.
   category: { bar: 'back', title: 'Add a product', tab: 'loop', back: (a) => (a.categoryId ? ['category', { categoryId: null }] : 'shop') },
-  product: { bar: 'back', title: 'KBC Loop', tab: 'loop', back: (a) => (a.categoryId ? 'category' : 'shop') },
+  product: { bar: 'back', title: 'KBC Loop', tab: 'loop', back: (a, prev) => (prev === 'partner' ? 'partner' : a.categoryId ? 'category' : 'shop') },
+  // Partner page: back to the catalogue, category or product it was opened from.
+  partner: { bar: 'back', title: 'Partner', tab: 'loop', back: (_, prev) => (['category', 'product', 'shop'].includes(prev) ? prev : 'category') },
   done: { bar: 'back', title: 'KBC Loop', tab: 'loop', back: () => 'shop' },
   repair: { bar: 'back', title: 'Repair', tab: 'loop', back: (a) => (a.itemKey ? 'item' : 'shop') },
   // Product detail of a borrowed item and the cost overview: back to where the customer came from.
   item: { bar: 'back', title: 'My product', tab: 'loop', back: (_, prev) => (BACK_TARGETS.includes(prev) ? prev : 'shop') },
   rewards: { bar: 'back', title: 'Rewards', tab: 'loop', back: () => 'shop' },
   inbox: { bar: 'back', title: 'Notifications', tab: 'loop', back: () => 'shop' },
+  consent: { bar: 'back', title: 'Your data', tab: 'loop', back: () => 'shop' },
   costs: { bar: 'back', title: 'Costs', tab: 'loop', back: (_, prev) => (BACK_TARGETS.includes(prev) && prev !== 'item' ? prev : 'shop') },
 }
 

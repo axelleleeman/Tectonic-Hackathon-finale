@@ -1,6 +1,6 @@
 // Partner portal model: open repair tickets and KPIs for one partner, across all customers in the shared state.
 // Live figures are added on top of a small fictional pilot base, so the portal never looks empty.
-import { customers, partners, partnerPilot } from '@kbc-loop/shared/data/index.js'
+import * as data from '@kbc-loop/shared/data/index.js'
 import { productById } from '@kbc-loop/shared/engine/catalog.js'
 
 /** Partner flow on a ticket, in order (statuses of PARTNER_UPDATE_REPAIR). */
@@ -11,7 +11,12 @@ export const TICKET_FLOW = [
   { status: 'repaired', action: 'Repaired', label: 'Repaired' },
 ]
 
+const { customers, partners, partnerPilot, products } = data
+
 export const partnerList = Object.values(partners)
+
+/** Partner profile (about, highlight, repairSlaHours, …) when the shared data provides it, otherwise null. */
+export const profileOf = (partnerId) => (typeof data.partnerProfile === 'function' ? data.partnerProfile(partnerId) ?? null : null)
 
 // Small deterministic number per partner id (pilot base for partners without pilot figures)
 const seed = (id) => [...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 997, 7)
@@ -39,6 +44,7 @@ export function partnerTickets(state, partnerId) {
       customerId: customer.id,
       firstName: customer.name,
       product: product.name,
+      productId: product.id,
       issue: item.repair.issue,
       note: item.repair.note ?? null,
       photo: item.repair.photo === true,
@@ -62,4 +68,40 @@ export function partnerKpis(state, partnerId, tickets) {
     inField: (pilot?.activeContracts ?? 120 + (s % 400)) + inField,
     secondLife: 40 + (s % 160) + secondLife,
   }
+}
+
+/** Products of this partner that are out with customers: live contracts plus the pilot base, spread deterministically. */
+export function partnerFleet(state, partnerId, inFieldTotal) {
+  const own = products.filter((p) => p.partnerId === partnerId)
+  if (own.length === 0) return []
+  const live = itemsOfPartner(state, partnerId).filter(({ item }) => !item.returned)
+  const liveCount = (id) => live.filter(({ product }) => product.id === id).length
+  const base = Math.max(0, inFieldTotal - live.length)
+  const weights = own.map((p) => 2 + (seed(p.id) % 5))
+  const totalWeight = weights.reduce((a, b) => a + b, 0)
+  const shares = weights.map((w) => Math.floor((base * w) / totalWeight))
+  shares[weights.indexOf(Math.max(...weights))] += base - shares.reduce((a, b) => a + b, 0)
+  return own
+    .map((p, i) => ({ id: p.id, product: p, count: shares[i] + liveCount(p.id), live: liveCount(p.id) }))
+    .sort((a, b) => b.count - a.count)
+}
+
+/** Where returned units go: refurbished and placed again, harvested for parts, or recycled (refurbish rate from the profile when known). */
+export function secondLifeSplit(total, refurbishRate) {
+  const refurbishedPct = refurbishRate > 0 ? refurbishRate : 60
+  const refurbished = Math.round((total * refurbishedPct) / 100)
+  const parts = Math.round((total - refurbished) * 0.65)
+  return [
+    { id: 'refurbished', label: 'Refurbished and placed again', count: refurbished },
+    { id: 'parts', label: 'Harvested for spare parts', count: parts },
+    { id: 'recycled', label: 'Recycled materials', count: total - refurbished - parts },
+  ]
+}
+
+/** Deterministic mini trend that ends at `value` (decorative sparkline next to a KPI). */
+export function kpiTrend(key, value, pct, n = 8) {
+  const h = seed(key)
+  const start = value / (1 + pct / 100)
+  return Array.from({ length: n }, (_, i) => (i === n - 1 ? value
+    : Math.max(0, (start + ((value - start) * i) / (n - 1)) * (1 + (((h * (i + 3)) % 7) - 3) / 100))))
 }

@@ -114,7 +114,9 @@ kbc-loop/
     shared/          @kbc-loop/shared: plain JavaScript, no React
       src/config/      demo settings (date, CO₂ factor, Kate Coins, bundle discount, KBC margin, technician slot)
       src/data/        data only: categories, partners, products (+ bundles), customers, repairIssues,
-                       pilotStats, spendSegments, kbcServices, rewards (Kate Coins rewards: rewards, rewardById)
+                       pilotStats, spendSegments, kbcServices, rewards (Kate Coins rewards: rewards, rewardById),
+                       dataChoices (copy for the data-preferences screen on web and app),
+                       partnerProfiles (about, key facts, services and demo certifications per partner; illustrative)
       src/engine/      logic: rules, signals, catalog, pricing, impact, dashboards, insights, kateIntents …
                        costs.js: cost overview per item and customer (paid, remaining, split, upcoming payments)
                        upgrades.js: upgrade options and quote for a borrowed product
@@ -155,7 +157,8 @@ kbc-loop/
                        portal on #partner, partnerTickets.js = its tickets and KPIs), site/ (KBC apps page)
       src/loop/        the KBC LOOP page: #loop (metrics with a small three.js loop from three/, "Your home" per
                        category, Kate tips, FAQ), #loop/catalog[/<category>] (alias #loop/marketplace: catalogue per
-                       category and partner), #loop/product/<itemKey>, #loop/costs and #loop/presentation (URL only);
+                       category and partner, with "How borrowing works" and "Our partners"), #loop/catalog/product/<productId>
+                       (catalogue product page), #loop/partner/<partnerId> (partner page), #loop/product/<itemKey>, #loop/costs and #loop/presentation (URL only);
                        header without tabs, dialogs, light and dark theme; rewards/ (#loop/rewards: redeem Kate
                        Coins), inbox/ (notifications bell and panel in the header), share/ (impact card drawn with
                        Canvas 2D and downloaded as a PNG), consent/ (#loop/consent: choose what happens with your data)
@@ -186,8 +189,8 @@ kbc-loop/
                      check-openapi.mjs: checks that docs/openapi.yaml covers every route and action (npm run docs:check)
 ```
 
-**Extending:** adding a partner = `packages/shared/src/data/partners.js` + products in
-`packages/shared/src/data/products.js`. A category = `packages/shared/src/data/categories.js`. A signal
+**Extending:** adding a partner = `packages/shared/src/data/partners.js` + a profile in
+`packages/shared/src/data/partnerProfiles.js` + products in `packages/shared/src/data/products.js`. A category = `packages/shared/src/data/categories.js`. A signal
 = a rule in `packages/shared/src/engine/rules.js`.
 
 **KBC Loop Insights** (`apps/insights`, in production at `/kbc/`): internal tool for KBC staff. Shows, anonymised,

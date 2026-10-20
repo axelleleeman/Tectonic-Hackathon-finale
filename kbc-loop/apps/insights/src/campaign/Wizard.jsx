@@ -39,9 +39,8 @@ export function Wizard({ state, actions, segments, go, initialGroup }) {
 
   return (
     <div className="ins-wizard">
-      <a className="ins-backlink" href={href.campaigns}><Icon name="back" size={16} />Cancel</a>
-      <PageHead eyebrow="New campaign" title={stepTitle(step)} />
-      <Stepper steps={STEPS} current={step} onGo={(n) => n < step && setStep(n)} />
+      <PageHead eyebrow={`New campaign · step ${step} of ${STEPS.length}`} title={stepTitle(step)} back={{ href: href.campaigns, label: 'Cancel' }}
+        below={<Stepper steps={STEPS} current={step} onGo={(n) => n < step && setStep(n)} />} />
 
       <div className="ins-step-body">
         {step === 1 && <StepGroup segments={segments} running={running} selectedId={draft?.segmentId} onPick={pick} />}

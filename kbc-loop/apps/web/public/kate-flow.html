@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From data to Kate</title>
+<meta name="description" content="Slide: expenditure pattern plus data insight becomes a Kate recommendation.">
+<style>
+  /* One 16:9 slide on a dark-blue stage, sized to the window (present it full screen or screenshot it). */
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #071A3A; }
+  body { display: grid; place-items: center; font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+  .slide {
+    width: min(100vw, 177.78vh); aspect-ratio: 16 / 9; position: relative; overflow: hidden;
+    background: radial-gradient(120% 90% at 50% 0%, #123A78 0%, #0B2A5B 45%, #071A3A 100%);
+    color: #FFFFFF; display: grid; grid-template-rows: auto 1fr auto; padding: 5.5% 6%;
+    container-type: inline-size;
+  }
+  .brand { display: flex; align-items: center; gap: 1.2cqw; font-weight: 700; letter-spacing: .12em; font-size: 1.6cqw; color: #DCE8F7; }
+  .ring { width: 1.8cqw; height: 1.8cqw; border-radius: 50%; border: .35cqw solid #4AABEE; }
+  .flow { display: flex; align-items: center; justify-content: center; gap: 2.4cqw; }
+  .box {
+    flex: 1 1 0; max-width: 24cqw; aspect-ratio: 1 / 1; border-radius: 2.4cqw; padding: 2.4cqw;
+    display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1.8cqw; text-align: center;
+    background: rgba(255, 255, 255, .06); border: .12cqw solid rgba(255, 255, 255, .18);
+  }
+  .box.kate { background: #FFFFFF; color: #0B2A5B; border-color: #FFFFFF; box-shadow: 0 2cqw 5cqw rgba(0, 0, 0, .35); }
+  .icon { width: 7cqw; height: 7cqw; border-radius: 50%; display: grid; place-items: center; background: rgba(74, 171, 238, .18); }
+  .kate .icon { background: #0A64B8; }
+  .icon svg { width: 3.4cqw; height: 3.4cqw; fill: none; stroke: #4AABEE; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .kate .icon svg { stroke: #FFFFFF; }
+  .label { font-size: 2.3cqw; font-weight: 700; line-height: 1.15; min-height: 2.3em; display: flex; align-items: center; }
+  .op { flex: none; width: 5cqw; height: 5cqw; border-radius: 50%; display: grid; place-items: center; background: #4AABEE; color: #071A3A; font-size: 3.2cqw; font-weight: 700; line-height: 1; }
+  .op svg { width: 2.6cqw; height: 2.6cqw; fill: none; stroke: #071A3A; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+  .note { text-align: center; font-size: 1.15cqw; color: #9FB4D3; margin: 0; }
+</style>
+</head>
+<body>
+  <main class="slide" aria-label="Expenditure pattern plus data insight gives a Kate recommendation">
+    <div class="brand"><span class="ring" aria-hidden="true"></span>KBC LOOP</div>
+
+    <div class="flow">
+      <section class="box">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>
+        <span class="label">Expenditure pattern</span>
+      </section>
+
+      <span class="op" aria-hidden="true">+</span>
+
+      <section class="box">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20.5 20.5 16 16"/><path d="M8.5 11h5M11 8.5v5"/></svg></span>
+        <span class="label">Data insight</span>
+      </section>
+
+      <span class="op" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+
+      <section class="box kate">
+        <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5.5h16v10H9l-5 4z"/><path d="M8.5 10.5h7"/></svg></span>
+        <span class="label">Kate recommendation</span>
+      </section>
+    </div>
+
+    <p class="note">With consent · anonymised groups · always explained</p>
+  </main>
+</body>
+</html>

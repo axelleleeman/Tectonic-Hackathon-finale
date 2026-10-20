@@ -1,4 +1,4 @@
-import { eur } from '../model.js'
+import { eur, signedPct, trendSeries, weightedPct } from '../model.js'
 import { num } from '@kbc-loop/shared/engine/format.js'
 import { PageHead } from '../components/PageHead.jsx'
 import { KpiGrid, KpiTile } from '../components/KpiTile.jsx'
@@ -10,14 +10,32 @@ import { href } from '../useRoute.js'
 const CHART_ROWS = 6
 const compactEuro = (v) => (v >= 1000 ? `€ ${num(v / 1000, 1)}k` : `€ ${num(v)}`)
 
-/** First screen: four headline numbers, one chart and the three best opportunities. */
+/** First screen: navy band with four headline numbers, one chart and the three best opportunities. */
 export function Overview({ state, segments, data }) {
   const { totals } = data
   const running = state.campaigns ?? []
   const rest = segments.length - CHART_ROWS
+  // Trend per KPI: change in payments vs. last year, weighted by what the KPI measures.
+  const trend = (weight) => weightedPct(segments, (s) => s.trendPct, weight)
+  const kpis = [
+    ['reach', 'Reachable customers', totals.reachable, num(totals.reachable), trend((s) => s.reachable)],
+    ['contracts', 'Expected contracts', totals.expectedContracts, num(totals.expectedContracts), trend((s) => s.expectedContracts)],
+    ['rent', 'Rent per month', totals.monthlyRevenue, eur(totals.monthlyRevenue), trend((s) => s.monthlyRevenue)],
+    ['co2', 'CO₂ avoided', totals.co2Tons, `${num(totals.co2Tons)} t`, trend((s) => s.co2Tons)],
+  ]
   return (
     <>
-      <PageHead eyebrow="Overview" title="Opportunities" />
+      <PageHead eyebrow="Overview" title="Opportunities"
+        below={(
+          <KpiGrid label="Potential across all groups">
+            {kpis.map(([id, label, value, display, pct]) => (
+              <KpiTile key={id} label={label} value={display} trend={trendSeries(id, value, pct)}
+                sub={<><b className={pct >= 0 ? 'ins-up' : ''}>{signedPct(pct)}</b> spending pattern vs. last year</>} />
+            ))}
+          </KpiGrid>
+        )}>
+        Anonymised spending groups that could rent instead of repairing or buying again, and what a Kate campaign could bring.
+      </PageHead>
 
       {running.length > 0 && (
         <a className="ins-banner" href={href.campaigns}>
@@ -26,13 +44,6 @@ export function Overview({ state, segments, data }) {
           <Icon name="arrow" />
         </a>
       )}
-
-      <KpiGrid label="Potential across all groups">
-        <KpiTile label="Reachable customers" value={num(totals.reachable)} />
-        <KpiTile label="Expected contracts" value={num(totals.expectedContracts)} />
-        <KpiTile label="Rent per month" value={eur(totals.monthlyRevenue)} />
-        <KpiTile label="CO₂ avoided" value={`${num(totals.co2Tons)} t`} />
-      </KpiGrid>
 
       <div className="ins-split">
         <section className="ins-card ins-pad">

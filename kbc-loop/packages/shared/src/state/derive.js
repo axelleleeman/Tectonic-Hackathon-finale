@@ -6,6 +6,7 @@ import { productById } from '../engine/catalog.js'
 import { upgradeOptions } from '../engine/upgrades.js'
 import { rewardById } from '../data/rewards.js'
 import { TODAY } from '../config/index.js'
+import { defaultDataPreferences } from './loopReducer.js'
 
 export function derive(state) {
   const cid = state.customerId
@@ -25,6 +26,8 @@ export function derive(state) {
     signals,
     coins: state.coins[customer.id] ?? 0,
     redemptions: state.redemptions?.[customer.id] ?? [],
+    // Tolerates older persisted state without dataPreferences; kateTips always mirrors consent
+    dataPreferences: { ...defaultDataPreferences(state.consent), ...state.dataPreferences?.[customer.id], kateTips: Boolean(state.consent) },
     activeSignal: signals.find((s) => s.id === state.active.signalId) ?? null,
     activeItem: items.find((i) => i.key === state.active.itemKey) ?? null,
   }

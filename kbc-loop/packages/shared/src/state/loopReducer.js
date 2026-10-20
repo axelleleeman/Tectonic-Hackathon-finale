@@ -9,7 +9,7 @@ import { rewardById } from '../data/rewards.js'
 
 // Allowed values; anything else is ignored so the shared state never breaks.
 export const VIEWS = ['klant', 'partner', 'kbc']
-export const SCREENS = ['home', 'mykbc', 'shop', 'category', 'product', 'done', 'repair', 'item', 'costs', 'rewards', 'inbox', 'consent']
+export const SCREENS = ['home', 'mykbc', 'shop', 'category', 'product', 'done', 'repair', 'item', 'costs', 'rewards', 'inbox', 'consent', 'partner']
 export const ACTION_TYPES = [
   'RESET', 'SET_VIEW', 'SWITCH_CUSTOMER', 'SET_CONSENT', 'NAVIGATE', 'OPEN_KATE', 'CLOSE_KATE', 'DISMISS_SIGNAL',
   'BORROW', 'REPORT_DEFECT', 'ADVANCE_REPAIR', 'CLOSE_REPAIR', 'RETURN_ITEM', 'UPGRADE_ITEM', 'TRIGGER_TELEMETRY',
@@ -38,7 +38,7 @@ export const DATA_PREFERENCE_KEYS = ['kateTips', 'insights', 'partners', 'teleme
 export const defaultDataPreferences = (consent = false) =>
   ({ kateTips: Boolean(consent), insights: false, partners: false, telemetry: false, completedOn: null })
 
-const ACTIVE_KEYS = ['productId', 'signalId', 'itemKey', 'categoryId']
+const ACTIVE_KEYS = ['productId', 'signalId', 'itemKey', 'categoryId', 'partnerId']
 const isId = (v) => typeof v === 'string' && v.length > 0 && v.length <= MAX_ID_LENGTH
 const pickActive = (active) => (active && typeof active === 'object' && !Array.isArray(active)
   ? Object.fromEntries(Object.entries(active).filter(([k, v]) => ACTIVE_KEYS.includes(k) && (v === null || isId(v))))

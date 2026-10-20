@@ -220,3 +220,12 @@ test('bound campaign actions', () => {
   ])
   assert.ok(sent.every((x) => ACTION_TYPES.includes(x.type)))
 })
+
+test('navigating to a partner keeps a valid partnerId and drops an invalid one', () => {
+  assert.ok(SCREENS.includes('partner'))
+  const s = run({ type: 'NAVIGATE', screen: 'partner', active: { partnerId: 'washcycle' } })
+  assert.equal(s.screen, 'partner')
+  assert.equal(s.active.partnerId, 'washcycle')
+  const bad = loopReducer(s, { type: 'NAVIGATE', screen: 'partner', active: { partnerId: { evil: 1 } } })
+  assert.equal(bad.active.partnerId, 'washcycle')
+})

@@ -1,16 +1,20 @@
 import { useRef, useState } from 'react'
 
 const TABS = [
-  { id: 'home', label: 'Your home' },
-  { id: 'impact', label: 'Your impact' },
+  { id: 'home', label: 'Home' },
+  { id: 'impact', label: 'Impact' },
+  { id: 'rewards', label: 'Rewards' },
 ]
 
 /**
- * Segmented switch between the two start-screen modules (ARIA tabs, arrow keys / Home / End move between tabs).
+ * Segmented switch between the start-screen modules (Home, Impact, Rewards; optionally controlled via `active`/`onChange`) (ARIA tabs, arrow keys / Home / End move between tabs).
+ * The switch and the active panel sit together in one framed container (.lp-frame).
  * Both panels stay mounted so each keeps its state; the inactive one is hidden.
  */
-export function HomeTabs({ panels }) {
-  const [active, setActive] = useState('home')
+export function HomeTabs({ panels, active: activeProp, onChange }) {
+  const [own, setOwn] = useState('home')
+  const active = activeProp ?? own
+  const setActive = (id) => { setOwn(id); onChange?.(id) }
   const refs = useRef({})
   const onKey = (e) => {
     const i = TABS.findIndex((t) => t.id === active)
@@ -22,7 +26,7 @@ export function HomeTabs({ panels }) {
     refs.current[tab.id]?.focus()
   }
   return (
-    <>
+    <div className="lp-frame">
       <div className="lp-seg" role="tablist" aria-label="Start screen" onKeyDown={onKey}>
         {TABS.map((t) => (
           <button key={t.id} type="button" role="tab" id={`lp-tab-${t.id}`} aria-controls={`lp-panel-${t.id}`}
@@ -38,6 +42,6 @@ export function HomeTabs({ panels }) {
           {panels[t.id]}
         </div>
       ))}
-    </>
+    </div>
   )
 }
