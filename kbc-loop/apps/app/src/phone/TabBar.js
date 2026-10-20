@@ -1,17 +1,17 @@
-// Zwevende witte menubalk met de vijf tabbladen van KBC Mobile (zoals in de opname).
-// Het actieve tabblad krijgt een lichtgrijze afgeronde markering en een gevuld icoon.
-// Beleggen en Zakelijk doen niets in de demo en staan lichtgrijs.
+// Floating white tab bar with the five KBC Mobile tabs (shared with the web via @kbc-loop/shared/navigation/tabs.js).
+// The active tab gets a light-grey rounded highlight and a filled icon.
+// Invest and Business do nothing in the demo and are shown light grey.
 import { StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Icon } from '../ui/Icon.js'
 import { Press } from '../ui/Press.js'
 import { T } from '../ui/T.js'
-import { TABS } from '../navigation.js'
+import { TABS, screenForTab } from '../navigation.js'
 import { colors } from '../theme.js'
 
 export const TABBAR_HEIGHT = 64
 
-/** Afstand van de onderkant van het scherm tot de menubalk. */
+/** Distance from the bottom of the screen to the tab bar. */
 export function useTabBarBottom() {
   const insets = useSafeAreaInsets()
   return insets.bottom > 0 ? Math.max(insets.bottom - 12, 12) : 12
@@ -26,7 +26,7 @@ export function TabBar({ active, onSelect }) {
         const color = t.disabled ? colors.offIcon : colors.kmNavy
         return (
           <Press key={t.id} role="tab" aria-selected={on} label={t.label}
-            onPress={t.disabled ? undefined : () => onSelect(t.id)} style={[styles.tab, on && styles.on]}>
+            onPress={t.disabled ? undefined : () => onSelect(screenForTab(t.id))} style={[styles.tab, on && styles.on]}>
             {/* Outline icons (the loop symbol) get a bolder stroke when active instead of a fill */}
             <Icon name={t.icon} size={24} color={color}
               fill={on && !t.outline ? colors.kmNavy : 'none'} strokeWidth={on && t.outline ? 2.6 : 1.8} />

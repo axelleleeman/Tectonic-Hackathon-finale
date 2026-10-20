@@ -10,6 +10,7 @@ import { KateHeader } from './KateHeader.js'
 import { KateIntro, KateMessage, Message } from './KateMessages.js'
 import { KateChips } from './KateChips.js'
 import { KateComposer } from './KateComposer.js'
+import { greeting } from '@kbc-loop/shared/kate/conversation.js'
 import { useKateChat } from './useKateChat.js'
 
 const native = Platform.OS !== 'web'
@@ -37,7 +38,7 @@ function KateConversation({ customer, items, signals, actions, bottomInset }) {
         keyboardShouldPersistTaps="handled" keyboardDismissMode="interactive"
         onContentSizeChange={() => scroll.current?.scrollToEnd({ animated: true })}>
         <KateIntro />
-        <KateMessage>Hi {customer.name}. 👋 Kate here, how can I help?</KateMessage>
+        <KateMessage>{greeting(customer)}</KateMessage>
         {chat.messages.map((m) => <Message key={m.id} from={m.from} text={m.text} />)}
         <KateChips chips={chat.chips} onChoose={chat.choose} busy={chat.busy} />
       </ScrollView>
