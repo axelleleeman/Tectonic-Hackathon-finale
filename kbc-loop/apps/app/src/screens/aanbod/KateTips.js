@@ -81,7 +81,7 @@ function Connector() {
   )
 }
 
-/** One tip: expenditure pattern → data insight → Kate's recommendation (same flow as the web, kate-flow.html style). */
+/** One tip: expenditure pattern → data insight → Kate's recommendation (same flow as the web). */
 function Tip({ signal, customer, actions }) {
   const [why, setWhy] = useState(false)
   const visual = tipVisual(signal, customer)

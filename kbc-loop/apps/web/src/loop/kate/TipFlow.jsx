@@ -71,7 +71,7 @@ function Connector({ vertical }) {
 }
 
 /**
- * One Kate tip as "expenditure pattern → data insight → Kate recommendation" (style of public/kate-flow.html).
+ * One Kate tip as "expenditure pattern → data insight → Kate recommendation".
  * `visual` comes from @kbc-loop/shared/kate/tipVisual.js; `actions` are the CTA buttons; `reasons` fill "Why?".
  */
 export function TipFlow({ visual, title, reasons, actions, onDismiss }) {

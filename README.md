@@ -22,7 +22,6 @@ npm run dev          # starts api, website, dashboard and app bundler – keep t
 | **App** | The KBC Mobile app with KBC Loop (iPhone / Android), the same customer as on the website | `npm run open:app`, or **Explore the app** on the website |
 | **Management dashboard** | KBC Loop Insights for KBC staff: opportunities, partners, campaigns | http://localhost:5174 |
 | **Partner portal** | What a repair partner sees: live repair tickets and their status | http://localhost:5173/#partner |
-| **Slide** | One animated slide for the pitch: expenditure pattern → data insight → Kate | http://localhost:5173/kate-flow.html |
 | **API** (`localhost:4000`) | The backend that stores the shared live state. **Not a page**, never open it | runs automatically with `npm run dev` |
 
 ### Open in this order
@@ -65,7 +64,6 @@ No simulator? The same app also runs inside the website: scroll to **Explore the
 
 | Page | Link | What it is |
 |---|---|---|
-| Slide "from data to Kate" | http://localhost:5173/kate-flow.html | One animated 16:9 slide: expenditure pattern → data insight → Kate recommendation |
 | Demo script | [kbc-loop/docs/DEMO.md](kbc-loop/docs/DEMO.md) | The 4-minute demo, click by click |
 
 ### Do not open
@@ -493,8 +491,8 @@ kbc-loop/
                        header without tabs, dialogs, light and dark theme; rewards/ (#loop/rewards: redeem Kate
                        Coins), inbox/ (notifications bell and panel in the header), share/ (impact card drawn with
                        Canvas 2D and downloaded as a PNG), consent/ (#loop/consent: choose what happens with your data),
-                       kate/ (TipFlow.jsx + tipFlow.css: each Kate tip as pattern → insight → Kate card, style of
-                       public/kate-flow.html)
+                       kate/ (TipFlow.jsx + tipFlow.css: each Kate tip as expenditure pattern → data insight → Kate
+                       card)
       src/hooks/       useAutoplay (plays the demo automatically), useHashRoute (KBC apps page ↔ KBC LOOP)
       src/styles/      styling of the site and the phone frame
       src/assets/      screenshot parts of the KBC apps page

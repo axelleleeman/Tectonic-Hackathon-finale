@@ -1,4 +1,4 @@
-/* Kate tip as "expenditure pattern → data insight → Kate recommendation" (style of public/kate-flow.html).
+/* Kate tip as "expenditure pattern → data insight → Kate recommendation".
    The navy card and the white Kate card keep the same colours in the light and the dark theme. */
 .tf-list { display: grid; gap: var(--s4); }
 .tf-card {
