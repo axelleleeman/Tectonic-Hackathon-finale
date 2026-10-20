@@ -3,6 +3,26 @@
 > **Stop buying things. Start using them.**
 > KBC LOOP is a Product-as-a-Service ecosystem by KBC. Customers pay monthly for the *result* (light, clean clothes, coffee, a working phone) instead of buying products that are built to break. Products stay in the loop: used, repaired, returned and remade.
 
+## ▶️ How to open the demo (read this first)
+
+Open the three parts **in this order**. Everything shares one live state, so what you do in one shows up in the others.
+
+| Step | Open | Where | What it is |
+|---|---|---|---|
+| 0 | Start everything | Terminal: `cd kbc-loop` → `npm install` (first time) → `npm run demo:reset` → `npm run dev` | Starts the api, website, dashboard and app bundler. Keep this terminal open. |
+| **1** | **The website** | **http://localhost:5173/#loop** | KBC LOOP for the customer (Lotte): home, impact, rewards, catalogue, product pages, Kate tips |
+| **2** | **The app in the iPhone simulator** | Second terminal: `cd kbc-loop` → `npm run open:app` | The KBC Mobile app with KBC Loop (opens Expo Go in the iOS Simulator). Also clickable inside the website under **Explore the app** → **Open the app large** |
+| **3** | **The management dashboard** | **http://localhost:5174** | KBC Loop Insights for KBC staff: opportunities, partners, campaigns |
+
+Also useful during the pitch:
+
+- Partner portal (repair partner view): http://localhost:5173/#partner
+- One-slide explainer "expenditure pattern → data insight → Kate": http://localhost:5173/kate-flow.html
+- Step-by-step pitch script: [kbc-loop/docs/DEMO.md](kbc-loop/docs/DEMO.md)
+
+**Do not open** `http://localhost:4000` (that is the api, it has no page) or `http://localhost:8081` in a browser (that is the app bundler; use the simulator or **Explore the app** instead).
+Before every demo run `npm run demo:reset` so Lotte starts with 10 products and 350 Kate Coins. Requirements: Node 24+, and for step 2 a Mac with Xcode's iOS Simulator and Expo Go installed in it (if Expo Go is missing, run `npm run dev:app` once and press `i`).
+
 ---
 
 ## 1. The problem

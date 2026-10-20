@@ -19,6 +19,7 @@
     "import:feed": "node scripts/import-partner-feed.mjs",
     "docs:check": "node scripts/check-openapi.mjs",
     "demo:reset": "node scripts/demo-reset.mjs",
+    "open:app": "open -a Simulator && sleep 4 && xcrun simctl openurl booted exp://127.0.0.1:8081",
     "lint": "npm run lint -w @kbc-loop/web && npm run lint -w @kbc-loop/insights",
     "build": "npm run build -w @kbc-loop/web && npm run build -w @kbc-loop/insights && npm run export:web -w @kbc-loop/app",
     "dev:insights": "npm run dev -w @kbc-loop/insights"
