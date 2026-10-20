@@ -8,8 +8,20 @@ export const customers = [
     persona: 'already borrows Philips lights · phone just repaired',
     accountName: 'Current account', iban: 'BE12 3456 7890 1234', balance: 2483.17,
     phoneAgeMonths: 34,
-    // Borrowed since last year, so a fault can be reported straight away in the demo.
-    borrowed: [{ productId: 'lamp-home', since: '2025-08-01', repairs: 1, room: 'kitchen' }],
+    // A full home on KBC LOOP. The lamp comes first (lotte-0): it is used in the repair demo.
+    // No phone on purpose: Kate suggests borrowing one after the repair transaction.
+    borrowed: [
+      { productId: 'lamp-home', since: '2025-08-01', repairs: 1, room: 'kitchen' },
+      { productId: 'solar-balcony', since: '2025-04-15', repairs: 0, room: 'balcony' },
+      { productId: 'washer', since: '2024-11-01', repairs: 1, room: 'laundry room' },
+      { productId: 'fridge', since: '2025-02-10', repairs: 0, room: 'kitchen' },
+      { productId: 'dishwasher', since: '2025-06-01', repairs: 0, room: 'kitchen' },
+      { productId: 'coffee', since: '2026-01-12', repairs: 0, room: 'kitchen' },
+      { productId: 'laptop', since: '2025-09-01', repairs: 0, room: 'study' },
+      { productId: 'tv', since: '2025-12-01', repairs: 0, room: 'living room' },
+      { productId: 'ebike', since: '2025-03-20', repairs: 1, room: 'garage' },
+      { productId: 'stroller', since: '2026-05-01', repairs: 0, room: 'hall' },
+    ],
     myKbc: [
       { section: 'Rekeningen', name: 'Savings account', sub: 'BE98 7654 3210 9876', value: 6150 },
       { section: 'Verzekeringen', name: 'Home insurance', sub: 'Policy active' },

@@ -70,17 +70,19 @@ test('state persists in the database after a restart', async () => {
 // unchanged: the version still goes up and the attempt is logged. Unknown types are refused with 400.
 test('upgrading an item via the api; an invalid upgrade leaves the state unchanged', async () => {
   await post({ type: 'RESET' })
-  await post({ type: 'BORROW', productId: 'phone' })
+  const borrowed = await (await post({ type: 'BORROW', productId: 'phone' })).json()
+  const count = borrowed.state.items.lotte.length
+  const byKey = (items, key) => items.find((i) => i.key === key)
   const invalid = await (await post({ type: 'UPGRADE_ITEM', itemKey: 'lotte-new-0', productId: 'washer' })).json()
-  assert.equal(invalid.state.items.lotte.length, 2)
-  assert.equal(invalid.state.items.lotte[1].returned, false)
+  assert.equal(invalid.state.items.lotte.length, count)
+  assert.equal(byKey(invalid.state.items.lotte, 'lotte-new-0').returned, false)
   const res = await post({ type: 'UPGRADE_ITEM', itemKey: 'lotte-new-0', productId: 'phone-pro' })
   assert.equal(res.status, 200)
   const { state, version } = await res.json()
   assert.equal(version, invalid.version + 1)
-  assert.equal(state.items.lotte[1].returned, true)
-  assert.equal(state.items.lotte[2].productId, 'phone-pro')
-  assert.equal(state.items.lotte[2].upgradedFrom, 'lotte-new-0')
+  assert.equal(byKey(state.items.lotte, 'lotte-new-0').returned, true)
+  assert.equal(state.items.lotte.at(-1).productId, 'phone-pro')
+  assert.equal(state.items.lotte.at(-1).upgradedFrom, 'lotte-new-0')
 })
 
 test('starting and stopping a campaign via the api', async () => {

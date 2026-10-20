@@ -7,9 +7,10 @@ import { COINS, TODAY } from '../src/config/index.js'
 const run = (...actions) => actions.reduce(loopReducer, createInitialState())
 
 test('borrowing adds an item and shows the confirmation', () => {
+  const before = createInitialState().items.lotte.length
   const s = run({ type: 'BORROW', productId: 'phone' })
   assert.equal(s.screen, 'done')
-  assert.equal(s.items.lotte.length, 2)
+  assert.equal(s.items.lotte.length, before + 1)
 })
 
 test('borrowing a bundle adds each product separately', () => {
@@ -69,7 +70,8 @@ test('returning marks the item, records the date and rewards the customer once',
 
 test('upgrading returns the old item and adds the new one atomically', () => {
   const s = run({ type: 'BORROW', productId: 'phone' }, { type: 'UPGRADE_ITEM', itemKey: 'lotte-new-0', productId: 'phone-pro' })
-  const [, old, upgraded] = s.items.lotte
+  const old = s.items.lotte.find((i) => i.key === 'lotte-new-0')
+  const upgraded = s.items.lotte.at(-1)
   assert.equal(old.returned, true)
   assert.equal(old.returnedOn, TODAY)
   assert.equal(old.repair, null)
@@ -77,7 +79,7 @@ test('upgrading returns the old item and adds the new one atomically', () => {
     { productId: upgraded.productId, since: upgraded.since, repairs: upgraded.repairs, returned: upgraded.returned, upgradedFrom: upgraded.upgradedFrom },
     { productId: 'phone-pro', since: TODAY, repairs: 0, returned: false, upgradedFrom: 'lotte-new-0' },
   )
-  assert.equal(new Set(s.items.lotte.map((i) => i.key)).size, 3)
+  assert.equal(new Set(s.items.lotte.map((i) => i.key)).size, s.items.lotte.length)
   assert.equal(s.coins.lotte, COINS.return)
   assert.equal(s.screen, 'item')
   assert.equal(s.active.itemKey, upgraded.key)
@@ -103,9 +105,10 @@ test('the item and costs screens are navigable', () => {
 })
 
 test('actions only affect the active customer', () => {
+  const initial = createInitialState().items
   const s = run({ type: 'SWITCH_CUSTOMER', customerId: 'peeters' }, { type: 'BORROW', productId: 'lamp-shop' })
-  assert.equal(s.items.lotte.length, 1)
-  assert.equal(s.items.peeters.length, 1)
+  assert.equal(s.items.lotte.length, initial.lotte.length)
+  assert.equal(s.items.peeters.length, initial.peeters.length + 1)
 })
 
 test('toggling a campaign from KBC Loop Insights', () => {
