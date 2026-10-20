@@ -1,0 +1,8 @@
+
+# Schermopnames en video (kunnen persoonlijke bankgegevens bevatten)
+*.mp4
+*.MP4
+*.mov
+*.MOV
+*.m4v
+.DS_Store
