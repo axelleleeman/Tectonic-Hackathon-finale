@@ -4,26 +4,23 @@ import { date, money } from './format.js'
 
 /** Large product illustration with name, partner, status and the four key facts. */
 export function ProductHero({ row, cost }) {
-  const { product, partner, category, item } = row
+  const { product, partner, item } = row
   const facts = [
-    ['Monthly fee', item.returned ? '—' : money(product.monthly), item.returned ? null : 'All-in'],
+    ['Monthly', item.returned ? '—' : money(product.monthly)],
     ['Since', date(item.since)],
-    [item.returned ? 'Returned on' : 'Ends on', item.returned ? date(item.returnedOn) : date(cost.endDate)],
-    ['Paid to date', money(cost.paidToDate)],
+    [item.returned ? 'Returned' : 'Ends', item.returned ? date(item.returnedOn) : date(cost.endDate)],
+    ['Paid', money(cost.paidToDate)],
   ]
   return (
-    <section className="pp-hero lp-card" aria-labelledby="pp-name">
+    <section className="pp-hero" aria-labelledby="pp-name">
       <div className="pp-hero-art"><ProductThumb product={product} size="hero" /></div>
       <div className="pp-hero-main">
-        <div className="pp-hero-top">
-          {category && <span className="lp-tag">{category.name}</span>}
-          <StatusPill row={row} />
-        </div>
+        <StatusPill row={row} />
         <h1 id="pp-name" className="pp-title" tabIndex={-1}>{product.name}</h1>
-        <p className="pp-partner">by <b>{partner.name}</b> · {product.detail}</p>
+        <p className="pp-partner">{partner.name}</p>
         <dl className="pp-keyfacts">
-          {facts.map(([label, value, hint]) => (
-            <div key={label}><dt>{label}</dt><dd className="lp-num">{value}{hint && <small>{hint}</small>}</dd></div>
+          {facts.map(([label, value]) => (
+            <div key={label}><dt>{label}</dt><dd className="lp-num">{value}</dd></div>
           ))}
         </dl>
       </div>

@@ -1,17 +1,5 @@
-import { useEffect, useId, useState } from 'react'
+import { useId } from 'react'
 import { LoopIcon } from '../LoopIcon.jsx'
-
-/** Local object URL for a picked file; revoked when the file changes or the component unmounts. */
-export function usePreviewUrl(file) {
-  const [url, setUrl] = useState(null)
-  useEffect(() => {
-    if (!file) { setUrl(null); return undefined }
-    const next = URL.createObjectURL(file)
-    setUrl(next)
-    return () => URL.revokeObjectURL(next)
-  }, [file])
-  return url
-}
 
 /**
  * Optional photo of the problem. The image stays in this browser (local preview only); it is never uploaded.

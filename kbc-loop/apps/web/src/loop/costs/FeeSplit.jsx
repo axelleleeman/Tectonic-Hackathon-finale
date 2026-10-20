@@ -1,3 +1,4 @@
+import './costs.css'
 import { money, percent } from '../product/format.js'
 
 const SPLIT_PARTS = [

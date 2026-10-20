@@ -4,9 +4,9 @@ import { LoopIcon } from '../LoopIcon.jsx'
 /** The three repair steps with their state. */
 function trackerSteps(partnerName, preventive) {
   return [
-    { title: preventive ? 'Wear reported by the device' : 'Problem reported', text: 'Logged with your subscription, no cost to you' },
-    { title: 'Technician scheduled', text: `${partnerName} visits on ${TECHNICIAN_SLOT}, or brings a replacement` },
-    { title: 'Repaired and tested', text: `Back in use · +${COINS.repair} Kate Coins` },
+    { title: preventive ? 'Wear detected' : 'Reported', text: 'No cost to you' },
+    { title: 'Technician visit', text: `${partnerName} · ${TECHNICIAN_SLOT}` },
+    { title: 'Repaired', text: `+${COINS.repair} Kate Coins` },
   ]
 }
 
@@ -44,7 +44,7 @@ export function RepairTracker({ row, busy, onAdvance, onCloseRepair, compact = f
           )
         })}
       </ol>
-      {done && <p className="pp-coins-earned" role="status"><span className="lp-coin" aria-hidden="true" />+{COINS.repair} Kate Coins earned for repairing instead of replacing</p>}
+      {done && <p className="pp-coins-earned" role="status"><span className="lp-coin" aria-hidden="true" />+{COINS.repair} Kate Coins</p>}
       <div className="pp-row">
         {done
           ? <button type="button" className="lp-btn lp-primary" onClick={onCloseRepair} disabled={busy}>Close repair</button>

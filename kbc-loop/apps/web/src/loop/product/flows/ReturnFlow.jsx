@@ -7,12 +7,12 @@ import { dayLabel, nextWeekdays } from '../format.js'
 
 const STEPS = ['Reason', 'Pickup', 'Summary']
 const ORDER = ['reason', 'pickup', 'summary']
-const REASONS = ['I no longer need it', 'I am moving house', 'I want a different product', 'It does not suit my needs', 'Other reason']
+const REASONS = ['No longer needed', 'Moving house', 'Want something else', 'Other']
 const TIMES = ['8:00–12:00', '13:00–17:00', '9:00–13:00']
 
 /** Return: optional reason → pickup slot → summary → confirm (RETURN_ITEM) → confirmation. */
 export function ReturnFlow({ row, actions, onClose, onOpenCatalog }) {
-  const { product, partner } = row
+  const { product } = row
   const slots = useMemo(() => nextWeekdays(3).map((iso, n) => ({ id: iso, label: `${dayLabel(iso)} · ${TIMES[n]}` })), [])
   const [stage, setStage] = useState('reason')
   const [reason, setReason] = useState(null)
@@ -33,7 +33,7 @@ export function ReturnFlow({ row, actions, onClose, onOpenCatalog }) {
   if (stage === 'reason') {
     body = (
       <fieldset className="pp-choices">
-        <legend className="pp-q">Why are you returning it? <small>Optional</small></legend>
+        <legend className="pp-q">Reason <small>Optional</small></legend>
         {REASONS.map((r) => (
           <label key={r} className="pp-choice">
             <input type="radio" name="pp-reason" checked={reason === r} onChange={() => setReason(r)} data-autofocus={r === (reason ?? REASONS[0]) || undefined} />
@@ -46,36 +46,34 @@ export function ReturnFlow({ row, actions, onClose, onOpenCatalog }) {
   } else if (stage === 'pickup') {
     body = (
       <fieldset className="pp-choices">
-        <legend className="pp-q">When can {partner.name} pick it up?</legend>
+        <legend className="pp-q">Pickup</legend>
         {slots.map((s) => (
           <label key={s.id} className="pp-choice">
             <input type="radio" name="pp-slot" checked={slot === s.id} onChange={() => setSlot(s.id)} data-autofocus={slot === s.id || undefined} />
             <span>{s.label}</span>
           </label>
         ))}
-        <p className="pp-hint">Free pickup at your address. Keep the accessories together; packaging is not needed.</p>
       </fieldset>
     )
     footer = <>{back('reason')}<button type="button" className="lp-btn lp-primary" onClick={() => setStage('summary')}>Continue<LoopIcon name="arrow" size={16} /></button></>
   } else if (stage === 'summary') {
     body = (
       <>
-        <p className="pp-q">Return summary</p>
         <dl className="pp-review">
-          <div><dt>Product</dt><dd>{product.name} · {partner.name}</dd></div>
+          <div><dt>Product</dt><dd>{product.name}</dd></div>
           <div><dt>Pickup</dt><dd>{slotLabel}</dd></div>
           {reason && <div><dt>Reason</dt><dd>{reason}</dd></div>}
-          <div><dt>Monthly fee</dt><dd>Stops after the pickup, no return costs</dd></div>
+          <div><dt>Monthly fee</dt><dd>Stops after pickup</dd></div>
           <div><dt>Reward</dt><dd className="lp-eco">+{COINS.return} Kate Coins</dd></div>
         </dl>
-        <p className="pp-second"><LoopIcon name="leaf" size={18} />Second life: {partner.name} refurbishes it for the next customer or reuses its parts and materials. Borrowing instead of buying avoids about {num(product.co2Kg)} kg CO₂.</p>
+        <p className="pp-second"><LoopIcon name="leaf" size={18} />Second life · {num(product.co2Kg)} kg CO₂ saved</p>
       </>
     )
     footer = <>{back('pickup')}<button type="button" className="lp-btn lp-primary" onClick={confirm} disabled={busy} data-autofocus>{busy ? 'Confirming…' : 'Confirm return'}</button></>
   } else {
     body = (
       <Success title="Return confirmed" coins={COINS.return}>
-        <p>{partner.name} picks up your {product.name} on {slotLabel}. Thank you for keeping it in the loop.</p>
+        <p>{slotLabel}</p>
       </Success>
     )
     footer = <><button type="button" className="lp-btn lp-ghost" onClick={onOpenCatalog}>Browse the catalogue</button><button type="button" className="lp-btn lp-primary" onClick={onClose} data-autofocus>Done</button></>

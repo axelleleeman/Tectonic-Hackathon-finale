@@ -1,7 +1,7 @@
 import { productById } from '@kbc-loop/shared/engine/catalog.js'
 import { LoopIcon } from '../LoopIcon.jsx'
 import { ProductThumb } from '../product/ProductThumb.jsx'
-import { date, money } from '../product/format.js'
+import { money } from '../product/format.js'
 
 const STATUS = { active: ['Active', 'ok'], repair: ['In repair', 'warn'], returned: ['Returned', 'off'] }
 
@@ -19,13 +19,9 @@ export function CostItemList({ items, onOpenProduct }) {
               {product && <ProductThumb product={product} size="md" />}
               <span className="lp-min0 cp-item-name">
                 <b>{c.name}</b>
-                <small>{c.partnerName} · <span className={`lp-status lp-st-${tone}`}>{label}</span></small>
+                {tone !== 'ok' ? <small><span className={`lp-status lp-st-${tone}`}>{label}</span></small> : <small>{c.partnerName}</small>}
               </span>
-              <span className="cp-item-meta lp-num">
-                <small>{returned ? 'Paid in total' : c.remainingMonths ? `${c.remainingMonths} months left` : 'Term completed'}</small>
-                <span>{returned ? money(c.paidToDate) : `ends ${date(c.endDate)}`}</span>
-              </span>
-              <span className="cp-item-fee lp-num">{returned ? '—' : money(c.monthly)}<small>{returned ? 'stopped' : '/ month'}</small></span>
+              <span className="cp-item-fee lp-num">{returned ? '—' : money(c.monthly)}{!returned && <small>/ month</small>}</span>
               <LoopIcon name="chev" className="cp-item-chev" />
             </button>
           </li>

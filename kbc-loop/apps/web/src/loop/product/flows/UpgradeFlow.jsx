@@ -15,7 +15,7 @@ function newItemKey(snapshot, customerId, beforeKeys, productId) {
 
 /** Upgrade: pick a newer model → review old vs new → confirm (UPGRADE_ITEM) → open the new product's page. */
 export function UpgradeFlow({ row, loop, actions, onClose, onOpenCatalog, onOpenItem }) {
-  const { product, partner } = row
+  const { product } = row
   const options = useMemo(() => upgradeOptions(product.id, loop.customer.type), [product.id, loop.customer.type])
   const [stage, setStage] = useState('choose')
   const [choice, setChoice] = useState(options[0]?.id ?? null)
@@ -43,14 +43,13 @@ export function UpgradeFlow({ row, loop, actions, onClose, onOpenCatalog, onOpen
     body = (
       <div className="pp-empty">
         <p className="pp-q">No newer model yet</p>
-        <p className="pp-hint">{partner.name} has no upgrade for your {product.name} right now. Keeping it longer is the most sustainable choice; you can also look for something else in the catalogue.</p>
       </div>
     )
     footer = <><button type="button" className="lp-btn lp-ghost" onClick={onClose}>Keep current</button><button type="button" className="lp-btn lp-primary" onClick={onOpenCatalog}>Browse the catalogue</button></>
   } else if (stage === 'choose') {
     body = (
       <fieldset className="pp-choices">
-        <legend className="pp-q">Choose your new model</legend>
+        <legend className="pp-q">New model</legend>
         {options.map((p) => {
           const diff = upgradeQuote(product.id, p.id).monthlyDifference
           return (
@@ -60,7 +59,6 @@ export function UpgradeFlow({ row, loop, actions, onClose, onOpenCatalog, onOpen
               <span className="pp-option-text">
                 <b>{p.name}</b>
                 <small>{p.detail}</small>
-                <span className="pp-option-incl">{p.includes.slice(0, 2).join(' · ')}</span>
               </span>
               <span className="pp-option-price">
                 <b>{money(p.monthly)}</b><small>/ month</small>
@@ -75,7 +73,6 @@ export function UpgradeFlow({ row, loop, actions, onClose, onOpenCatalog, onOpen
   } else if (stage === 'review') {
     body = (
       <>
-        <p className="pp-q">Your current model goes back, the new one comes in</p>
         <div className="pp-compare">
           <div className="pp-compare-card">
             <small>Current</small>
@@ -93,9 +90,8 @@ export function UpgradeFlow({ row, loop, actions, onClose, onOpenCatalog, onOpen
         </div>
         <dl className="pp-review">
           <div><dt>Monthly fee</dt><dd>{signedMoney(quote.monthlyDifference)} per month</dd></div>
-          <div><dt>Return bonus</dt><dd className="lp-eco">+{quote.coinsForReturn} Kate Coins for returning your {product.name}</dd></div>
+          <div><dt>Return bonus</dt><dd className="lp-eco">+{quote.coinsForReturn} Kate Coins</dd></div>
           <div><dt>Second life</dt><dd>{quote.co2Note}</dd></div>
-          <div><dt>Included</dt><dd>{chosen.includes.slice(0, 3).join(' · ')}</dd></div>
         </dl>
         {failed && <p className="pp-error" role="alert">The upgrade could not be sent. Check your connection and try again.</p>}
       </>
@@ -104,7 +100,7 @@ export function UpgradeFlow({ row, loop, actions, onClose, onOpenCatalog, onOpen
   } else {
     body = (
       <Success title="Upgrade confirmed" coins={quote?.coinsForReturn}>
-        <p>Your {chosen.name} is on its way. {partner.name} collects your {product.name} on the same visit and gives it a second life.</p>
+        <p>{chosen.name} is on its way.</p>
       </Success>
     )
     footer = newKey
