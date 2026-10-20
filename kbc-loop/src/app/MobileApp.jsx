@@ -4,6 +4,7 @@ import { bindActions } from '../state/actions.js'
 import { PhoneFrame } from './phone/PhoneFrame.jsx'
 import { AppBar } from './phone/AppBar.jsx'
 import { TabBar } from './phone/TabBar.jsx'
+import { Fab } from './phone/Fab.jsx'
 import { Home } from './screens/Home.jsx'
 import { MyKbc } from './screens/MyKbc.jsx'
 import { Shop } from './screens/Shop.jsx'
@@ -13,15 +14,15 @@ import { Done } from './screens/Done.jsx'
 import { Repair } from './screens/Repair.jsx'
 import { KateSheet } from './screens/KateSheet.jsx'
 
-// Per scherm: titel in de appbar, terug-bestemming en actief tabblad.
+// Per scherm: soort kopbalk, titel, terug-bestemming en actief tabblad (zoals in KBC Mobile).
 const SCREENS = {
-  home: { title: '', tab: 'home' },
-  mykbc: { title: 'Mijn KBC', tab: 'mykbc' },
-  shop: { title: 'KBC Loop', tab: 'shop' },
-  category: { title: 'KBC Loop', tab: 'shop', back: () => 'shop' },
-  product: { title: 'KBC Loop', tab: 'shop', back: (a) => (a.categoryId ? 'category' : a.signalId ? 'home' : 'shop') },
-  done: { title: 'KBC Loop', tab: 'mykbc', back: () => 'mykbc' },
-  repair: { title: 'Herstelling', tab: 'mykbc', back: () => 'mykbc' },
+  home: { bar: 'search', placeholder: 'Hoe kan ik je helpen?', tab: 'home' },
+  mykbc: { bar: 'title', title: 'Mijn KBC', tab: 'mykbc' },
+  shop: { bar: 'title', title: 'Aanbod', tab: 'shop' },
+  category: { bar: 'back', title: 'KBC Loop', tab: 'shop', back: () => 'shop' },
+  product: { bar: 'back', title: 'KBC Loop', tab: 'shop', back: (a) => (a.categoryId ? 'category' : a.signalId ? 'home' : 'shop') },
+  done: { bar: 'back', title: 'KBC Loop', tab: 'mykbc', back: () => 'mykbc' },
+  repair: { bar: 'back', title: 'Herstelling', tab: 'mykbc', back: () => 'mykbc' },
 }
 
 // De klantenapp (KBC Mobile). Deelt state met de webweergave via useLoop.
@@ -34,7 +35,7 @@ export default function MobileApp() {
   const shared = { customer, items, signals, actions }
 
   const screen = {
-    home: () => <Home {...shared} consent={state.consent} />,
+    home: () => <Home {...shared} coins={coins} consent={state.consent} />,
     mykbc: () => <MyKbc {...shared} coins={coins} />,
     shop: () => <Shop {...shared} />,
     category: () => <Category {...shared} categoryId={state.active.categoryId} />,
@@ -46,9 +47,9 @@ export default function MobileApp() {
   return (
     <div className="app-stage">
       <PhoneFrame
-        header={<AppBar title={meta.title} avatar={customer.avatar} onKate={actions.openKate}
+        header={<AppBar variant={meta.bar} title={meta.title} placeholder={meta.placeholder} onKate={actions.openKate}
           onBack={meta.back && (() => actions.navigate(meta.back(state.active)))} />}
-        footer={<TabBar active={meta.tab} onSelect={(id) => actions.navigate(id)} />}
+        footer={<><Fab /><TabBar active={meta.tab} onSelect={(id) => actions.navigate(id)} /></>}
         overlay={state.kateOpen && <KateSheet {...shared} />}
       >
         {screen()}

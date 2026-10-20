@@ -3,6 +3,7 @@
 @import '../styles/components.css';
 @import '../styles/phone.css';
 @import '../styles/screens.css';
+@import '../styles/kbcmobile.css';
 
 .app-stage { min-height: 100vh; display: grid; place-items: center; padding: 32px 16px; }
 
