@@ -1,0 +1,10 @@
+/* Webweergave: gedeelde huisstijl uit @kbc-loop/web-ui + eigen stijlen in ../styles/ */
+@import '@kbc-loop/web-ui/styles/tokens.css';
+@import '@kbc-loop/web-ui/styles/components.css';
+@import '@kbc-loop/web-ui/styles/layout.css';
+@import '@kbc-loop/web-ui/styles/dashboard.css';
+@import '../styles/phone.css';
+@import '../styles/site.css';
+
+.phone[hidden] { display: none; }
+.app-frame { display: block; width: 100%; border: 0; }

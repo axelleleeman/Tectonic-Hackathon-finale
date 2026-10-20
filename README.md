@@ -89,52 +89,63 @@ Real-world precedent: Philips provides **Light-as-a-Service at Schiphol Airport*
 
 ## 5. Project structure
 
+`kbc-loop/` is an npm-workspaces monorepo: shared code lives in `packages/`, everything that runs lives in `apps/`. See [`kbc-loop/README.md`](kbc-loop/README.md) (Dutch) for setup, API and security details.
+
 ```
 kbc-loop/
-├── README.md
-├── docs/
-│   ├── pitch/                  # Figma Slides deck + export
-│   ├── design-principles.md    # How we meet each challenge principle (see §7)
-│   ├── customer-journey.md     # Journey above, with screens
-│   └── architecture.md         # Diagram of services and data flows
+├── README.md                # Dutch developer docs (checked by scripts/check-readme.mjs)
+├── package.json             # Workspaces packages/* + apps/*; scripts: dev, dev:api, dev:web, dev:app,
+│                            #   dev:insights, test, check:readme, lint, build
+├── Dockerfile               # Builds web + insights + app web export, runs the API (Cloud Run)
 │
-├── data/
-│   └── sample/                 # Synthetic transactions & partner catalog (no real customer data)
+├── packages/
+│   ├── shared/              # @kbc-loop/shared: pure JS, no React
+│   │   └── src/
+│   │       ├── config/      # Demo settings (date, CO₂ factor, Kate Coins, bundle discount, KBC margin)
+│   │       ├── data/        # Fictional data: categories, partners, products, customers, spend segments, KBC services
+│   │       ├── engine/      # Signals/rules, catalog, pricing, impact, dashboards, insights, Kate intents
+│   │       ├── state/       # loopReducer (all actions, with input validation), actions, derive
+│   │       └── client.js    # API client (fetch + WebSocket), https-only outside localhost
+│   └── web-ui/              # @kbc-loop/web-ui: shared web building blocks for apps/web + apps/insights
+│       └── src/             # api.js (API_URL, APP_URL, INSIGHTS_URL, client), useLoop.js,
+│                            #   components/, styles/, assets/ (KBC logo)
 │
-├── services/
-│   ├── signal-engine/          # Detects repeat purchases in transactions → "PaaS candidate"
-│   ├── consent/                # Customer data controls: what may be used, by whom, how proactive
-│   ├── marketplace/            # Partner catalog: phones, lighting, washing machines, coffee machines
-│   ├── subscriptions/          # Contract lifecycle: start, swap, upgrade, return
-│   ├── insurance/              # KBC Verzekeringen: coverage per subscription, claims, fleet cover
-│   ├── billing/                # Monthly payment + split: partner / insurance / KBC
-│   ├── circularity/            # End-of-life tracking: returned products, reused materials, CO₂ saved
-│   └── sustainability-coins/   # Earn rules, coin wallet, redeem (discounts, premiums, green projects)
+├── apps/
+│   ├── api/                 # @kbc-loop/api: Node REST + WebSocket on SQLite; in production also serves
+│   │                        #   web at /, KBC Loop Insights at /kbc/, app web export at /app/
+│   ├── web/                 # @kbc-loop/web (Vite + React, :5173): KBC apps page (screenshot + KBC Loop tab/card),
+│   │                        #   presentation panel, Philips/KBC dashboards, the app in an iframe
+│   ├── insights/            # @kbc-loop/insights (Vite + React, :5174, /kbc/): KBC Loop Insights, internal dashboard
+│   │                        #   for KBC staff: anonymised spending groups, recommended rental products, Kate campaigns
+│   └── app/                 # @kbc-loop/app: Expo SDK 58 app for iPhone + Android (+ web) in the KBC Mobile look;
+│                            #   only KBC Loop is interactive (src/phone, src/screens, src/ui)
 │
-├── partners/
-│   └── adapters/               # Mock APIs for producers (delivery, repair, return)
-│
-├── app/
-│   └── kbc-mobile-mock/        # Customer front end: offer, choice, claim, impact dashboard
-│
-└── tests/
+└── scripts/
+    └── check-readme.mjs     # Fails `npm test` if kbc-loop/README.md no longer matches the code
 ```
+
+All customers, accounts and amounts are fictional; no real data or third-party logos. Screen recordings are git-ignored because they can contain personal banking data.
 
 ### How the services connect
 
 ```
-transactions ──► signal-engine ──► consent ──(allowed?)──► marketplace ──► app (offer)
-                                                                              │ customer chooses
-                                                                              ▼
-                   circularity ◄── subscriptions ──► insurance (KBC Verzekeringen)
-                        │                │                    ▲
-                        │                ▼                    │ redeem: lower premium
-                        │             billing ──► partner │ insurance premium │ KBC fee
-                        │                ▲                    │
-                        ▼                │ redeem: discount   │
-               sustainability-coins ─────┴────────────────────┘
-               (earn: switch · keep longer · repair · return)
+  apps/web (:5173, /)    apps/insights (:5174, /kbc/)    apps/app (Expo: iOS · Android · web /app/)
+  dashboards, demo       internal KBC dashboard          customer: KBC Mobile + KBC Loop
+        │                        │                                │
+        └────────────────────────┼────────────────────────────────┘
+                                 │  REST (GET /api/state, POST /api/actions, GET /api/insights)
+                                 │  WebSocket /api/live (live state to every screen and device)
+                                 ▼
+                 apps/api (Node, http + ws) ── applies actions with the reducer from packages/shared
+                                 │
+                                 ▼
+                    SQLite (node:sqlite): loop_state + action_log
+
+  packages/shared: data, signal engine, reducer, derive and API client, used by web, insights, app and api
+  packages/web-ui: shared React building blocks (API URLs, useLoop, components, styles) for web + insights
 ```
+
+Inside the shared engine, the business flow from §2–3 is the same: transactions → signals (with consent) → offer in the app → contract (financing + insurance) → repair / return → impact and Kate Coins, all visible live in the Philips and KBC dashboards and in KBC Loop Insights.
 
 ## 6. Business model
 

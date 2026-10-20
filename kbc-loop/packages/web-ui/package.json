@@ -1,0 +1,16 @@
+{
+  "name": "@kbc-loop/web-ui",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Gedeelde web-bouwstenen (api-verbinding, useLoop, componenten, huisstijl) voor apps/web en apps/insights",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "dependencies": {
+    "@kbc-loop/shared": "*"
+  },
+  "peerDependencies": {
+    "react": "19.3.0"
+  }
+}

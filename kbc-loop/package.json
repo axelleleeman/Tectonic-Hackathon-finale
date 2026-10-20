@@ -2,17 +2,23 @@
   "name": "kbc-loop",
   "private": true,
   "description": "KBC Loop: web, app (iOS + Android) en api op één database",
-  "workspaces": ["shared", "api", "web", "app"],
-  "engines": { "node": ">=22.13" },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
   "scripts": {
-    "dev": "concurrently -k -n api,web,app -c blue,green,magenta \"npm run dev -w @kbc-loop/api\" \"npm run dev -w @kbc-loop/web\" \"npm run start -w @kbc-loop/app\"",
+    "dev": "concurrently -k -n api,web,insights,app -c blue,green,yellow,magenta \"npm run dev -w @kbc-loop/api\" \"npm run dev -w @kbc-loop/web\" \"npm run dev -w @kbc-loop/insights\" \"npm run start -w @kbc-loop/app\"",
     "dev:api": "npm run dev -w @kbc-loop/api",
     "dev:web": "npm run dev -w @kbc-loop/web",
     "dev:app": "npm run start -w @kbc-loop/app",
     "test": "npm test -w @kbc-loop/shared && npm test -w @kbc-loop/api && npm run check:readme",
     "check:readme": "node scripts/check-readme.mjs",
-    "lint": "npm run lint -w @kbc-loop/web",
-    "build": "npm run build -w @kbc-loop/web"
+    "lint": "npm run lint -w @kbc-loop/web && npm run lint -w @kbc-loop/insights",
+    "build": "npm run build -w @kbc-loop/web && npm run build -w @kbc-loop/insights && npm run export:web -w @kbc-loop/app",
+    "dev:insights": "npm run dev -w @kbc-loop/insights"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"

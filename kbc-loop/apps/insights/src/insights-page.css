@@ -1,0 +1,6 @@
+/* KBC Loop Insights: gedeelde huisstijl uit @kbc-loop/web-ui + eigen stijlen */
+@import '@kbc-loop/web-ui/styles/tokens.css';
+@import '@kbc-loop/web-ui/styles/components.css';
+@import '@kbc-loop/web-ui/styles/layout.css';
+@import '@kbc-loop/web-ui/styles/dashboard.css';
+@import './insights.css';
