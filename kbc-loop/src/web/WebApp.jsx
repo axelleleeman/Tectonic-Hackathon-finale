@@ -7,7 +7,9 @@ import { PresenterPanel } from './presenter/PresenterPanel.jsx'
 import { PartnerDashboard } from './dashboards/PartnerDashboard.jsx'
 import { KbcDashboard } from './dashboards/KbcDashboard.jsx'
 import { SiteHeader } from './site/SiteHeader.jsx'
+import { Icon } from '../components/ui/Icon.jsx'
 import { AppsOverview } from './site/AppsOverview.jsx'
+import { KbcLive } from './site/KbcLive.jsx'
 
 const TABS = ['Overzicht', 'Smartphone', 'Tablet', 'PC']
 
@@ -30,10 +32,11 @@ export default function WebApp() {
 
       <section className="site-hero">
         <h1>{onLoop ? 'KBC Loop: lenen in plaats van kopen' : 'Alle apps van KBC op een rijtje'}</h1>
+        <KbcLive />
       </section>
 
       <div className="site-body">
-        <div className="crumbs"><span className="off-link">Home</span> › {onLoop ? 'KBC Loop' : 'Alle apps van KBC op een rijtje'}</div>
+        <div className="crumbs"><span className="off-link">Home</span><Icon name="chevron" size={14} />{onLoop ? 'KBC Loop' : 'Alle apps van KBC op een rijtje'}</div>
 
         <nav className="site-tabs">
           {TABS.map((t) => (
