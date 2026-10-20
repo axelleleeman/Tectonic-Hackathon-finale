@@ -7,7 +7,7 @@ const SCREEN_H = 844
 const BEZEL = 12
 const MAX_SCALE = 0.72
 const STATUS_H = 44 // fake iOS status bar above the app, so the notch never covers app content
-const LOAD_TIMEOUT = 12000
+const LOAD_TIMEOUT = 20000
 
 // Only the configured app address is ever framed (no user input); anything that is not http(s) is refused.
 const SAFE_URL = /^https?:\/\//.test(APP_URL) || APP_URL.startsWith('/') ? APP_URL : null
@@ -105,11 +105,21 @@ export function AppPreview() {
   const [state, setState] = useState(SAFE_URL ? 'loading' : 'failed') // loading | ready | failed
   const [large, setLarge] = useState(false)
 
+  // The iframe is lazy, so it only starts loading once the section is near the viewport:
+  // start the time-out from that moment, not from page load (otherwise slow scrollers see the fallback).
+  const [visible, setVisible] = useState(false)
   useEffect(() => {
-    if (state !== 'loading') return undefined
+    const el = fitRef.current
+    if (!el || typeof IntersectionObserver === 'undefined') { setVisible(true); return undefined }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); io.disconnect() } }, { rootMargin: '200px' })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+  useEffect(() => {
+    if (state !== 'loading' || !visible) return undefined
     const t = setTimeout(() => setState((s) => (s === 'loading' ? 'failed' : s)), LOAD_TIMEOUT)
     return () => clearTimeout(t)
-  }, [state])
+  }, [state, visible])
 
   return (
     <section className="lp-section lp-appx" aria-labelledby="lp-appx-title">
@@ -129,6 +139,7 @@ export function AppPreview() {
         {state === 'failed' ? (
           <div className="lp-card lp-empty lp-appx-fallback">
             <p>The app preview could not be loaded here.</p>
+            <button type="button" className="lp-btn lp-sm" onClick={() => setState('loading')}>Try again</button>
             {SAFE_URL && <a className="lp-btn lp-sm" href={SAFE_URL} target="_blank" rel="noopener noreferrer">Open the app</a>}
           </div>
         ) : (

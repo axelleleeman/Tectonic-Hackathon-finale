@@ -115,7 +115,8 @@
 .lp-tip-actions { display: flex; flex-wrap: wrap; gap: var(--s2); margin-top: auto; }
 
 /* FAQ: quiet and collapsed */
-.lp-faq { margin-top: var(--s7); display: grid; gap: var(--s3); max-width: 720px; }
+.lp-faq { margin: var(--s7) auto 0; display: grid; gap: var(--s3); max-width: 720px; width: 100%; }
+.lp-faq > h2, .lp-faq > header { text-align: center; }
 .lp-ui .lp-faq h2 { font-size: 1.125rem; }
 .lp-faq details { border-bottom: 1px solid var(--lp-line); }
 .lp-faq details:first-child { border-top: 1px solid var(--lp-line); }
