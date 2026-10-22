@@ -38,3 +38,4 @@ apps/api/data/
 .expo/
 ios/
 android/
+.vercel

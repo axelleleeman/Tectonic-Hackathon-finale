@@ -5,6 +5,11 @@
 
 ## ▶️ How to open the demo (read this first)
 
+> **Online demo (no installation):** https://kbc-loop.vercel.app
+> Website: https://kbc-loop.vercel.app · Management dashboard: https://kbc-loop.vercel.app/kbc/ · Partner portal: https://kbc-loop.vercel.app/#partner · App: https://kbc-loop.vercel.app/app/
+> The online version keeps the demo in your own browser (open the parts in tabs of the same browser and they stay live in sync). For the full shared live setup, run it locally as below.
+
+
 ### Start (once)
 
 ```bash
