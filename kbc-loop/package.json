@@ -22,6 +22,7 @@
     "open:app": "open -a Simulator && sleep 4 && xcrun simctl openurl booted exp://127.0.0.1:8081",
     "lint": "npm run lint -w @kbc-loop/web && npm run lint -w @kbc-loop/insights",
     "build": "npm run build -w @kbc-loop/web && npm run build -w @kbc-loop/insights && npm run export:web -w @kbc-loop/app",
+    "build:demo": "node scripts/build-demo.mjs",
     "dev:insights": "npm run dev -w @kbc-loop/insights"
   },
   "devDependencies": {

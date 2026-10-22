@@ -3,6 +3,7 @@
 import { Platform } from 'react-native'
 import Constants from 'expo-constants'
 import { createLoopClient } from '@kbc-loop/shared/client.js'
+import { createLocalClient } from '@kbc-loop/shared/localClient.js'
 
 const DEV_PORT = 4000
 
@@ -30,11 +31,16 @@ export function apiUrl() {
 // de sleutel schermt de api enkel af tegen toevallige verzoeken.
 const API_KEY = process.env.EXPO_PUBLIC_API_KEY || null
 
+// Demo mode (EXPO_PUBLIC_DEMO_MODE=true at build time, see scripts/build-demo.mjs): no api. On the web the state lives in
+// localStorage and is shared live with the KBC LOOP web and Insights on the same origin; on native it is kept in memory.
+// Must be written literally like this, so Expo fills in the value at build time.
+export const DEMO_MODE = process.env.EXPO_PUBLIC_DEMO_MODE === 'true'
+
 let client = null
 
 /** Eén gedeelde client. Gooit een fout als er geen (veilig) api-adres is. */
 export function getClient() {
   // Onversleutelde http enkel in ontwikkeling; in productie weigert de client alles behalve https.
-  client ??= createLoopClient(apiUrl(), { apiKey: API_KEY, allowInsecure: __DEV__ })
+  client ??= DEMO_MODE ? createLocalClient() : createLoopClient(apiUrl(), { apiKey: API_KEY, allowInsecure: __DEV__ })
   return client
 }

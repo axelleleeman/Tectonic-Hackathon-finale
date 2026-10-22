@@ -231,8 +231,9 @@ CI (`.github/workflows/ci.yml`) runs install, test, lint and build on every push
 kbc-loop/
 ├── docs/                    # ARCHITECTURE.md, DEMO.md (pitch script), openapi.yaml (REST API)
 ├── package.json             # Workspaces packages/* + apps/*; scripts: dev, dev:api, dev:web, dev:app,
-│                            #   dev:insights, test, check:readme, lint, build
+│                            #   dev:insights, test, check:readme, lint, build, build:demo
 ├── Dockerfile               # Builds web + insights + app web export, runs the API (Cloud Run)
+├── vercel.json              # Static online demo on Vercel (build:demo, no API): rewrites, CSP + security headers
 │
 ├── packages/
 │   ├── shared/              # @kbc-loop/shared: pure JS, no React
@@ -241,7 +242,8 @@ kbc-loop/
 │   │       ├── data/        # Fictional data: categories, partners, products, customers, spend segments, KBC services
 │   │       ├── engine/      # Signals/rules, catalog, pricing, impact, dashboards, insights, Kate intents
 │   │       ├── state/       # loopReducer (all actions, with input validation), actions, derive
-│   │       └── client.js    # API client (fetch + WebSocket), https-only outside localhost
+│   │       ├── client.js    # API client (fetch + WebSocket), https-only outside localhost
+│   │       └── localClient.js # Same interface without an API (demo mode): state in localStorage, live across tabs
 │   └── web-ui/              # @kbc-loop/web-ui: shared web building blocks for apps/web + apps/insights
 │       └── src/             # api.js (API_URL, APP_URL, INSIGHTS_URL, client), useLoop.js,
 │                            #   components/, styles/, assets/ (KBC logo)
@@ -257,7 +259,8 @@ kbc-loop/
 │                            #   only KBC Loop is interactive (src/phone, src/screens, src/ui)
 │
 └── scripts/
-    └── check-readme.mjs     # Fails `npm test` if this README no longer matches the code
+    ├── check-readme.mjs     # Fails `npm test` if this README no longer matches the code
+    └── build-demo.mjs       # npm run build:demo: the production build in demo mode (no API), used by Vercel
 ```
 
 All customers, accounts and amounts are fictional; no real data or third-party logos. Screen recordings are git-ignored because they can contain personal banking data.
@@ -429,7 +432,9 @@ npm workspaces monorepo: shared code in `packages/`, everything that runs in `ap
 
 ```
 kbc-loop/
-  package.json       npm workspaces (packages/*, apps/*) + scripts dev/test/build/lint
+  package.json       npm workspaces (packages/*, apps/*) + scripts dev/test/build/build:demo/lint
+  vercel.json        static online demo on Vercel: npm run build:demo → apps/web/dist, rewrites for /kbc and /app,
+                     Content-Security-Policy and other security headers, immutable cache for hashed assets
   Dockerfile         production image: builds web + insights + app, runs the api (Cloud Run)
   docker-compose.yml runs that image locally: healthcheck on /api/health, named volume for the database
   docs/              openapi.yaml: OpenAPI 3.1 contract of every route, the error format and the /api/live protocol
@@ -458,6 +463,8 @@ kbc-loop/
       src/navigation/  tabs.js: the five KBC Mobile tabs (Home, My KBC, Invest, Business, Loop), shared by app and web
       src/ui/          iconPaths.js: SVG path data for line icons, shared by app and web; illustrations/
       src/client.js    API client (fetch + WebSocket) for web, insights and app; https only outside localhost
+      src/localClient.js  demo-mode client with the same interface, without an API: loopReducer + insights engine
+                       in the browser, state in localStorage, shared live across tabs/iframes (BroadcastChannel)
       tests/
     web-ui/          @kbc-loop/web-ui: shared web building blocks for apps/web and apps/insights
       src/api.js       API_URL, APP_URL, INSIGHTS_URL and the client
@@ -511,6 +518,7 @@ kbc-loop/
       app.json         Expo config (web under base path /app)
   docs/              ARCHITECTURE.md (diagram, data flow, security), DEMO.md (pitch script), openapi.yaml (REST API)
   scripts/           check-readme.mjs: checks that this README describes the actual structure
+                     build-demo.mjs: npm run build with VITE_DEMO_MODE/EXPO_PUBLIC_DEMO_MODE=true (npm run build:demo)
                      import-partner-feed.mjs: imports a partner product feed into the database (npm run import:feed)
                      check-openapi.mjs: checks that docs/openapi.yaml covers every route and action (npm run docs:check)
                      demo-reset.mjs: resets the shared demo state via the API (npm run demo:reset)
@@ -591,6 +599,7 @@ npm run demo:reset   # POST { type: 'RESET' } to API_URL (default http://127.0.0
 Uses Node's built-in test runner (`node --test`), without extra packages. `npm run lint` checks the code of
 web and Insights (ESLint). `npm run build` creates the production build in `apps/web/dist/`: first the web,
 then Insights (in `apps/web/dist/kbc`) and finally the web export of the app (in `apps/web/dist/app`).
+`npm run build:demo` does the same in demo mode (no API needed; see "Online demo (Vercel)").
 
 ## Keeping the documentation up to date
 
@@ -657,6 +666,8 @@ Front-end settings (baked in at build time, so **no secrets**):
 | `VITE_API_KEY` | web, insights | Same value as `API_KEY`, if set |
 | `EXPO_PUBLIC_API_URL` | app | API address (by default discovered via the Expo dev server) |
 | `EXPO_PUBLIC_API_KEY` | app | Same value as `API_KEY`, if set |
+| `VITE_DEMO_MODE` | web, insights | `true`: demo mode without API (`localClient.js`); set by `npm run build:demo` |
+| `EXPO_PUBLIC_DEMO_MODE` | app | `true`: demo mode without API (`localClient.js`); set by `npm run build:demo` |
 
 ## Partner catalogue and product feeds
 
@@ -738,6 +749,25 @@ healthcheck. Optional `API_KEY`, `ALLOWED_ORIGINS` and `LOG_LEVEL` come from a l
 - **Not public without KBC's permission**: the web view imitates kbc.be (screenshot, KBC logo). Do not put the
   service online publicly without KBC's permission; leave out `--allow-unauthenticated` and use e.g. IAM or
   Identity-Aware Proxy, or share it only with the jury.
+
+## Online demo (Vercel)
+
+`kbc-loop/vercel.json` deploys a static version of the whole demo, without the API (no SQLite, no WebSocket):
+set the Vercel project's root directory to `kbc-loop`. Vercel runs `npm install --ignore-scripts` and
+`npm run build:demo`, and serves `apps/web/dist`: the web at `/`, Insights at `/kbc/` and the app at `/app/`.
+
+- **Demo mode** (`VITE_DEMO_MODE=true`, `EXPO_PUBLIC_DEMO_MODE=true`): web, Insights and app use
+  `packages/shared/src/localClient.js` instead of the API client. Actions run through the same `loopReducer`, and
+  insights come from the same engine as `GET /api/insights`.
+- **State per browser**: it is kept in `localStorage` (key `kbc-loop-demo-state`) and shared live between tabs and
+  the app iframe of the same browser (BroadcastChannel, with the `storage` event as fallback). Different visitors
+  or devices do not see each other's changes. "Reset demo" restores the starting state.
+- **Headers**: a strict Content-Security-Policy (`script-src 'self'`, `connect-src 'self'`, `frame-ancestors 'self'`),
+  `X-Frame-Options: SAMEORIGIN`, `nosniff`, `Referrer-Policy` and `Permissions-Policy`; hashed assets are cached
+  as immutable.
+- Normal development (`npm run dev`) and the Cloud Run build are unchanged: they still use the API.
+- The same permission note as above applies: do not make the deployment public without KBC's permission
+  (e.g. use Vercel Deployment Protection).
 
 ## Limitations / disclaimers
 
